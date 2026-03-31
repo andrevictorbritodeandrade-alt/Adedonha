@@ -1,1 +1,23 @@
 @import "tailwindcss";
+
+body {
+  overflow-x: hidden;
+}
+
+@keyframes msn-shake {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-10px, -10px); }
+  20% { transform: translate(10px, -10px); }
+  30% { transform: translate(-10px, 10px); }
+  40% { transform: translate(10px, 10px); }
+  50% { transform: translate(-10px, 0); }
+  60% { transform: translate(10px, 0); }
+  70% { transform: translate(0, -10px); }
+  80% { transform: translate(0, 10px); }
+  90% { transform: translate(-5px, -5px); }
+  100% { transform: translate(0, 0); }
+}
+
+.animate-msn-shake {
+  animation: msn-shake 0.1s infinite;
+}

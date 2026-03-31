@@ -96,6 +96,27 @@ export default function App() {
     }
   };
 
+  const playBeep = () => {
+    try {
+      if (!audioCtxRef.current) return;
+      const osc = audioCtxRef.current.createOscillator();
+      const gainNode = audioCtxRef.current.createGain();
+      osc.connect(gainNode);
+      gainNode.connect(audioCtxRef.current.destination);
+      
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(1000, audioCtxRef.current.currentTime);
+      
+      gainNode.gain.setValueAtTime(0.1, audioCtxRef.current.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtxRef.current.currentTime + 0.1);
+      
+      osc.start();
+      osc.stop(audioCtxRef.current.currentTime + 0.1);
+    } catch (e) {
+      console.error("Audio error:", e);
+    }
+  };
+
   // Roleta segura
   const sortearLetra = () => {
     if (isSpinning) return;
@@ -167,9 +188,10 @@ export default function App() {
     };
   }, [isRunning]); // Só reage quando o isRunning muda (Play/Pausa), não a cada segundo!
 
-  // Preenchimento automático quando o tempo acaba
+  // Preenchimento automático e bip quando o tempo acaba
   useEffect(() => {
     if (timeLeft === 0 && letraSorteada !== "?") {
+      playDing(); // Toca o som quando o tempo acaba
       setRespostas(prev => {
         const novas = { ...prev };
         temas.forEach(tema => {
@@ -180,8 +202,10 @@ export default function App() {
         });
         return novas;
       });
+    } else if (isRunning && timeLeft <= 10 && timeLeft > 0) {
+      playBeep();
     }
-  }, [timeLeft, letraSorteada]);
+  }, [timeLeft, isRunning, letraSorteada]);
 
   const toggleTimer = () => setIsRunning(!isRunning);
   
@@ -212,8 +236,10 @@ export default function App() {
   const percentage = (timeLeft / TEMPO_INICIAL) * 100;
   const barColor = timeLeft <= 60 ? 'bg-red-500' : (timeLeft <= 120 ? 'bg-yellow-500' : 'bg-green-500');
 
+  const isShaking = isRunning && timeLeft <= 10 && timeLeft > 0;
+
   return (
-    <div className="min-h-screen bg-slate-100 font-sans p-2 md:p-6 text-slate-800">
+    <div className={`min-h-screen bg-slate-100 font-sans p-2 md:p-6 text-slate-800 ${isShaking ? 'animate-msn-shake' : ''}`}>
       
       <header className="text-center mb-4">
         <h1 className="text-3xl font-extrabold text-indigo-600 mb-1">🛑 Adedonha</h1>
