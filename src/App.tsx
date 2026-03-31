@@ -282,12 +282,13 @@ export default function App() {
         </div>
 
         {/* Painel Direito (Temas) */}
-        <div className="w-full lg:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-3">
-          {temas.map((tema) => (
-            <div key={tema.id} className="bg-white p-3 rounded-xl shadow-sm border border-slate-200">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-xl">{tema.icon}</span>
-                <span className="text-md font-bold text-slate-700">{tema.name}</span>
+        <div className="w-full lg:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-2">
+          {temas.map((tema, index) => (
+            <div key={tema.id} className="bg-white p-2 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-slate-400 font-bold text-sm w-4">{index + 1}.</span>
+                <span className="text-lg">{tema.icon}</span>
+                <span className="text-sm font-bold text-slate-700 truncate">{tema.name}</span>
               </div>
               
               <input
@@ -295,7 +296,7 @@ export default function App() {
                 value={respostas[tema.id] || ''}
                 onChange={(e) => handleResposta(tema.id, e.target.value)}
                 placeholder="Escreva aqui..."
-                className="w-full p-2 mb-3 rounded-lg border border-slate-300 bg-slate-50 outline-none focus:border-indigo-400"
+                className="w-full p-1.5 text-sm mb-2 rounded-lg border border-slate-300 bg-slate-50 outline-none focus:border-indigo-400"
               />
               
               <div className="grid grid-cols-4 gap-1">
@@ -305,14 +306,14 @@ export default function App() {
                     <button
                       key={opt.value}
                       onClick={() => handleScore(tema.id, opt.value)}
-                      className={`py-1 flex flex-col items-center justify-center rounded-lg border ${
+                      className={`py-0.5 flex flex-col items-center justify-center rounded-lg border ${
                         isSelected 
                           ? 'bg-indigo-600 border-indigo-600 text-white' 
                           : 'bg-white border-slate-300 text-slate-600'
                       }`}
                     >
-                      <span className="text-sm">{opt.icon}</span>
-                      <span className="font-bold text-sm">{opt.value}</span>
+                      <span className="text-xs">{opt.icon}</span>
+                      <span className="font-bold text-xs">{opt.value}</span>
                     </button>
                   );
                 })}
