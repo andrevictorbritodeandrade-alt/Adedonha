@@ -15,6 +15,7 @@ const temas = [
 
 const TEMPO_INICIAL = 5 * 60; // 5 minutos em segundos
 const ALFABETO = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+const WHEEL_COLORS = ['#FF595E', '#FFCA3A', '#8AC926', '#1982C4', '#6A4C93', '#FF99C8', '#F4A261', '#2A9D8F', '#E76F51', '#264653'];
 
 const pointOptions = [
   { value: 0, label: "Branco", icon: "❌" },
@@ -64,15 +65,15 @@ export default function App() {
       osc.connect(gainNode);
       gainNode.connect(audioCtxRef.current.destination);
       
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(600, audioCtxRef.current.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(200, audioCtxRef.current.currentTime + 0.05);
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(800, audioCtxRef.current.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(100, audioCtxRef.current.currentTime + 0.02);
       
-      gainNode.gain.setValueAtTime(0.1, audioCtxRef.current.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtxRef.current.currentTime + 0.05);
+      gainNode.gain.setValueAtTime(0.3, audioCtxRef.current.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtxRef.current.currentTime + 0.02);
       
       osc.start();
-      osc.stop(audioCtxRef.current.currentTime + 0.05);
+      osc.stop(audioCtxRef.current.currentTime + 0.02);
     } catch (e) {
       console.error("Audio error:", e);
     }
@@ -261,8 +262,15 @@ export default function App() {
   return (
     <div className={`min-h-screen bg-slate-100 font-sans p-2 md:p-4 text-slate-800 ${isShaking ? 'animate-msn-shake' : ''}`}>
       
-      <header className="text-center mb-2">
-        <h1 className="text-3xl font-extrabold text-indigo-600 mb-1">🛑 Adedonha</h1>
+      <header className="text-center mb-4 mt-2">
+        <h1 className="text-4xl md:text-5xl font-black mb-2 tracking-tight drop-shadow-sm">
+          <span className="inline-block animate-bounce mr-2">🛑</span>
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-yellow-400 via-green-500 via-blue-500 to-purple-500 uppercase">
+            SUPER ADEDONHA!
+          </span>
+          <span className="inline-block animate-bounce ml-2" style={{ animationDelay: '0.2s' }}>🚀</span>
+        </h1>
+        <p className="text-slate-500 font-bold uppercase tracking-wider text-sm">O jogo mais divertido da sala de aula</p>
       </header>
 
       <div className="max-w-[1600px] w-full mx-auto flex flex-col lg:flex-row gap-3">
@@ -278,9 +286,9 @@ export default function App() {
               
               {/* Wheel */}
               <div 
-                className="w-full h-full rounded-full border-4 border-indigo-600 relative overflow-hidden shadow-inner"
+                className="w-full h-full rounded-full border-4 border-white relative overflow-hidden shadow-lg"
                 style={{
-                  background: `conic-gradient(from -${360 / 26 / 2}deg, ${ALFABETO.map((_, i) => `${i % 2 === 0 ? '#e0e7ff' : '#c7d2fe'} ${i * (360/26)}deg ${(i+1) * (360/26)}deg`).join(', ')})`,
+                  background: `conic-gradient(from -${360 / 26 / 2}deg, ${ALFABETO.map((_, i) => `${WHEEL_COLORS[i % WHEEL_COLORS.length]} ${i * (360/26)}deg ${(i+1) * (360/26)}deg`).join(', ')})`,
                   transform: `rotate(${rotation}deg)`,
                   transition: 'transform 3s cubic-bezier(0.25, 1, 0.5, 1)'
                 }}
@@ -295,7 +303,7 @@ export default function App() {
                       width: '24px'
                     }}
                   >
-                    <span className="block text-center font-bold text-indigo-800 text-xs sm:text-sm mt-1">
+                    <span className="block text-center font-black text-white drop-shadow-md text-xs sm:text-sm mt-1">
                       {letra}
                     </span>
                   </div>
