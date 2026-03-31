@@ -23,6 +23,19 @@ const pointOptions = [
   { value: 15, label: "Único!", icon: "👑" }
 ];
 
+const dicionarioRespostas = {
+  1: { A: "Ana", B: "Bruno", C: "Carlos", D: "Daniel", E: "Eduardo", F: "Fernanda", G: "Gabriel", H: "Helena", I: "Igor", J: "João", K: "Karina", L: "Lucas", M: "Maria", N: "Natália", O: "Otávio", P: "Pedro", Q: "Quitéria", R: "Rafael", S: "Sofia", T: "Tiago", U: "Ubirajara", V: "Vitória", W: "Wagner", X: "Xuxa", Y: "Yuri", Z: "Zeca" },
+  2: { A: "Arara", B: "Baleia", C: "Cachorro", D: "Dinossauro", E: "Elefante", F: "Foca", G: "Gato", H: "Hipopótamo", I: "Iguana", J: "Jacaré", K: "Kiwi", L: "Leão", M: "Macaco", N: "Naja", O: "Ovelha", P: "Pato", Q: "Quati", R: "Rato", S: "Sapo", T: "Tatu", U: "Urso", V: "Vaca", W: "Wombat", X: "Xaréu", Y: "Yak", Z: "Zebra" },
+  3: { A: "Arroz", B: "Bolo", C: "Chocolate", D: "Doce de leite", E: "Empada", F: "Feijão", G: "Goiabada", H: "Hambúrguer", I: "Iogurte", J: "Jujuba", K: "Kiwi", L: "Lasanha", M: "Macarrão", N: "Nhoque", O: "Ovo", P: "Pizza", Q: "Queijo", R: "Rabanada", S: "Sorvete", T: "Torta", U: "Uva", V: "Vitamina", W: "Wafer", X: "X-Tudo", Y: "Yakisoba", Z: "Zabaione" },
+  4: { A: "Azul", B: "Branco", C: "Cinza", D: "Dourado", E: "Esmeralda", F: "Fúcsia", G: "Gelo", H: "Havana", I: "Índigo", J: "Jambo", K: "Khaki", L: "Laranja", M: "Marrom", N: "Neve", O: "Ouro", P: "Preto", Q: "Quartzo", R: "Rosa", S: "Salmão", T: "Turquesa", U: "Urucum", V: "Verde", W: "Wenge", X: "Xanadu", Y: "Yellow", Z: "Zinco" },
+  5: { A: "Anitta", B: "Beatles", C: "Caetano Veloso", D: "Djavan", E: "Eminem", F: "Foo Fighters", G: "Gilberto Gil", H: "Harry Styles", I: "Ivete Sangalo", J: "Justin Bieber", K: "Katy Perry", L: "Lady Gaga", M: "Madonna", N: "Nirvana", O: "Oasis", P: "Pink Floyd", Q: "Queen", R: "Rihanna", S: "Shakira", T: "Taylor Swift", U: "U2", V: "Victor e Leo", W: "Wesley Safadão", X: "Xamã", Y: "Yes", Z: "Zeca Pagodinho" },
+  6: { A: "Aladdin", B: "Batman", C: "Cinderela", D: "Dumbo", E: "Enrolados", F: "Frozen", G: "Gladiador", H: "Hércules", I: "Irmão Urso", J: "Jumanji", K: "Kung Fu Panda", L: "Lilo & Stitch", M: "Mulan", N: "Naruto", O: "O Máskara", P: "Pinóquio", Q: "Quarteto Fantástico", R: "Rei Leão", S: "Shrek", T: "Toy Story", U: "Up", V: "Vingadores", W: "Wall-E", X: "X-Men", Y: "Yu-Gi-Oh!", Z: "Zootopia" },
+  7: { A: "Amável", B: "Brava", C: "Chata", D: "Divertida", E: "Especial", F: "Fofa", G: "Gentil", H: "Honesta", I: "Inteligente", J: "Jovem", K: "K-popper", L: "Legal", M: "Maravilhosa", N: "Nervosa", O: "Ocupada", P: "Perfeita", Q: "Querida", R: "Rica", S: "Simpática", T: "Teimosa", U: "Única", V: "Valente", W: "Workaholic", X: "Xarope", Y: "Yogui", Z: "Zangada" },
+  8: { A: "Aquaman", B: "Batman", C: "Capitão América", D: "Demolidor", E: "Elektra", F: "Flash", G: "Gavião Arqueiro", H: "Hulk", I: "Homem de Ferro", J: "Jean Grey", K: "Kick-Ass", L: "Lanterna Verde", M: "Mulher Maravilha", N: "Noturno", O: "Oráculo", P: "Pantera Negra", Q: "Quarteto Fantástico", R: "Robin", S: "Superman", T: "Thor", U: "Ultraman", V: "Viúva Negra", W: "Wolverine", X: "X-Men", Y: "Yelena", Z: "Zatanna" },
+  9: { A: "Abdômen", B: "Braço", C: "Cabeça", D: "Dedo", E: "Estômago", F: "Fígado", G: "Garganta", H: "Hálux", I: "Intestino", J: "Joelho", K: "Quadril", L: "Língua", M: "Mão", N: "Nariz", O: "Olho", P: "Pé", Q: "Queixo", R: "Rosto", S: "Sobrancelha", T: "Tornozelo", U: "Unha", V: "Veia", W: "Wrist (Pulso)", X: "Xixi", Y: "Y (Cromossomo)", Z: "Zonula" },
+  10: { A: "Argentina", B: "Brasil", C: "Canadá", D: "Dinamarca", E: "Espanha", F: "França", G: "Grécia", H: "Holanda", I: "Itália", J: "Japão", K: "Kuwait", L: "Londres", M: "México", N: "Noruega", O: "Orlando", P: "Portugal", Q: "Quênia", R: "Rússia", S: "Suíça", T: "Turquia", U: "Uruguai", V: "Venezuela", W: "Washington", X: "Xangai", Y: "Yokohama", Z: "Zimbábue" }
+};
+
 export default function App() {
   const [timeLeft, setTimeLeft] = useState(TEMPO_INICIAL);
   const [isRunning, setIsRunning] = useState(false);
@@ -153,6 +166,22 @@ export default function App() {
       if (interval) clearInterval(interval);
     };
   }, [isRunning]); // Só reage quando o isRunning muda (Play/Pausa), não a cada segundo!
+
+  // Preenchimento automático quando o tempo acaba
+  useEffect(() => {
+    if (timeLeft === 0 && letraSorteada !== "?") {
+      setRespostas(prev => {
+        const novas = { ...prev };
+        temas.forEach(tema => {
+          // Preenche apenas se o campo estiver vazio
+          if (!novas[tema.id] || novas[tema.id].trim() === "") {
+            novas[tema.id] = dicionarioRespostas[tema.id]?.[letraSorteada] || "---";
+          }
+        });
+        return novas;
+      });
+    }
+  }, [timeLeft, letraSorteada]);
 
   const toggleTimer = () => setIsRunning(!isRunning);
   
