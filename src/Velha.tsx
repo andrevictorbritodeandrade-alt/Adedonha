@@ -56,7 +56,7 @@ export default function Velha({ onBack }: { onBack: () => void }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 font-sans p-4 text-slate-800 flex flex-col items-center">
+    <div className="min-h-screen bg-magical font-sans p-4 text-white flex flex-col items-center">
       
       <header className="text-center mb-6 relative w-full max-w-4xl">
         <button 
@@ -68,7 +68,7 @@ export default function Velha({ onBack }: { onBack: () => void }) {
         <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic">
           <span className="inline-block animate-bounce mr-2">⭕</span>
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 uppercase">
-            SUPER VELHA!
+            EPIC VELHA!
           </span>
           <span className="inline-block animate-bounce ml-2" style={{ animationDelay: '0.2s' }}>❌</span>
         </h1>

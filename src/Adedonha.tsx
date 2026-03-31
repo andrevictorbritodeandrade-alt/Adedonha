@@ -260,7 +260,7 @@ export default function Adedonha({ onBack }: { onBack: () => void }) {
   const isShaking = isRunning && timeLeft <= 10 && timeLeft > 0;
 
   return (
-    <div className={`min-h-screen bg-slate-100 font-sans p-2 md:p-4 text-slate-800 ${isShaking ? 'animate-msn-shake' : ''}`}>
+    <div className={`min-h-screen bg-magical font-sans p-2 md:p-4 text-white ${isShaking ? 'animate-msn-shake' : ''}`}>
       
       <header className="text-center mb-4 mt-2 relative">
         <button 
@@ -272,9 +272,8 @@ export default function Adedonha({ onBack }: { onBack: () => void }) {
         <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic">
           <span className="inline-block animate-bounce mr-2">🛑</span>
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-yellow-400 via-green-500 via-blue-500 to-purple-500 uppercase">
-            SUPER ADEDONHA!
+            EPIC ADEDONHA!
           </span>
-          <span className="inline-block animate-bounce ml-2" style={{ animationDelay: '0.2s' }}>🚀</span>
         </h1>
         <p className="text-slate-500 font-bold uppercase tracking-wider text-sm">O jogo mais divertido da sala de aula</p>
       </header>

@@ -28,7 +28,7 @@ const Boneco = ({ erros, color, title, isTurn, onClickTurn }) => (
       {isTurn && <span className="animate-bounce text-2xl">👇</span>}
     </div>
     
-    <svg width="160" height="220" viewBox="0 0 200 250" className="stroke-current text-slate-800" strokeWidth="8" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="160" height="220" viewBox="0 0 200 250" className="stroke-current text-white" strokeWidth="8" fill="none" strokeLinecap="round" strokeLinejoin="round">
       {/* Forca Base */}
       <line x1="20" y1="240" x2="100" y2="240" />
       <line x1="60" y1="240" x2="60" y2="20" />
@@ -111,7 +111,7 @@ export default function Forca({ onBack }: { onBack: () => void }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 font-sans p-4 text-slate-800 flex flex-col items-center">
+    <div className="min-h-screen bg-magical font-sans p-4 text-white flex flex-col items-center">
       
       <header className="text-center mb-6 relative w-full max-w-6xl">
         <button 
@@ -123,7 +123,7 @@ export default function Forca({ onBack }: { onBack: () => void }) {
         <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic">
           <span className="inline-block animate-bounce mr-2">🪢</span>
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 uppercase">
-            SUPER FORCA!
+            EPIC FORCA!
           </span>
           <span className="inline-block animate-bounce ml-2" style={{ animationDelay: '0.2s' }}>😵</span>
         </h1>
@@ -162,7 +162,7 @@ export default function Forca({ onBack }: { onBack: () => void }) {
               key={index} 
               className={`w-12 h-16 md:w-16 md:h-20 border-b-8 flex items-center justify-center text-4xl md:text-5xl font-black transition-all ${
                 letrasAdivinhadas.has(letra) || status === 'perdeu' 
-                  ? 'border-emerald-500 text-slate-800' 
+                  ? 'border-emerald-500 text-emerald-500' 
                   : 'border-slate-300 text-transparent'
               } ${status === 'perdeu' && !letrasAdivinhadas.has(letra) ? 'text-red-500 opacity-50' : ''}`}
             >
