@@ -45,6 +45,10 @@ export default function App() {
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const audioCtxRef = useRef(null);
+  
+  const [players, setPlayers] = useState(() => 
+    Array.from({ length: 20 }, (_, i) => ({ id: i + 1, name: '', score: 0, roundScore: '' }))
+  );
 
   const playTick = () => {
     try {
@@ -225,6 +229,22 @@ export default function App() {
     setRespostas(prev => ({ ...prev, [themeId]: texto }));
   };
 
+  const handlePlayerChange = (id, field, value) => {
+    setPlayers(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p));
+  };
+
+  const addPlayerScore = (id) => {
+    setPlayers(prev => prev.map(p => {
+      if (p.id === id) {
+        const pts = parseInt(p.roundScore) || 0;
+        return { ...p, score: p.score + pts, roundScore: '' };
+      }
+      return p;
+    }));
+  };
+
+  const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
+
   const totalScore = temas.reduce((total, tema) => {
     return total + (scores[tema.id] || 0);
   }, 0);
@@ -239,16 +259,16 @@ export default function App() {
   const isShaking = isRunning && timeLeft <= 10 && timeLeft > 0;
 
   return (
-    <div className={`min-h-screen bg-slate-100 font-sans p-2 md:p-6 text-slate-800 ${isShaking ? 'animate-msn-shake' : ''}`}>
+    <div className={`min-h-screen bg-slate-100 font-sans p-2 md:p-4 text-slate-800 ${isShaking ? 'animate-msn-shake' : ''}`}>
       
-      <header className="text-center mb-4">
+      <header className="text-center mb-2">
         <h1 className="text-3xl font-extrabold text-indigo-600 mb-1">🛑 Adedonha</h1>
       </header>
 
-      <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-4">
+      <div className="max-w-[1600px] w-full mx-auto flex flex-col lg:flex-row gap-3">
         
         {/* Painel Esquerdo */}
-        <div className="w-full lg:w-1/3 bg-white p-4 rounded-xl shadow-md border border-slate-200">
+        <div className="w-full lg:w-1/4 bg-white p-3 rounded-xl shadow-md border border-slate-200 flex flex-col">
           
           <div className="bg-indigo-50 p-4 rounded-lg flex flex-col items-center justify-center mb-4 border border-indigo-100">
             {/* Roleta */}
@@ -336,8 +356,8 @@ export default function App() {
 
         </div>
 
-        {/* Painel Direito (Temas) */}
-        <div className="w-full lg:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-2">
+        {/* Painel Central (Temas) */}
+        <div className="w-full lg:w-2/4 grid grid-cols-1 md:grid-cols-2 gap-2">
           {temas.map((tema, index) => (
             <div key={tema.id} className="bg-white p-2 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
               <div className="flex items-center gap-1.5 mb-1">
@@ -351,7 +371,7 @@ export default function App() {
                 value={respostas[tema.id] || ''}
                 onChange={(e) => handleResposta(tema.id, e.target.value)}
                 placeholder="Escreva aqui..."
-                className="w-full p-1.5 text-sm mb-2 rounded-lg border border-slate-300 bg-slate-50 outline-none focus:border-indigo-400"
+                className="w-full p-2 text-sm mb-2 rounded-lg border-2 border-indigo-200 bg-indigo-50 text-indigo-900 font-bold uppercase outline-none focus:border-indigo-400 focus:bg-indigo-100 transition-colors placeholder:font-normal placeholder:normal-case placeholder:text-indigo-300"
               />
               
               <div className="grid grid-cols-4 gap-1">
@@ -375,6 +395,54 @@ export default function App() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Painel Direito (Ranking) */}
+        <div className="w-full lg:w-1/4 bg-white p-3 rounded-xl shadow-md border border-slate-200 flex flex-col">
+          <div className="text-center mb-2">
+            <h2 className="text-lg font-extrabold text-indigo-600 flex items-center justify-center gap-2">
+              🏆 Ranking da Turma
+            </h2>
+            <p className="text-[10px] text-slate-500 uppercase font-bold">Adicione os pontos na caixinha e clique em +</p>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto pr-1" style={{ maxHeight: 'calc(100vh - 120px)' }}>
+            <div className="flex flex-col gap-1.5">
+              {sortedPlayers.map((player, index) => (
+                <div key={player.id} className={`flex items-center gap-1 p-1.5 rounded-lg border ${player.score > 0 && index === 0 ? 'bg-yellow-50 border-yellow-300' : (player.score > 0 && index === 1 ? 'bg-slate-100 border-slate-300' : (player.score > 0 && index === 2 ? 'bg-orange-50 border-orange-200' : 'bg-slate-50 border-slate-200'))}`}>
+                  <span className={`font-black text-xs w-5 text-center ${index === 0 && player.score > 0 ? 'text-yellow-600' : (index === 1 && player.score > 0 ? 'text-slate-500' : (index === 2 && player.score > 0 ? 'text-orange-600' : 'text-slate-400'))}`}>
+                    {index + 1}º
+                  </span>
+                  <input 
+                    type="text" 
+                    value={player.name}
+                    onChange={(e) => handlePlayerChange(player.id, 'name', e.target.value)}
+                    placeholder={`Aluno ${player.id}`}
+                    className="flex-1 w-0 p-1 text-xs font-bold rounded border border-slate-300 outline-none focus:border-indigo-400 bg-white"
+                  />
+                  <div className="font-black text-indigo-600 w-7 text-center text-sm" title="Pontuação Total">
+                    {player.score}
+                  </div>
+                  <input 
+                    type="number" 
+                    value={player.roundScore}
+                    onChange={(e) => handlePlayerChange(player.id, 'roundScore', e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && addPlayerScore(player.id)}
+                    placeholder="+pts"
+                    className="w-11 p-1 text-xs rounded border border-slate-300 outline-none focus:border-indigo-400 bg-white text-center"
+                    title="Pontos da rodada"
+                  />
+                  <button 
+                    onClick={() => addPlayerScore(player.id)}
+                    className="bg-green-500 hover:bg-green-600 text-white w-6 h-6 rounded flex items-center justify-center font-bold transition-colors"
+                    title="Adicionar pontos"
+                  >
+                    +
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
       </div>
