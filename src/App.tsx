@@ -10,7 +10,7 @@ const temas = [
   { id: 7, name: "Minha sogra é", icon: "👵" },
   { id: 8, name: "Super-herói", icon: "🦸" },
   { id: 9, name: "Parte do Corpo", icon: "👃" },
-  { id: 10, name: "Lugar", icon: "🏠" },
+  { id: 10, name: "CEP (Cidade, Estado ou País)", icon: "🏠" },
 ];
 
 const TEMPO_INICIAL = 5 * 60; // 5 minutos em segundos
