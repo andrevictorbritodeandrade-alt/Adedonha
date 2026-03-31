@@ -158,10 +158,10 @@ export default function Memoria({ onBack }: { onBack: () => void }) {
         >
           ⬅ Voltar
         </button>
-        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic">
+        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic text-amber-400">
           <span className="inline-block animate-bounce mr-2">🦁</span>
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-600 via-orange-500 to-yellow-600 uppercase">
-            MEMÓRIA SAVANA
+          <span className="uppercase">
+            EPIC MEMÓRIA
           </span>
           <span className="inline-block animate-bounce ml-2" style={{ animationDelay: '0.2s' }}>🐘</span>
         </h1>

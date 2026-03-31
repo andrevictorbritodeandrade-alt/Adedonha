@@ -120,9 +120,9 @@ export default function Forca({ onBack }: { onBack: () => void }) {
         >
           ⬅ Voltar
         </button>
-        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic">
+        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic text-emerald-400">
           <span className="inline-block animate-bounce mr-2">🪢</span>
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 uppercase">
+          <span className="uppercase">
             EPIC FORCA!
           </span>
           <span className="inline-block animate-bounce ml-2" style={{ animationDelay: '0.2s' }}>😵</span>

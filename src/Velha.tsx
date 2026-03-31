@@ -65,9 +65,9 @@ export default function Velha({ onBack }: { onBack: () => void }) {
         >
           ⬅ Voltar
         </button>
-        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic">
+        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic text-rose-400">
           <span className="inline-block animate-bounce mr-2">⭕</span>
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 uppercase">
+          <span className="uppercase">
             EPIC VELHA!
           </span>
           <span className="inline-block animate-bounce ml-2" style={{ animationDelay: '0.2s' }}>❌</span>

@@ -267,9 +267,9 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
         >
           ⬅ Voltar
         </button>
-        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic">
+        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic text-orange-400">
           <span className="inline-block animate-bounce mr-2">❓</span>
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 uppercase">
+          <span className="uppercase">
             EPIC PERGUNTADOS!
           </span>
           <span className="inline-block animate-bounce ml-2" style={{ animationDelay: '0.2s' }}>🧠</span>

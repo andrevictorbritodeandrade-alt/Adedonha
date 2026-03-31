@@ -125,9 +125,9 @@ export default function Bandeiras({ onBack }: { onBack: () => void }) {
         >
           ⬅ Voltar
         </button>
-        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic">
+        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic text-sky-400">
           <span className="inline-block animate-bounce mr-2">🌍</span>
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 uppercase">
+          <span className="uppercase">
             EPIC BANDEIRAS!
           </span>
           <span className="inline-block animate-bounce ml-2" style={{ animationDelay: '0.2s' }}>🗺️</span>

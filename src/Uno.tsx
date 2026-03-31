@@ -10,9 +10,9 @@ export default function Uno({ onBack }: { onBack: () => void }) {
         >
           ⬅ Voltar
         </button>
-        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic">
+        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic text-yellow-400">
           <span className="inline-block animate-bounce mr-2">🃏</span>
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-600 via-yellow-500 to-green-600 uppercase">
+          <span className="uppercase">
             EPIC UNO!
           </span>
           <span className="inline-block animate-bounce ml-2" style={{ animationDelay: '0.2s' }}>🃏</span>

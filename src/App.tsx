@@ -52,10 +52,8 @@ export default function App() {
     <div className="min-h-screen bg-magical font-sans flex flex-col items-center justify-center p-4">
       
       <div className="text-center mb-12 relative z-10">
-        <h1 className="text-6xl md:text-8xl font-display mb-4 tracking-wider text-shadow-comic-lg text-white">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 uppercase drop-shadow-lg">
-            SALA DE JOGOS
-          </span>
+        <h1 className="text-6xl md:text-8xl font-display mb-4 tracking-wider text-shadow-comic-lg text-yellow-400 uppercase">
+          SALA DE JOGOS
         </h1>
         <p className="text-white/90 font-bold uppercase tracking-widest text-xl drop-shadow-md">Escolha a brincadeira de hoje!</p>
       </div>

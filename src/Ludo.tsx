@@ -10,9 +10,9 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
         >
           ⬅ Voltar
         </button>
-        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic">
+        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic text-red-400">
           <span className="inline-block animate-bounce mr-2">🎲</span>
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 to-blue-500 uppercase">
+          <span className="uppercase">
             EPIC LUDO!
           </span>
           <span className="inline-block animate-bounce ml-2" style={{ animationDelay: '0.2s' }}>🎲</span>
