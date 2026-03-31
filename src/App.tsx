@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const temas = [
   { id: 1, name: "Nome de Pessoa", icon: "👧👦" },
@@ -13,7 +13,7 @@ const temas = [
   { id: 10, name: "Lugar", icon: "🏠" },
 ];
 
-const TEMPO_INICIAL = 4 * 60; // 4 minutos em segundos
+const TEMPO_INICIAL = 5 * 60; // 5 minutos em segundos
 const ALFABETO = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
 
 const pointOptions = [
@@ -31,12 +31,65 @@ export default function App() {
   const [letraSorteada, setLetraSorteada] = useState("?");
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
+  const audioCtxRef = useRef(null);
+
+  const playTick = () => {
+    try {
+      if (!audioCtxRef.current) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtxRef.current = new AudioContext();
+      }
+      if (audioCtxRef.current.state === 'suspended') {
+        audioCtxRef.current.resume();
+      }
+      const osc = audioCtxRef.current.createOscillator();
+      const gainNode = audioCtxRef.current.createGain();
+      osc.connect(gainNode);
+      gainNode.connect(audioCtxRef.current.destination);
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, audioCtxRef.current.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(200, audioCtxRef.current.currentTime + 0.05);
+      
+      gainNode.gain.setValueAtTime(0.1, audioCtxRef.current.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtxRef.current.currentTime + 0.05);
+      
+      osc.start();
+      osc.stop(audioCtxRef.current.currentTime + 0.05);
+    } catch (e) {
+      console.error("Audio error:", e);
+    }
+  };
+
+  const playDing = () => {
+    try {
+      if (!audioCtxRef.current) return;
+      const osc = audioCtxRef.current.createOscillator();
+      const gainNode = audioCtxRef.current.createGain();
+      osc.connect(gainNode);
+      gainNode.connect(audioCtxRef.current.destination);
+      
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(880, audioCtxRef.current.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(440, audioCtxRef.current.currentTime + 0.5);
+      
+      gainNode.gain.setValueAtTime(0.3, audioCtxRef.current.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtxRef.current.currentTime + 1);
+      
+      osc.start();
+      osc.stop(audioCtxRef.current.currentTime + 1);
+    } catch (e) {
+      console.error("Audio error:", e);
+    }
+  };
 
   // Roleta segura
   const sortearLetra = () => {
     if (isSpinning) return;
     setIsSpinning(true);
     setLetraSorteada("?");
+    setIsRunning(false);
+    setTimeLeft(TEMPO_INICIAL);
     
     const targetIndex = Math.floor(Math.random() * ALFABETO.length);
     const targetAngle = 360 - (targetIndex * (360 / 26));
@@ -49,10 +102,33 @@ export default function App() {
     const newRotation = rotation + extraSpins + diff;
     
     setRotation(newRotation);
+
+    // Efeitos sonoros
+    const startTime = Date.now();
+    const duration = 3000;
+    
+    const tick = () => {
+      const elapsed = Date.now() - startTime;
+      if (elapsed >= duration) {
+        playDing();
+        return;
+      }
+      playTick();
+      
+      const progress = elapsed / duration;
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      const nextDelay = 30 + (easeOut * 200); 
+      
+      setTimeout(tick, nextDelay);
+    };
+    
+    // Iniciar som
+    tick();
     
     setTimeout(() => {
       setLetraSorteada(ALFABETO[targetIndex]);
       setIsSpinning(false);
+      setIsRunning(true);
     }, 3000);
   };
 
