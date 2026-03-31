@@ -269,7 +269,7 @@ export default function Adedonha({ onBack }: { onBack: () => void }) {
         >
           ⬅ Voltar
         </button>
-        <h1 className="text-4xl md:text-5xl font-black mb-2 tracking-tight drop-shadow-sm">
+        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic">
           <span className="inline-block animate-bounce mr-2">🛑</span>
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-yellow-400 via-green-500 via-blue-500 to-purple-500 uppercase">
             SUPER ADEDONHA!
@@ -338,7 +338,7 @@ export default function Adedonha({ onBack }: { onBack: () => void }) {
           </div>
           
           <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-4 text-center">
-            <h2 className="text-4xl font-black font-mono text-slate-700 mb-2">{timeString}</h2>
+            <h2 className="text-5xl font-display text-slate-700 mb-2 tracking-widest">{timeString}</h2>
             
             <div className="w-full bg-slate-200 h-4 rounded-full mb-4 overflow-hidden">
               <div 
@@ -414,7 +414,7 @@ export default function Adedonha({ onBack }: { onBack: () => void }) {
         {/* Painel Direito (Ranking) */}
         <div className="w-full lg:w-1/4 bg-white p-3 rounded-xl shadow-md border border-slate-200 flex flex-col">
           <div className="text-center mb-2">
-            <h2 className="text-lg font-extrabold text-indigo-600 flex items-center justify-center gap-2">
+            <h2 className="text-2xl font-display text-indigo-600 flex items-center justify-center gap-2 tracking-wide">
               🏆 Ranking da Turma
             </h2>
             <p className="text-[10px] text-slate-500 uppercase font-bold">Adicione os pontos na caixinha e clique em +</p>

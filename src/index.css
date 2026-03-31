@@ -1,4 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Luckiest+Guy&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Fredoka", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Luckiest Guy", cursive;
+}
 
 body {
   overflow-x: hidden;
@@ -20,4 +26,12 @@ body {
 
 .animate-msn-shake {
   animation: msn-shake 0.1s infinite;
+}
+
+@utility text-shadow-comic {
+  text-shadow: 3px 3px 0px rgba(0,0,0,0.15);
+}
+
+@utility text-shadow-comic-lg {
+  text-shadow: 4px 4px 0px rgba(0,0,0,0.2);
 }
