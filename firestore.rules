@@ -1,0 +1,68 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function isValidStringLength(field, minLen, maxLen) {
+      return request.resource.data[field] is string &&
+             request.resource.data[field].size() >= minLen &&
+             request.resource.data[field].size() <= maxLen;
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    function isValidRegistroNDA() {
+      return hasOnlyAllowedFields(['usuario', 'ip', 'data', 'versao_termo', 'plataforma']) &&
+             hasRequiredFields(['usuario', 'ip', 'data', 'versao_termo', 'plataforma']) &&
+             isValidStringLength('usuario', 1, 100) &&
+             isValidStringLength('ip', 1, 50) &&
+             isValidStringLength('data', 1, 50) &&
+             isValidStringLength('versao_termo', 1, 20) &&
+             isValidStringLength('plataforma', 1, 50);
+    }
+
+    function isValidLeaderboardEntry() {
+      return hasOnlyAllowedFields(['name', 'time', 'scenario', 'difficulty', 'timestamp']) &&
+             hasRequiredFields(['name', 'time', 'scenario', 'difficulty', 'timestamp']) &&
+             isValidStringLength('name', 1, 50) &&
+             request.resource.data.time is number &&
+             request.resource.data.time >= 0 &&
+             isValidStringLength('scenario', 1, 100) &&
+             isValidStringLength('difficulty', 1, 50) &&
+             isValidStringLength('timestamp', 1, 50);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+    
+    // NDA Records - Anyone can create, no one can read or update
+    match /registros_nda/{registroId} {
+      allow create: if isValidRegistroNDA();
+      allow read, update, delete: if false;
+    }
+
+    // Leaderboard - Anyone can read, authenticated users can create
+    match /artifacts/{appId}/public/data/leaderboard/{entryId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && isValidLeaderboardEntry();
+      allow update, delete: if false;
+    }
+  }
+}

@@ -37,19 +37,45 @@ const dicionarioRespostas = {
   10: { A: "Argentina", B: "Brasil", C: "Canadá", D: "Dinamarca", E: "Espanha", F: "França", G: "Grécia", H: "Holanda", I: "Itália", J: "Japão", K: "Kuwait", L: "Londres", M: "México", N: "Noruega", O: "Orlando", P: "Portugal", Q: "Quênia", R: "Rússia", S: "Suíça", T: "Turquia", U: "Uruguai", V: "Venezuela", W: "Washington", X: "Xangai", Y: "Yokohama", Z: "Zimbábue" }
 };
 
+const getInitialState = () => {
+  const saved = localStorage.getItem('adedonha_state');
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch (e) {
+      console.error("Error parsing saved state", e);
+    }
+  }
+  return null;
+};
+
 export default function Adedonha({ onBack }: { onBack: () => void }) {
-  const [timeLeft, setTimeLeft] = useState(TEMPO_INICIAL);
-  const [isRunning, setIsRunning] = useState(false);
-  const [scores, setScores] = useState({});
-  const [respostas, setRespostas] = useState({});
-  const [letraSorteada, setLetraSorteada] = useState("?");
+  const initialState = getInitialState();
+
+  const [timeLeft, setTimeLeft] = useState(initialState?.timeLeft ?? TEMPO_INICIAL);
+  const [isRunning, setIsRunning] = useState(initialState?.isRunning ?? false);
+  const [scores, setScores] = useState(initialState?.scores ?? {});
+  const [respostas, setRespostas] = useState(initialState?.respostas ?? {});
+  const [letraSorteada, setLetraSorteada] = useState(initialState?.letraSorteada ?? "?");
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const audioCtxRef = useRef(null);
   
   const [players, setPlayers] = useState(() => 
-    Array.from({ length: 20 }, (_, i) => ({ id: i + 1, name: '', score: 0, roundScore: '' }))
+    initialState?.players ?? Array.from({ length: 20 }, (_, i) => ({ id: i + 1, name: '', score: 0, roundScore: '' }))
   );
+
+  useEffect(() => {
+    const stateToSave = {
+      timeLeft,
+      isRunning,
+      scores,
+      respostas,
+      letraSorteada,
+      players
+    };
+    localStorage.setItem('adedonha_state', JSON.stringify(stateToSave));
+  }, [timeLeft, isRunning, scores, respostas, letraSorteada, players]);
 
   const playTick = () => {
     try {

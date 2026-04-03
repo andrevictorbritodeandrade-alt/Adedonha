@@ -1,0 +1,67 @@
+{
+  "entities": {
+    "RegistroNDA": {
+      "title": "RegistroNDA",
+      "description": "Registro de aceite do termo de confidencialidade",
+      "type": "object",
+      "properties": {
+        "usuario": {
+          "type": "string",
+          "description": "Nome ou identificador do usuário"
+        },
+        "ip": {
+          "type": "string",
+          "description": "Endereço IP do usuário"
+        },
+        "data": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Data e hora do aceite"
+        },
+        "versao_termo": {
+          "type": "string",
+          "description": "Versão do termo aceito"
+        },
+        "plataforma": {
+          "type": "string",
+          "description": "Plataforma de acesso"
+        }
+      },
+      "required": ["usuario", "ip", "data", "versao_termo", "plataforma"]
+    },
+    "LeaderboardEntry": {
+      "title": "LeaderboardEntry",
+      "description": "Entrada no placar de líderes do jogo",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "time": {
+          "type": "number"
+        },
+        "scenario": {
+          "type": "string"
+        },
+        "difficulty": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["name", "time", "scenario", "difficulty", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/registros_nda/{registroId}": {
+      "schema": "RegistroNDA",
+      "description": "Registros de aceite do NDA"
+    },
+    "/artifacts/{appId}/public/data/leaderboard/{entryId}": {
+      "schema": "LeaderboardEntry",
+      "description": "Placar de líderes do jogo"
+    }
+  }
+}

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import NDA from './NDA';
 import Adedonha from './Adedonha';
 import Perguntados from './Perguntados';
 import Forca from './Forca';
@@ -8,9 +9,26 @@ import Bandeiras from './Bandeiras';
 import Ludo from './Ludo';
 import Uno from './Uno';
 import Truco from './Truco';
+import XadrezSortudo from './XadrezSortudo';
+import Balaozinho from './Balaozinho';
+import Vermelhinho from './Vermelhinho';
+import Tatuzin from './Tatuzin';
+import Cruzaletras from './Cruzaletras';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('menu');
+  const [ndaAccepted, setNdaAccepted] = useState(true); // Assume true initially to avoid flicker, then check
+
+  useEffect(() => {
+    const accepted = localStorage.getItem('nda_accepted');
+    if (!accepted) {
+      setNdaAccepted(false);
+    }
+  }, []);
+
+  if (!ndaAccepted) {
+    return <NDA onAccept={() => setNdaAccepted(true)} />;
+  }
 
   if (currentScreen === 'adedonha') {
     return <Adedonha onBack={() => setCurrentScreen('menu')} />;
@@ -48,8 +66,53 @@ export default function App() {
     return <Truco onBack={() => setCurrentScreen('menu')} />;
   }
 
+  if (currentScreen === 'xadrez') {
+    return <XadrezSortudo onBack={() => setCurrentScreen('menu')} />;
+  }
+
+  if (currentScreen === 'balaozinho') {
+    return <Balaozinho onBack={() => setCurrentScreen('menu')} />;
+  }
+
+  if (currentScreen === 'vermelhinho') {
+    return <Vermelhinho onBack={() => setCurrentScreen('menu')} />;
+  }
+
+  if (currentScreen === 'tatuzin') {
+    return <Tatuzin onBack={() => setCurrentScreen('menu')} />;
+  }
+
+  if (currentScreen === 'cruzaletras') {
+    return <Cruzaletras onBack={() => setCurrentScreen('menu')} />;
+  }
+
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePos({
+        x: (e.clientX / window.innerWidth - 0.5) * 20,
+        y: (e.clientY / window.innerHeight - 0.5) * 20,
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-magical font-sans flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-magical font-sans flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      
+      {/* Background Image Overlay with Parallax */}
+      <div 
+        className="absolute inset-0 z-0 opacity-40 mix-blend-overlay pointer-events-none transition-transform duration-300 ease-out scale-110"
+        style={{ 
+          backgroundImage: 'url("/menu.png"), url("https://picsum.photos/seed/pixar-magic/1920/1080?blur=2")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          transform: `translate(${mousePos.x}px, ${mousePos.y}px) scale(1.1)`
+        }}
+      />
       
       <div className="text-center mb-12 relative z-10">
         <h1 className="text-6xl md:text-8xl font-display mb-4 tracking-wider text-shadow-comic-lg text-yellow-400 uppercase">
@@ -166,6 +229,66 @@ export default function App() {
           </div>
           <h2 className="text-2xl md:text-3xl font-display text-green-700 uppercase mb-2 text-shadow-comic">EPIC TRUCO!</h2>
           <p className="text-slate-600 font-medium text-sm">Truco Paulista 2v2! Peça truco, seis, nove e doze e vença a partida com 12 pontos!</p>
+        </button>
+
+        {/* Card Xadrez Sortudo */}
+        <button 
+          onClick={() => setCurrentScreen('xadrez')}
+          className="pixar-card group flex flex-col items-center text-center p-6"
+        >
+          <div className="w-24 h-24 md:w-32 md:h-32 bg-emerald-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-inner overflow-hidden border-4 border-emerald-200">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=xadrez&backgroundColor=ffdfbf" alt="Xadrez" className="w-full h-full object-cover" />
+          </div>
+          <h2 className="text-2xl md:text-3xl font-display text-emerald-700 uppercase mb-2 text-shadow-comic">EPIC XADREZ SORTUDO</h2>
+          <p className="text-slate-600 font-medium text-sm">Gire as peças de xadrez e tente combinar 3 reis ou cores iguais para ganhar prêmios dobrados!</p>
+        </button>
+
+        {/* Card Jogo do Balãozinho */}
+        <button 
+          onClick={() => setCurrentScreen('balaozinho')}
+          className="pixar-card group flex flex-col items-center text-center p-6"
+        >
+          <div className="w-24 h-24 md:w-32 md:h-32 bg-pink-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-inner overflow-hidden border-4 border-pink-200">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=balaozinho&backgroundColor=fbcfe8" alt="Balãozinho" className="w-full h-full object-cover" />
+          </div>
+          <h2 className="text-2xl md:text-3xl font-display text-pink-600 uppercase mb-2 text-shadow-comic">JOGO DO BALÃOZINHO</h2>
+          <p className="text-slate-600 font-medium text-sm">Voo pedagógico! Teste seus reflexos e colete doces antes que o balão fuja!</p>
+        </button>
+
+        {/* Card Onde está o Vermelhinho? */}
+        <button 
+          onClick={() => setCurrentScreen('vermelhinho')}
+          className="pixar-card group flex flex-col items-center text-center p-6"
+        >
+          <div className="w-24 h-24 md:w-32 md:h-32 bg-red-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-inner overflow-hidden border-4 border-red-200">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=vermelhinho&backgroundColor=fca5a5" alt="Vermelhinho" className="w-full h-full object-cover" />
+          </div>
+          <h2 className="text-2xl md:text-3xl font-display text-red-600 uppercase mb-2 text-shadow-comic">ONDE ESTÁ O VERMELHINHO?</h2>
+          <p className="text-slate-600 font-medium text-sm">Encontre o ônibus vermelhinho escondido nos cenários de Maricá!</p>
+        </button>
+
+        {/* Card Tatuzin */}
+        <button 
+          onClick={() => setCurrentScreen('tatuzin')}
+          className="pixar-card group flex flex-col items-center text-center p-6"
+        >
+          <div className="w-24 h-24 md:w-32 md:h-32 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-inner overflow-hidden border-4 border-orange-200">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=tatuzin&backgroundColor=fdba74" alt="Tatuzin" className="w-full h-full object-cover" />
+          </div>
+          <h2 className="text-2xl md:text-3xl font-display text-orange-600 uppercase mb-2 text-shadow-comic">TATUZIN</h2>
+          <p className="text-slate-600 font-medium text-sm">Ajude o Tatuzin a desviar dos obstáculos e coletar formigas no Cerrado!</p>
+        </button>
+
+        {/* Card Cruzaletras */}
+        <button 
+          onClick={() => setCurrentScreen('cruzaletras')}
+          className="pixar-card group flex flex-col items-center text-center p-6"
+        >
+          <div className="w-24 h-24 md:w-32 md:h-32 bg-purple-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-inner overflow-hidden border-4 border-purple-200">
+             <img src="https://api.dicebear.com/7.x/bottts/svg?seed=cruzaletras&backgroundColor=e9d5ff" alt="Cruzaletras" className="w-full h-full object-cover" />
+          </div>
+          <h2 className="text-2xl md:text-3xl font-display text-purple-700 uppercase mb-2 text-shadow-comic">CRUZALETRAS</h2>
+          <p className="text-slate-600 font-medium text-sm">Encontre as palavras escondidas no caça-palavras e suba no ranking!</p>
         </button>
 
       </div>
