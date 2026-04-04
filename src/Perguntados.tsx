@@ -32,6 +32,16 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
     Array.from({ length: 20 }, (_, i) => ({ id: i + 1, name: '', score: 0, roundScore: '' }))
   );
 
+  // Load answered questions from localStorage
+  const [answeredQuestions, setAnsweredQuestions] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('answeredQuestions');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+
+  useEffect(() => {
+    localStorage.setItem('answeredQuestions', JSON.stringify(Array.from(answeredQuestions)));
+  }, [answeredQuestions]);
+
   const playTick = () => {
     try {
       if (!audioCtxRef.current) {
@@ -152,9 +162,17 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
       
       // Select random question
       const perguntasCat = PERGUNTAS[cat.id];
-      if (perguntasCat && perguntasCat.length > 0) {
-        const randomQ = perguntasCat[Math.floor(Math.random() * perguntasCat.length)];
+      const unansweredQuestions = perguntasCat.filter(q => !answeredQuestions.has(q.id));
+      
+      if (unansweredQuestions.length > 0) {
+        const randomQ = unansweredQuestions[Math.floor(Math.random() * unansweredQuestions.length)];
         // Shuffle options
+        const shuffledOptions = [...randomQ.o].sort(() => Math.random() - 0.5);
+        setPerguntaAtual({ ...randomQ, options: shuffledOptions });
+      } else {
+        // All questions answered, reset
+        setAnsweredQuestions(new Set());
+        const randomQ = perguntasCat[Math.floor(Math.random() * perguntasCat.length)];
         const shuffledOptions = [...randomQ.o].sort(() => Math.random() - 0.5);
         setPerguntaAtual({ ...randomQ, options: shuffledOptions });
       }
@@ -202,6 +220,9 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
     setOpcaoSelecionada(opcao);
     setIsAnswered(true);
     setIsRunning(false);
+
+    // Mark question as answered
+    setAnsweredQuestions(prev => new Set(prev).add(perguntaAtual.id));
 
     if (opcao === perguntaAtual.r) {
       setFlashColor('bg-green-500/30');

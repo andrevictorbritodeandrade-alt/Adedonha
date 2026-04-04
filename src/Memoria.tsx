@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
-const ANIMAIS = ['🦁', '🐘', '🦒', '🦓', '🦏', '🦛', '🐆'];
-const MICO = '🐒';
+const ANIMAIS = ['🦁', '🐘', '🦒', '🦓', '🦏', '🦛', '🐆', '🐅', '🐊', '🐍', '🐢', '🦎', '🦜', '🦚', '🦋', '🐝'];
 
 interface CardData {
   id: number;
   emoji: string;
   isFlipped: boolean;
   isMatched: boolean;
-  isMico: boolean;
+}
+
+interface Score {
+  name: string;
+  time: number;
 }
 
 export default function Memoria({ onBack }: { onBack: () => void }) {
@@ -17,19 +20,18 @@ export default function Memoria({ onBack }: { onBack: () => void }) {
   const [moves, setMoves] = useState(0);
   const [matches, setMatches] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
-  const [showMicoAlert, setShowMicoAlert] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const [leaderboard, setLeaderboard] = useState<Score[]>([]);
 
   const shuffleCards = () => {
-    // 7 pares de animais + 2 micos = 16 cartas
-    const deck = [...ANIMAIS, ...ANIMAIS, MICO, MICO].map((emoji, index) => ({
+    const deck = [...ANIMAIS, ...ANIMAIS].map((emoji, index) => ({
       id: index,
       emoji,
       isFlipped: false,
       isMatched: false,
-      isMico: emoji === MICO,
     }));
 
-    // Fisher-Yates shuffle
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -39,37 +41,24 @@ export default function Memoria({ onBack }: { onBack: () => void }) {
     setFlippedIndices([]);
     setMoves(0);
     setMatches(0);
-    setShowMicoAlert(false);
+    setTimer(0);
+    setIsRunning(true);
     setIsLocked(false);
   };
 
   useEffect(() => {
+    const savedLeaderboard = JSON.parse(localStorage.getItem('memoriaLeaderboard') || '[]');
+    setLeaderboard(savedLeaderboard);
     shuffleCards();
   }, []);
 
-  const playMonkeySound = () => {
-    try {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      const ctx = new AudioContext();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(400, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
-      osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.2);
-      
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-      
-      osc.start();
-      osc.stop(ctx.currentTime + 0.3);
-    } catch (e) {
-      console.error(e);
+  useEffect(() => {
+    let interval: any;
+    if (isRunning) {
+      interval = setInterval(() => setTimer((t) => t + 1), 1000);
     }
-  };
+    return () => clearInterval(interval);
+  }, [isRunning]);
 
   const handleCardClick = (index: number) => {
     if (isLocked || cards[index].isFlipped || cards[index].isMatched) return;
@@ -86,55 +75,25 @@ export default function Memoria({ onBack }: { onBack: () => void }) {
       setMoves((m) => m + 1);
 
       const [firstIndex, secondIndex] = newFlippedIndices;
-      const card1 = newCards[firstIndex];
-      const card2 = newCards[secondIndex];
-
-      // Regra do Mico
-      if (card1.isMico || card2.isMico) {
-        playMonkeySound();
-        setShowMicoAlert(true);
-        
-        setTimeout(() => {
-          // Embaralha apenas as cartas não combinadas
-          const unmatchedCards = newCards.filter(c => !c.isMatched);
-          for (let i = unmatchedCards.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [unmatchedCards[i].emoji, unmatchedCards[j].emoji] = [unmatchedCards[j].emoji, unmatchedCards[i].emoji];
-            [unmatchedCards[i].isMico, unmatchedCards[j].isMico] = [unmatchedCards[j].isMico, unmatchedCards[i].isMico];
+      if (newCards[firstIndex].emoji === newCards[secondIndex].emoji) {
+        newCards[firstIndex].isMatched = true;
+        newCards[secondIndex].isMatched = true;
+        setCards(newCards);
+        setFlippedIndices([]);
+        setMatches((m) => {
+          const newMatches = m + 1;
+          if (newMatches === ANIMAIS.length) {
+            setIsRunning(false);
+            saveScore(timer);
           }
-          
-          const finalCards = newCards.map(c => {
-            if (!c.isMatched) {
-              return { ...c, isFlipped: false };
-            }
-            return c;
-          });
-          
-          setCards(finalCards);
-          setFlippedIndices([]);
-          setShowMicoAlert(false);
-          setIsLocked(false);
-        }, 2000);
-        return;
-      }
-
-      // Combinação normal
-      if (card1.emoji === card2.emoji) {
-        setTimeout(() => {
-          const matchedCards = [...newCards];
-          matchedCards[firstIndex].isMatched = true;
-          matchedCards[secondIndex].isMatched = true;
-          setCards(matchedCards);
-          setFlippedIndices([]);
-          setMatches((m) => m + 1);
-          setIsLocked(false);
-        }, 500);
+          return newMatches;
+        });
+        setIsLocked(false);
       } else {
         setTimeout(() => {
-          const resetCards = [...newCards];
-          resetCards[firstIndex].isFlipped = false;
-          resetCards[secondIndex].isFlipped = false;
-          setCards(resetCards);
+          newCards[firstIndex].isFlipped = false;
+          newCards[secondIndex].isFlipped = false;
+          setCards(newCards);
           setFlippedIndices([]);
           setIsLocked(false);
         }, 1000);
@@ -142,81 +101,52 @@ export default function Memoria({ onBack }: { onBack: () => void }) {
     }
   };
 
-  const isWin = matches === 7; // 7 pares de animais (os micos não formam par para vencer, eles atrapalham)
+  const saveScore = (time: number) => {
+    const name = prompt('Parabéns! Digite seu nome para o ranking:') || 'Anônimo';
+    const newScore = { name, time };
+    const newLeaderboard = [...leaderboard, newScore].sort((a, b) => a.time - b.time).slice(0, 5);
+    setLeaderboard(newLeaderboard);
+    localStorage.setItem('memoriaLeaderboard', JSON.stringify(newLeaderboard));
+  };
 
   return (
     <div className="min-h-screen bg-[#e8d5a5] font-sans p-4 flex flex-col items-center relative overflow-hidden">
-      {/* Elementos decorativos de savana no fundo */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20" 
-           style={{ backgroundImage: 'radial-gradient(#8b4513 2px, transparent 2px)', backgroundSize: '30px 30px' }}>
-      </div>
-
-      <header className="text-center mb-6 relative w-full max-w-4xl z-10">
+      <header className="text-center mb-6 relative w-full max-w-4xl z-10 bg-white/80 p-4 rounded-2xl shadow-md border border-amber-200">
         <button 
           onClick={onBack}
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-white text-amber-700 font-bold py-2 px-4 rounded-lg shadow hover:bg-amber-50 transition-colors border border-amber-200"
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-amber-600 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-amber-700 transition-colors"
         >
           ⬅ Voltar
         </button>
-        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic text-amber-400">
-          <span className="inline-block animate-bounce mr-2">🦁</span>
-          <span className="uppercase">
-            EPIC MEMÓRIA
-          </span>
-          <span className="inline-block animate-bounce ml-2" style={{ animationDelay: '0.2s' }}>🐘</span>
-        </h1>
-        <div className="flex justify-center gap-6 text-amber-900 font-bold text-lg md:text-xl bg-white/50 py-2 px-6 rounded-full inline-flex backdrop-blur-sm border border-amber-200/50">
+        <h1 className="text-3xl md:text-5xl font-display mb-2 text-amber-800">EPIC MEMÓRIA</h1>
+        <div className="flex justify-center gap-6 text-amber-900 font-bold text-lg">
+          <span>Tempo: {timer}s</span>
           <span>Tentativas: {moves}</span>
-          <span>Pares: {matches}/7</span>
+        </div>
+        <div className="mt-2 text-sm text-amber-800">
+          <strong>Ranking:</strong> {leaderboard.map((s, i) => `${i+1}º ${s.name} (${s.time}s)`).join(' | ')}
         </div>
       </header>
 
-      {showMicoAlert && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-red-500 text-white p-8 rounded-3xl shadow-2xl border-8 border-red-700 animate-bounce text-center">
-          <div className="text-8xl mb-4">🐒</div>
-          <h2 className="text-4xl font-display tracking-widest text-shadow-comic">O MICO APARECEU!</h2>
-          <p className="text-xl font-bold mt-2">As cartas vão embaralhar!</p>
-        </div>
-      )}
-
-      {isWin && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-green-500 text-white p-8 rounded-3xl shadow-2xl border-8 border-green-700 animate-bounce text-center w-11/12 max-w-md">
-          <div className="text-6xl mb-4">🏆</div>
-          <h2 className="text-4xl font-display tracking-widest text-shadow-comic">PARABÉNS!</h2>
-          <p className="text-xl font-bold mt-2">Você encontrou todos os animais em {moves} tentativas!</p>
-          <button 
-            onClick={shuffleCards}
-            className="mt-6 bg-white text-green-600 font-black text-2xl py-3 px-8 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform w-full"
-          >
-            JOGAR NOVAMENTE
-          </button>
-        </div>
-      )}
-
-      <div className="grid grid-cols-4 gap-2 md:gap-4 w-full max-w-2xl z-10 perspective-1000">
+      <div className="grid grid-cols-4 md:grid-cols-8 gap-2 md:gap-3 w-full max-w-4xl z-10">
         {cards.map((card, index) => (
           <div 
             key={card.id}
             onClick={() => handleCardClick(index)}
-            className={`relative w-full aspect-[3/4] cursor-pointer transition-transform duration-500 transform-style-3d ${
+            className={`relative w-full aspect-square cursor-pointer transition-transform duration-500 transform-style-3d ${
               card.isFlipped || card.isMatched ? 'rotate-y-180' : ''
-            } ${card.isMatched ? 'opacity-50 scale-95' : 'hover:scale-105'}`}
+            } ${card.isMatched ? 'opacity-50' : 'hover:scale-105'}`}
             style={{ transformStyle: 'preserve-3d' }}
           >
-            {/* Verso da Carta (Folha/Baobá) */}
-            <div className="absolute w-full h-full backface-hidden bg-[#556b2f] rounded-xl md:rounded-2xl border-4 border-[#3a4a20] shadow-lg flex items-center justify-center overflow-hidden">
-              <div className="text-4xl md:text-6xl opacity-30">🌿</div>
-              <div className="absolute inset-0 bg-black/10"></div>
+            <div className="absolute w-full h-full backface-hidden bg-[#556b2f] rounded-lg border-2 border-[#3a4a20] shadow-sm flex items-center justify-center">
+              <span className="text-2xl md:text-4xl opacity-30">🌿</span>
             </div>
-
-            {/* Frente da Carta (Animal) */}
-            <div className="absolute w-full h-full backface-hidden bg-amber-50 rounded-xl md:rounded-2xl border-4 border-amber-300 shadow-lg flex items-center justify-center rotate-y-180">
-              <span className="text-5xl md:text-7xl drop-shadow-md">{card.emoji}</span>
+            <div className="absolute w-full h-full backface-hidden bg-amber-50 rounded-lg border-2 border-amber-300 shadow-sm flex items-center justify-center rotate-y-180">
+              <span className="text-3xl md:text-5xl">{card.emoji}</span>
             </div>
           </div>
         ))}
       </div>
-
     </div>
   );
 }

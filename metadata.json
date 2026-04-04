@@ -1,5 +1,5 @@
 {
-  "name": "Adedonha",
-  "description": "A digital version of the classic Adedonha/STOP game (Categories) with a timer, random letter generator, and score tracking.",
+  "name": "Sala de Jogos",
+  "description": "Uma coleção de jogos clássicos e educativos para diversão e aprendizado.",
   "requestFramePermissions": []
 }
