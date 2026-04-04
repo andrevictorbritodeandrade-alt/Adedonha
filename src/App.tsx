@@ -39,6 +39,7 @@ const JOGOS = [
   { id: 'vermelhinho', nome: 'ONDE ESTÁ O VERMELHINHO?', Icon: Search, color: 'text-red-500' },
   { id: 'tatuzin', nome: 'TATUZIN', Icon: Bug, color: 'text-amber-700' },
   { id: 'cruzaletras', nome: 'CRUZALETRAS', Icon: Crosshair, color: 'text-indigo-600' },
+  { id: 'install', nome: 'BAIXAR APP', Icon: Download, color: 'text-yellow-400' },
   { id: 'qrcode', nome: 'COMPARTILHAR', Icon: QrCode, color: 'text-green-500' },
 ];
 
@@ -46,6 +47,7 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState('menu');
   const [ndaAccepted, setNdaAccepted] = useState(true);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallInfo, setShowInstallInfo] = useState(false);
 
   useEffect(() => {
     const accepted = localStorage.getItem('nda_accepted');
@@ -156,6 +158,24 @@ export default function App() {
                     {nome}
                   </span>
                 </div>
+              ) : id === 'install' ? (
+                <button 
+                  key={id} 
+                  onClick={() => {
+                    if (deferredPrompt) {
+                      handleInstall();
+                    } else {
+                      setShowInstallInfo(true);
+                    }
+                  }} 
+                  className={`pixar-card flex flex-col items-center p-4 gap-2 group ${!deferredPrompt ? 'opacity-80' : 'animate-bounce'}`}
+                  title="Instalar App"
+                >
+                  <Icon className={`w-20 h-20 ${color} group-hover:scale-110 transition-transform`} />
+                  <span className="font-display text-sm text-blue-900 text-center leading-tight">
+                    {nome}
+                  </span>
+                </button>
               ) : (
                 <button 
                   key={id} 
@@ -179,7 +199,32 @@ export default function App() {
             <button onClick={() => setNdaAccepted(false)} className="mt-2 text-yellow-400 underline hover:text-yellow-300">
               Ver Termo de Confidencialidade (NDA)
             </button>
+            <div className="mt-4 text-xs text-white/40 max-w-md mx-auto">
+              Dica: Se o botão "BAIXAR APP" não aparecer, você pode instalar manualmente clicando nos três pontinhos do navegador e selecionando "Instalar aplicativo" ou "Adicionar à tela de início".
+            </div>
           </footer>
+
+          {/* MODAL DE INFORMAÇÃO DE INSTALAÇÃO */}
+          {showInstallInfo && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+              <div className="bg-white text-blue-900 p-6 rounded-2xl max-w-sm w-full shadow-2xl animate-in zoom-in duration-200">
+                <h3 className="text-xl font-bold mb-4">Como Instalar</h3>
+                <p className="text-sm mb-6 leading-relaxed">
+                  Para instalar este aplicativo no seu Android:
+                  <br /><br />
+                  1. Clique nos <strong>três pontinhos</strong> (⋮) no canto superior do navegador.
+                  <br />
+                  2. Selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela de início"</strong>.
+                </p>
+                <button 
+                  onClick={() => setShowInstallInfo(false)}
+                  className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors"
+                >
+                  ENTENDI
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       
