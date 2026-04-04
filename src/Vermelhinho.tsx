@@ -136,20 +136,21 @@ export default function Vermelhinho({ onBack }: VermelhinhoProps) {
       const result = await response.json();
       if (!result.predictions?.[0]?.bytesBase64Encoded) throw new Error();
       setBackgroundImage(`data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`);
-      
-      setBusData({
-        x: Math.random() * 88 + 6,
-        y: Math.random() * 88 + 6,
-        rotation: Math.random() * 360,
-        opacity: difficulty.id === 'hard' ? 0.75 : 0.95
-      });
-      setGameState('playing');
-      setTimer(0);
-      startTimer();
     } catch (err) {
-      setError('Problema no sinal da EPT! Tente novamente em instantes.');
-      setGameState('menu');
+      // Silent Retry: Fallback para imagem estática (cache offline simulado)
+      console.warn("API de imagem falhou, usando imagem de fallback offline.");
+      setBackgroundImage(`https://picsum.photos/seed/${scenario.id}/1920/1080?blur=2`);
     }
+    
+    setBusData({
+      x: Math.random() * 88 + 6,
+      y: Math.random() * 88 + 6,
+      rotation: Math.random() * 360,
+      opacity: difficulty.id === 'hard' ? 0.75 : 0.95
+    });
+    setGameState('playing');
+    setTimer(0);
+    startTimer();
   };
 
   const startTimer = () => {
@@ -223,14 +224,14 @@ export default function Vermelhinho({ onBack }: VermelhinhoProps) {
     <div className="min-h-screen bg-slate-950 text-white font-sans flex flex-col items-center p-4 select-none overflow-hidden relative">
       <button 
         onClick={onBack}
-        className="absolute top-4 left-4 z-50 bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700 hover:bg-slate-700 transition-all shadow-xl flex items-center gap-2 font-bold"
+        className="absolute top-4 left-4 z-50 bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700 hover:bg-slate-700 transition-all shadow-xl flex items-center gap-2 font-group-b text-white"
       >
         <ChevronLeft size={18} /> Voltar
       </button>
 
-      <header className="py-2 text-center mt-12">
-        <h1 className="text-xl md:text-3xl font-black text-red-600 flex items-center justify-center gap-2 italic">
-          <Bus size={32} className="animate-pulse" /> ONDE ESTÁ O VERMELHINHO?
+      <header className="py-2 text-center mt-12 w-full px-4">
+        <h1 className="font-group-a text-3xl md:text-5xl flex items-center justify-center gap-2 w-full break-words">
+          <Bus size={40} className="animate-pulse text-red-600 shrink-0" /> ONDE ESTÁ O VERMELHINHO?
         </h1>
       </header>
 
@@ -243,13 +244,13 @@ export default function Vermelhinho({ onBack }: VermelhinhoProps) {
               
               {/* DISTRITO SELECTOR */}
               <div>
-                <h2 className="text-lg font-black mb-3 flex items-center gap-2 uppercase tracking-tighter"><MapIcon className="text-red-500" size={18}/> Escolha o Distrito</h2>
+                <h2 className="font-group-b text-lg mb-3 flex items-center gap-2 text-white"><MapIcon className="text-red-500" size={18}/> Escolha o distrito</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   {DISTRICTS.map(d => (
                     <button 
                       key={d.id} 
                       onClick={() => setSelectedDistrict(d.id)}
-                      className={`p-3 rounded-xl border-2 transition-all font-black text-xs uppercase tracking-tighter ${selectedDistrict === d.id ? 'border-red-600 bg-red-600/20' : 'border-slate-800 bg-slate-800/40 text-slate-500'}`}
+                      className={`p-3 rounded-xl border-2 transition-all font-group-b text-sm ${selectedDistrict === d.id ? 'border-red-600 bg-red-600/20 text-white' : 'border-slate-800 bg-slate-800/40 text-slate-400'}`}
                     >
                       {d.name}
                     </button>
@@ -259,13 +260,13 @@ export default function Vermelhinho({ onBack }: VermelhinhoProps) {
 
               {/* SCENARIO LIST (FILTERED) */}
               <div>
-                <h2 className="text-lg font-black mb-3 flex items-center gap-2 uppercase tracking-tighter"><MapPin className="text-red-500" size={18}/> Próxima Parada</h2>
+                <h2 className="font-group-b text-lg mb-3 flex items-center gap-2 text-white"><MapPin className="text-red-500" size={18}/> Próxima parada</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
                   {filteredScenarios.map(s => (
                     <button 
                       key={s.id} 
                       onClick={() => setScenario(s)} 
-                      className={`p-3 rounded-xl border-2 transition-all text-[10px] font-black h-16 uppercase leading-tight ${scenario.id === s.id ? 'border-red-600 bg-red-600/20 text-white shadow-[0_0_15px_rgba(220,38,38,0.2)]' : 'border-slate-800 bg-slate-800/40 text-slate-500 hover:border-slate-700'}`}
+                      className={`p-3 rounded-xl border-2 transition-all font-group-b text-xs h-16 leading-tight ${scenario.id === s.id ? 'border-red-600 bg-red-600/20 text-white shadow-[0_0_15px_rgba(220,38,38,0.2)]' : 'border-slate-800 bg-slate-800/40 text-slate-400 hover:border-slate-700'}`}
                     >
                       {s.name}
                     </button>
@@ -274,17 +275,17 @@ export default function Vermelhinho({ onBack }: VermelhinhoProps) {
               </div>
 
               <div>
-                <h2 className="text-lg font-black mb-3 flex items-center gap-2 uppercase tracking-tighter"><AlertCircle className="text-yellow-500" size={18}/> Nível</h2>
+                <h2 className="font-group-b text-lg mb-3 flex items-center gap-2 text-white"><AlertCircle className="text-yellow-500" size={18}/> Nível</h2>
                 <div className="grid grid-cols-3 gap-2">
                   {DIFFICULTIES.map(d => (
-                    <button key={d.id} onClick={() => setDifficulty(d)} className={`p-3 rounded-xl border-2 transition-all text-left ${difficulty.id === d.id ? 'border-yellow-500 bg-yellow-500/10 text-yellow-400' : 'border-slate-800 bg-slate-800/40 text-slate-500'}`}>
-                      <div className="font-black text-xs uppercase">{d.name}</div>
-                      <div className="text-[8px] opacity-60 font-bold">{d.label}</div>
+                    <button key={d.id} onClick={() => setDifficulty(d)} className={`p-3 rounded-xl border-2 transition-all text-left ${difficulty.id === d.id ? 'border-yellow-500 bg-yellow-500/10 text-yellow-400' : 'border-slate-800 bg-slate-800/40 text-slate-400'}`}>
+                      <div className="font-group-b text-sm text-white">{d.name}</div>
+                      <div className="text-[10px] opacity-80">{d.label}</div>
                     </button>
                   ))}
                 </div>
               </div>
-              <button onClick={generateScene} className="w-full py-6 bg-red-600 hover:bg-red-500 rounded-3xl text-3xl font-black shadow-xl active:scale-95 transition-all uppercase italic">Pegar o Vermelhinho</button>
+              <button onClick={generateScene} className="w-full py-6 bg-red-600 hover:bg-red-500 rounded-3xl text-3xl font-group-a shadow-xl active:scale-95 transition-all">PEGAR O VERMELHINHO</button>
             </div>
             
             <div className="bg-black/30 rounded-3xl p-4 border border-white/5 space-y-3 flex flex-col">
@@ -328,7 +329,7 @@ export default function Vermelhinho({ onBack }: VermelhinhoProps) {
         {gameState === 'loading' && (
           <div className="flex flex-col items-center justify-center py-32 space-y-6">
             <Bus size={80} className="text-red-600 animate-bounce" />
-            <h3 className="text-2xl font-black italic uppercase text-white animate-pulse text-center">Viajando para {scenario.name}...</h3>
+            <h3 className="text-3xl font-group-a text-center">VIAJANDO PARA {scenario.name.toUpperCase()}...</h3>
           </div>
         )}
 
@@ -390,14 +391,14 @@ export default function Vermelhinho({ onBack }: VermelhinhoProps) {
             <div className="bg-yellow-500 p-10 rounded-full shadow-2xl animate-bounce">
               <Trophy size={80} className="text-black" />
             </div>
-            <h2 className="text-5xl font-black italic uppercase text-white tracking-tighter">CHEGOU AO DESTINO!</h2>
+            <h2 className="text-5xl font-group-a text-center">CHEGOU AO DESTINO!</h2>
             <div className="bg-slate-800 p-8 rounded-[2.5rem] border border-white/10 w-full max-w-md shadow-2xl">
-              <div className="text-4xl font-black text-white mb-2 uppercase opacity-50">{difficulty.name}</div>
+              <div className="text-3xl font-group-a mb-2 opacity-80">{difficulty.name.toUpperCase()}</div>
               <div className="text-5xl font-black text-red-500 mb-6 font-mono">{formatTime(timer)}</div>
               <input type="text" placeholder="SEU NOME" maxLength={12} value={playerName} onChange={(e) => setPlayerName(e.target.value.toUpperCase())} className="w-full p-4 bg-black border-2 border-slate-700 rounded-2xl text-center font-black outline-none mb-4 uppercase" />
-              <button disabled={!playerName.trim() || isSaving} onClick={saveScore} className="w-full py-4 bg-red-600 disabled:opacity-50 rounded-2xl font-black text-xl shadow-lg transition-all uppercase italic">Registar Marca</button>
+              <button disabled={!playerName.trim() || isSaving} onClick={saveScore} className="w-full py-4 bg-red-600 disabled:opacity-50 rounded-2xl text-2xl font-group-a shadow-lg transition-all">REGISTRAR MARCA</button>
             </div>
-            <button onClick={() => setGameState('menu')} className="text-slate-600 font-black uppercase text-[10px]">Voltar ao Menu</button>
+            <button onClick={() => setGameState('menu')} className="text-slate-400 hover:text-white font-group-b text-sm transition-colors">Voltar ao Menu</button>
           </div>
         )}
       </main>

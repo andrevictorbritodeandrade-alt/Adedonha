@@ -1,490 +1,493 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Trophy, Timer, Play, RotateCcw, Award, RefreshCw, Star, ArrowLeft
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const temas = [
-  { id: 1, name: "Nome de Pessoa", icon: "👧👦" },
-  { id: 2, name: "Animal ou Bicho", icon: "🐶" },
-  { id: 3, name: "Comida ou Doce", icon: "🍎" },
-  { id: 4, name: "Cor", icon: "🎨" },
-  { id: 5, name: "Cantor(a)/Banda", icon: "🎤" },
-  { id: 6, name: "Desenho ou Filme", icon: "🎬" },
-  { id: 7, name: "Minha sogra é", icon: "👵" },
-  { id: 8, name: "Super-herói", icon: "🦸" },
-  { id: 9, name: "Parte do Corpo", icon: "👃" },
-  { id: 10, name: "CEP (Cidade, Estado ou País)", icon: "🏠" },
+// Alfabeto sem K, W, Y
+const LETTERS = "ABCDEFGHIJLMNOPQRSTUVXZ".split("");
+
+const ROULETTE_COLORS = [
+  '#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', 
+  '#a0c4ff', '#bdb2ff', '#ffc6ff', '#fffffc', '#ffadad',
+  '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff'
 ];
 
-const TEMPO_INICIAL = 5 * 60; // 5 minutos em segundos
-const ALFABETO = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
-const WHEEL_COLORS = ['#FF595E', '#FFCA3A', '#8AC926', '#1982C4', '#6A4C93', '#FF99C8', '#F4A261', '#2A9D8F', '#E76F51', '#264653'];
+// Funções de Áudio Sintetizado
+const playBeep = (freq = 880, duration = 0.1) => {
+  try {
+    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + duration);
+  } catch (e) { console.error("Audio error", e); }
+};
 
-const pointOptions = [
-  { value: 0, label: "Branco", icon: "❌" },
-  { value: 5, label: "Igual", icon: "🤝" },
-  { value: 10, label: "Diferente", icon: "🌟" },
-  { value: 15, label: "Único!", icon: "👑" }
+const playHorn = () => {
+  try {
+    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    oscillator.type = 'sawtooth';
+    oscillator.frequency.setValueAtTime(110, audioCtx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(55, audioCtx.currentTime + 1.5);
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1.5);
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 1.5);
+  } catch (e) { console.error("Audio error", e); }
+};
+
+// Ícones Estilo Disney (SVG)
+const CartoonIcon = ({ type }: { type: string }) => {
+  const icons: Record<string, React.ReactNode> = {
+    adjetivo: (
+      <svg viewBox="0 0 100 100" className="w-8 h-8">
+        <circle cx="50" cy="50" r="35" fill="#fef08a" stroke="#333" strokeWidth="2" />
+        <circle cx="40" cy="45" r="5" fill="#333" /><circle cx="60" cy="45" r="5" fill="#333" />
+        <path d="M35 65s5 10 15 10 15-10 15-10" stroke="#333" strokeWidth="3" fill="none" strokeLinecap="round" />
+        <path d="M20 20l10 10M80 20L70 30" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round" />
+      </svg>
+    ),
+    animal: (
+      <svg viewBox="0 0 100 100" className="w-8 h-8">
+        <path d="M30 40c0-10 20-20 20-20s20 10 20 20" fill="#fb923c" stroke="#333" strokeWidth="2" />
+        <circle cx="50" cy="60" r="30" fill="#fb923c" stroke="#333" strokeWidth="2" />
+        <path d="M35 30c-5-15 10-15 10 0M65 30c5-15-10-15-10 0" fill="#fdba74" stroke="#333" strokeWidth="2" />
+      </svg>
+    ),
+    cep: (
+      <svg viewBox="0 0 100 100" className="w-8 h-8">
+        <circle cx="50" cy="50" r="35" fill="#93c5fd" stroke="#333" strokeWidth="2" />
+        <path d="M50 20c-8 0-15 7-15 15 0 12 15 25 15 25s15-13 15-25c0-8-7-15-15-15z" fill="#ef4444" stroke="#333" strokeWidth="2" />
+        <circle cx="50" cy="35" r="5" fill="#fff" />
+      </svg>
+    ),
+    comida: (
+      <svg viewBox="0 0 100 100" className="w-8 h-8">
+        <path d="M15 45h70l-35 45z" fill="#fde047" stroke="#333" strokeWidth="2" />
+        <path d="M15 45c0-12 15-25 35-25s35 13 35 25z" fill="#ef4444" stroke="#333" strokeWidth="2" />
+      </svg>
+    ),
+    cor: (
+      <svg viewBox="0 0 100 100" className="w-8 h-8">
+        <path d="M20 60c0-25 25-45 55-30s25 45 0 55-55-5-55-25z" fill="#f8fafc" stroke="#333" strokeWidth="2" />
+        <circle cx="40" cy="45" r="8" fill="#ef4444" stroke="#333" strokeWidth="1" />
+        <circle cx="60" cy="40" r="8" fill="#3b82f6" stroke="#333" strokeWidth="1" />
+        <circle cx="65" cy="65" r="8" fill="#10b981" stroke="#333" strokeWidth="1" />
+      </svg>
+    ),
+    famoso: (
+      <svg viewBox="0 0 100 100" className="w-8 h-8">
+        <path d="M50 10l12 25h28l-22 18 8 27-26-18-26 18 8-27-22-18h28z" fill="#fde047" stroke="#333" strokeWidth="2" />
+      </svg>
+    ),
+    fruta: (
+      <svg viewBox="0 0 100 100" className="w-8 h-8">
+        <circle cx="50" cy="55" r="35" fill="#ef4444" stroke="#333" strokeWidth="2" />
+        <path d="M50 20c0-10 5-15 5-15" stroke="#4a2d1f" strokeWidth="4" strokeLinecap="round" />
+        <path d="M50 20s-10-5-15 5c0 0 5 10 15 0z" fill="#22c55e" stroke="#333" strokeWidth="1" />
+      </svg>
+    ),
+    nome: (
+      <svg viewBox="0 0 100 100" className="w-8 h-8">
+        <circle cx="50" cy="40" r="25" fill="#ffd1ba" stroke="#333" strokeWidth="2" />
+        <path d="M50 15c-10 0-15 5-15 12s5 10 15 10 15-3 15-10-5-12-15-12z" fill="#4a2d1f" />
+        <path d="M25 85c0-15 10-25 25-25s25 10 25 25" fill="#3b82f6" stroke="#333" strokeWidth="2" />
+      </svg>
+    ),
+    objeto: (
+      <svg viewBox="0 0 100 100" className="w-8 h-8">
+        <rect x="20" y="40" width="60" height="40" fill="#f97316" stroke="#333" strokeWidth="2" rx="5" />
+        <path d="M20 40l30 20 30-20" fill="none" stroke="#333" strokeWidth="2" />
+      </svg>
+    ),
+    profissao: (
+      <svg viewBox="0 0 100 100" className="w-8 h-8">
+        <rect x="25" y="60" width="50" height="20" fill="#333" rx="5" />
+        <circle cx="50" cy="45" r="25" fill="#94a3b8" stroke="#333" strokeWidth="2" />
+      </svg>
+    )
+  };
+  return icons[type] || null;
+};
+
+const CATEGORIES = [
+  { name: "ADJETIVO", type: "adjetivo" },
+  { name: "ANIMAL", type: "animal" },
+  { name: "CEP", type: "cep" },
+  { name: "COMIDA", type: "comida" },
+  { name: "COR", type: "cor" },
+  { name: "FAMOSO(A)", type: "famoso" },
+  { name: "FRUTA", type: "fruta" },
+  { name: "NOME", type: "nome" },
+  { name: "OBJETO", type: "objeto" },
+  { name: "PROFISSÃO", type: "profissao" },
 ];
 
-const dicionarioRespostas = {
-  1: { A: "Ana", B: "Bruno", C: "Carlos", D: "Daniel", E: "Eduardo", F: "Fernanda", G: "Gabriel", H: "Helena", I: "Igor", J: "João", K: "Karina", L: "Lucas", M: "Maria", N: "Natália", O: "Otávio", P: "Pedro", Q: "Quitéria", R: "Rafael", S: "Sofia", T: "Tiago", U: "Ubirajara", V: "Vitória", W: "Wagner", X: "Xuxa", Y: "Yuri", Z: "Zeca" },
-  2: { A: "Arara", B: "Baleia", C: "Cachorro", D: "Dinossauro", E: "Elefante", F: "Foca", G: "Gato", H: "Hipopótamo", I: "Iguana", J: "Jacaré", K: "Kiwi", L: "Leão", M: "Macaco", N: "Naja", O: "Ovelha", P: "Pato", Q: "Quati", R: "Rato", S: "Sapo", T: "Tatu", U: "Urso", V: "Vaca", W: "Wombat", X: "Xaréu", Y: "Yak", Z: "Zebra" },
-  3: { A: "Arroz", B: "Bolo", C: "Chocolate", D: "Doce de leite", E: "Empada", F: "Feijão", G: "Goiabada", H: "Hambúrguer", I: "Iogurte", J: "Jujuba", K: "Kiwi", L: "Lasanha", M: "Macarrão", N: "Nhoque", O: "Ovo", P: "Pizza", Q: "Queijo", R: "Rabanada", S: "Sorvete", T: "Torta", U: "Uva", V: "Vitamina", W: "Wafer", X: "X-Tudo", Y: "Yakisoba", Z: "Zabaione" },
-  4: { A: "Azul", B: "Branco", C: "Cinza", D: "Dourado", E: "Esmeralda", F: "Fúcsia", G: "Gelo", H: "Havana", I: "Índigo", J: "Jambo", K: "Khaki", L: "Laranja", M: "Marrom", N: "Neve", O: "Ouro", P: "Preto", Q: "Quartzo", R: "Rosa", S: "Salmão", T: "Turquesa", U: "Urucum", V: "Verde", W: "Wenge", X: "Xanadu", Y: "Yellow", Z: "Zinco" },
-  5: { A: "Anitta", B: "Beatles", C: "Caetano Veloso", D: "Djavan", E: "Eminem", F: "Foo Fighters", G: "Gilberto Gil", H: "Harry Styles", I: "Ivete Sangalo", J: "Justin Bieber", K: "Katy Perry", L: "Lady Gaga", M: "Madonna", N: "Nirvana", O: "Oasis", P: "Pink Floyd", Q: "Queen", R: "Rihanna", S: "Shakira", T: "Taylor Swift", U: "U2", V: "Victor e Leo", W: "Wesley Safadão", X: "Xamã", Y: "Yes", Z: "Zeca Pagodinho" },
-  6: { A: "Aladdin", B: "Batman", C: "Cinderela", D: "Dumbo", E: "Enrolados", F: "Frozen", G: "Gladiador", H: "Hércules", I: "Irmão Urso", J: "Jumanji", K: "Kung Fu Panda", L: "Lilo & Stitch", M: "Mulan", N: "Naruto", O: "O Máskara", P: "Pinóquio", Q: "Quarteto Fantástico", R: "Rei Leão", S: "Shrek", T: "Toy Story", U: "Up", V: "Vingadores", W: "Wall-E", X: "X-Men", Y: "Yu-Gi-Oh!", Z: "Zootopia" },
-  7: { A: "Amável", B: "Brava", C: "Chata", D: "Divertida", E: "Especial", F: "Fofa", G: "Gentil", H: "Honesta", I: "Inteligente", J: "Jovem", K: "K-popper", L: "Legal", M: "Maravilhosa", N: "Nervosa", O: "Ocupada", P: "Perfeita", Q: "Querida", R: "Rica", S: "Simpática", T: "Teimosa", U: "Única", V: "Valente", W: "Workaholic", X: "Xarope", Y: "Yogui", Z: "Zangada" },
-  8: { A: "Aquaman", B: "Batman", C: "Capitão América", D: "Demolidor", E: "Elektra", F: "Flash", G: "Gavião Arqueiro", H: "Hulk", I: "Homem de Ferro", J: "Jean Grey", K: "Kick-Ass", L: "Lanterna Verde", M: "Mulher Maravilha", N: "Noturno", O: "Oráculo", P: "Pantera Negra", Q: "Quarteto Fantástico", R: "Robin", S: "Superman", T: "Thor", U: "Ultraman", V: "Viúva Negra", W: "Wolverine", X: "X-Men", Y: "Yelena", Z: "Zatanna" },
-  9: { A: "Abdômen", B: "Braço", C: "Cabeça", D: "Dedo", E: "Estômago", F: "Fígado", G: "Garganta", H: "Hálux", I: "Intestino", J: "Joelho", K: "Quadril", L: "Língua", M: "Mão", N: "Nariz", O: "Olho", P: "Pé", Q: "Queixo", R: "Rosto", S: "Sobrancelha", T: "Tornozelo", U: "Unha", V: "Veia", W: "Wrist (Pulso)", X: "Xixi", Y: "Y (Cromossomo)", Z: "Zonula" },
-  10: { A: "Argentina", B: "Brasil", C: "Canadá", D: "Dinamarca", E: "Espanha", F: "França", G: "Grécia", H: "Holanda", I: "Itália", J: "Japão", K: "Kuwait", L: "Londres", M: "México", N: "Noruega", O: "Orlando", P: "Portugal", Q: "Quênia", R: "Rússia", S: "Suíça", T: "Turquia", U: "Uruguai", V: "Venezuela", W: "Washington", X: "Xangai", Y: "Yokohama", Z: "Zimbábue" }
-};
-
-const getInitialState = () => {
-  const saved = localStorage.getItem('adedonha_state');
-  if (saved) {
-    try {
-      return JSON.parse(saved);
-    } catch (e) {
-      console.error("Error parsing saved state", e);
-    }
-  }
-  return null;
-};
-
-export default function Adedonha({ onBack }: { onBack: () => void }) {
-  const initialState = getInitialState();
-
-  const [timeLeft, setTimeLeft] = useState(initialState?.timeLeft ?? TEMPO_INICIAL);
-  const [isRunning, setIsRunning] = useState(initialState?.isRunning ?? false);
-  const [scores, setScores] = useState(initialState?.scores ?? {});
-  const [respostas, setRespostas] = useState(initialState?.respostas ?? {});
-  const [letraSorteada, setLetraSorteada] = useState(initialState?.letraSorteada ?? "?");
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [rotation, setRotation] = useState(0);
-  const audioCtxRef = useRef(null);
-  
-  const [players, setPlayers] = useState(() => 
-    initialState?.players ?? Array.from({ length: 20 }, (_, i) => ({ id: i + 1, name: '', score: 0, roundScore: '' }))
-  );
+const RouletteCanvas = ({ onFinished, isSpinning, selectedLetter }: any) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [angle, setAngle] = useState(0);
 
   useEffect(() => {
-    const stateToSave = {
-      timeLeft,
-      isRunning,
-      scores,
-      respostas,
-      letraSorteada,
-      players
-    };
-    localStorage.setItem('adedonha_state', JSON.stringify(stateToSave));
-  }, [timeLeft, isRunning, scores, respostas, letraSorteada, players]);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = Math.min(centerX, centerY) - 20;
 
-  const playTick = () => {
-    try {
-      if (!audioCtxRef.current) {
-        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-        audioCtxRef.current = new AudioContext();
-      }
-      if (audioCtxRef.current.state === 'suspended') {
-        audioCtxRef.current.resume();
-      }
-      const osc = audioCtxRef.current.createOscillator();
-      const gainNode = audioCtxRef.current.createGain();
-      osc.connect(gainNode);
-      gainNode.connect(audioCtxRef.current.destination);
-      
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(800, audioCtxRef.current.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(100, audioCtxRef.current.currentTime + 0.02);
-      
-      gainNode.gain.setValueAtTime(0.3, audioCtxRef.current.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtxRef.current.currentTime + 0.02);
-      
-      osc.start();
-      osc.stop(audioCtxRef.current.currentTime + 0.02);
-    } catch (e) {
-      console.error("Audio error:", e);
-    }
-  };
-
-  const playDing = () => {
-    try {
-      if (!audioCtxRef.current) return;
-      const osc = audioCtxRef.current.createOscillator();
-      const gainNode = audioCtxRef.current.createGain();
-      osc.connect(gainNode);
-      gainNode.connect(audioCtxRef.current.destination);
-      
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(880, audioCtxRef.current.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(440, audioCtxRef.current.currentTime + 0.5);
-      
-      gainNode.gain.setValueAtTime(0.3, audioCtxRef.current.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtxRef.current.currentTime + 1);
-      
-      osc.start();
-      osc.stop(audioCtxRef.current.currentTime + 1);
-    } catch (e) {
-      console.error("Audio error:", e);
-    }
-  };
-
-  const playBeep = () => {
-    try {
-      if (!audioCtxRef.current) return;
-      const osc = audioCtxRef.current.createOscillator();
-      const gainNode = audioCtxRef.current.createGain();
-      osc.connect(gainNode);
-      gainNode.connect(audioCtxRef.current.destination);
-      
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(1000, audioCtxRef.current.currentTime);
-      
-      gainNode.gain.setValueAtTime(0.1, audioCtxRef.current.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtxRef.current.currentTime + 0.1);
-      
-      osc.start();
-      osc.stop(audioCtxRef.current.currentTime + 0.1);
-    } catch (e) {
-      console.error("Audio error:", e);
-    }
-  };
-
-  // Roleta segura
-  const sortearLetra = () => {
-    if (isSpinning) return;
-    setIsSpinning(true);
-    setLetraSorteada("?");
-    setIsRunning(false);
-    setTimeLeft(TEMPO_INICIAL);
-    
-    const targetIndex = Math.floor(Math.random() * ALFABETO.length);
-    const targetAngle = 360 - (targetIndex * (360 / 26));
-    const extraSpins = 5 * 360; // 5 full spins
-    
-    const currentMod = rotation % 360;
-    let diff = targetAngle - currentMod;
-    if (diff < 0) diff += 360;
-    
-    const newRotation = rotation + extraSpins + diff;
-    
-    setRotation(newRotation);
-
-    // Efeitos sonoros
-    const startTime = Date.now();
-    const duration = 3000;
-    
-    const tick = () => {
-      const elapsed = Date.now() - startTime;
-      if (elapsed >= duration) {
-        playDing();
-        return;
-      }
-      playTick();
-      
-      const progress = elapsed / duration;
-      const easeOut = 1 - Math.pow(1 - progress, 3);
-      const nextDelay = 30 + (easeOut * 200); 
-      
-      setTimeout(tick, nextDelay);
-    };
-    
-    // Iniciar som
-    tick();
-    
-    setTimeout(() => {
-      setLetraSorteada(ALFABETO[targetIndex]);
-      setIsSpinning(false);
-      setIsRunning(true);
-    }, 3000);
-  };
-
-  // MOTOR DO RELÓGIO CORRIGIDO: Não causa bloqueio no Android
-  useEffect(() => {
-    let interval;
-    if (isRunning) {
-      interval = setInterval(() => {
-        setTimeLeft((tempoAnterior) => {
-          if (tempoAnterior <= 1) {
-            clearInterval(interval);
-            setIsRunning(false);
-            return 0;
-          }
-          return tempoAnterior - 1;
-        });
-      }, 1000);
-    }
-    
-    // Limpeza segura ao pausar ou desmontar
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isRunning]); // Só reage quando o isRunning muda (Play/Pausa), não a cada segundo!
-
-  // Preenchimento automático e bip quando o tempo acaba
-  useEffect(() => {
-    if (timeLeft === 0 && letraSorteada !== "?") {
-      playDing(); // Toca o som quando o tempo acaba
-      setRespostas(prev => {
-        const novas = { ...prev };
-        temas.forEach(tema => {
-          // Preenche apenas se o campo estiver vazio
-          if (!novas[tema.id] || novas[tema.id].trim() === "") {
-            novas[tema.id] = dicionarioRespostas[tema.id]?.[letraSorteada] || "---";
-          }
-        });
-        return novas;
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      LETTERS.forEach((letter, i) => {
+        const sliceAngle = (2 * Math.PI) / LETTERS.length;
+        const startAngle = i * sliceAngle + angle;
+        const endAngle = (i + 1) * sliceAngle + angle;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.fillStyle = ROULETTE_COLORS[i % ROULETTE_COLORS.length];
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(startAngle + sliceAngle / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#333";
+        ctx.font = "italic 900 24px Montserrat";
+        ctx.fillText(letter, radius - 15, 8);
+        ctx.restore();
       });
-    } else if (isRunning && timeLeft <= 10 && timeLeft > 0) {
-      playBeep();
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY - radius - 5);
+      ctx.lineTo(centerX - 20, centerY - radius - 35);
+      ctx.lineTo(centerX + 20, centerY - radius - 35);
+      ctx.closePath();
+      ctx.fillStyle = "#1e293b";
+      ctx.fill();
+    };
+    draw();
+  }, [angle]);
+
+  useEffect(() => {
+    if (isSpinning) {
+      let start: number | null = null;
+      const duration = 4000;
+      const extraSpins = 15 + Math.random() * 10;
+      const animate = (timestamp: number) => {
+        if (!start) start = timestamp;
+        const progress = timestamp - start;
+        const easeOut = 1 - Math.pow(1 - Math.min(progress / duration, 1), 3);
+        setAngle(easeOut * extraSpins);
+        if (progress < duration) requestAnimationFrame(animate);
+        else {
+          const finalAngle = (easeOut * extraSpins) % (2 * Math.PI);
+          const sliceSize = (2 * Math.PI) / LETTERS.length;
+          const normalizedAngle = (1.5 * Math.PI - finalAngle) % (2 * Math.PI);
+          const index = Math.floor((normalizedAngle < 0 ? normalizedAngle + 2 * Math.PI : normalizedAngle) / sliceSize);
+          onFinished(LETTERS[index % LETTERS.length]);
+        }
+      };
+      requestAnimationFrame(animate);
     }
-  }, [timeLeft, isRunning, letraSorteada]);
-
-  const toggleTimer = () => setIsRunning(!isRunning);
-  
-  const resetRound = () => {
-    setIsRunning(false);
-    setTimeLeft(TEMPO_INICIAL);
-    setScores({});
-    setRespostas({});
-    setLetraSorteada("?");
-  };
-
-  const handleScore = (themeId, points) => {
-    setScores(prev => ({ ...prev, [themeId]: points }));
-  };
-
-  const handleResposta = (themeId, texto) => {
-    setRespostas(prev => ({ ...prev, [themeId]: texto }));
-  };
-
-  const handlePlayerChange = (id, field, value) => {
-    setPlayers(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p));
-  };
-
-  const addPlayerScore = (id) => {
-    setPlayers(prev => prev.map(p => {
-      if (p.id === id) {
-        const pts = parseInt(p.roundScore) || 0;
-        return { ...p, score: p.score + pts, roundScore: '' };
-      }
-      return p;
-    }));
-  };
-
-  const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
-
-  const totalScore = temas.reduce((total, tema) => {
-    return total + (scores[tema.id] || 0);
-  }, 0);
-
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
-  const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  
-  const percentage = (timeLeft / TEMPO_INICIAL) * 100;
-  const barColor = timeLeft <= 60 ? 'bg-red-500' : (timeLeft <= 120 ? 'bg-yellow-500' : 'bg-green-500');
-
-  const isShaking = isRunning && timeLeft <= 10 && timeLeft > 0;
+  }, [isSpinning]);
 
   return (
-    <div className={`min-h-screen bg-magical font-sans p-2 md:p-4 text-white ${isShaking ? 'animate-msn-shake' : ''}`}>
-      
-      <header className="text-center mb-4 mt-2 relative">
-        <button 
-          onClick={onBack}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white text-indigo-600 font-bold py-2 px-4 rounded-lg shadow hover:bg-indigo-50 transition-colors border border-indigo-200"
-        >
-          ⬅ Voltar
-        </button>
-        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic text-yellow-400">
-          <span className="inline-block animate-bounce mr-2">🛑</span>
-          <span className="uppercase">
-            EPIC ADEDONHA!
-          </span>
-        </h1>
-        <p className="text-slate-500 font-bold uppercase tracking-wider text-sm">O jogo mais divertido da sala de aula</p>
-      </header>
-
-      <div className="max-w-[1600px] w-full mx-auto flex flex-col lg:flex-row gap-3">
-        
-        {/* Painel Esquerdo */}
-        <div className="w-full lg:w-1/4 bg-white p-3 rounded-xl shadow-md border border-slate-200 flex flex-col">
-          
-          <div className="bg-indigo-50 p-4 rounded-lg flex flex-col items-center justify-center mb-4 border border-indigo-100">
-            {/* Roleta */}
-            <div className="relative w-48 h-48 sm:w-56 sm:h-56 mb-6 mt-2">
-              {/* Pointer */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-3 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[24px] border-l-transparent border-r-transparent border-t-red-600 z-20 drop-shadow-md"></div>
-              
-              {/* Wheel */}
-              <div 
-                className="w-full h-full rounded-full border-4 border-white relative overflow-hidden shadow-lg"
-                style={{
-                  background: `conic-gradient(from -${360 / 26 / 2}deg, ${ALFABETO.map((_, i) => `${WHEEL_COLORS[i % WHEEL_COLORS.length]} ${i * (360/26)}deg ${(i+1) * (360/26)}deg`).join(', ')})`,
-                  transform: `rotate(${rotation}deg)`,
-                  transition: 'transform 3s cubic-bezier(0.25, 1, 0.5, 1)'
-                }}
-              >
-                {ALFABETO.map((letra, i) => (
-                  <div 
-                    key={letra}
-                    className="absolute top-0 left-1/2 origin-bottom"
-                    style={{
-                      height: '50%',
-                      transform: `translateX(-50%) rotate(${i * (360/26)}deg)`,
-                      width: '24px'
-                    }}
-                  >
-                    <span className="block text-center font-black text-white drop-shadow-md text-xs sm:text-sm mt-1">
-                      {letra}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              
-              {/* Center dot */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-indigo-800 rounded-full z-10 shadow-md border-2 border-white"></div>
-            </div>
-
-            <div className="flex items-center justify-between w-full">
-              <div className="text-center flex-1">
-                <p className="text-xs font-bold text-indigo-400 uppercase">Sorteada</p>
-                <p className={`text-4xl font-black text-indigo-600 h-10 flex items-center justify-center ${isSpinning ? 'opacity-50' : 'scale-110 transition-transform'}`}>
-                  {letraSorteada}
-                </p>
-              </div>
-              <button
-                onClick={sortearLetra}
-                disabled={isSpinning}
-                className="bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg active:bg-indigo-700 disabled:bg-indigo-300 shadow-md transition-transform active:scale-95"
-              >
-                {isSpinning ? 'Girando...' : 'Girar Roleta'}
-              </button>
-            </div>
-          </div>
-          
-          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-4 text-center">
-            <h2 className="text-5xl font-display text-slate-700 mb-2 tracking-widest">{timeString}</h2>
-            
-            <div className="w-full bg-slate-200 h-4 rounded-full mb-4 overflow-hidden">
-              <div 
-                className={`${barColor} h-full transition-all duration-1000 ease-linear`}
-                style={{ width: `${percentage}%` }}
-              ></div>
-            </div>
-
-            <div className="flex gap-2">
-              <button 
-                onClick={toggleTimer} 
-                className={`flex-1 py-2 rounded-lg font-bold text-white ${isRunning ? 'bg-orange-500' : 'bg-green-500'}`}
-              >
-                {isRunning ? 'Pausar' : 'Play'}
-              </button>
-              <button 
-                onClick={resetRound} 
-                className="flex-1 py-2 rounded-lg font-bold bg-slate-200 text-slate-700"
-              >
-                Limpar
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-slate-800 text-white p-4 rounded-lg text-center">
-            <p className="text-xs font-bold uppercase text-slate-300">Pontuação Total</p>
-            <p className="text-4xl font-black">{totalScore}</p>
-          </div>
-
-        </div>
-
-        {/* Painel Central (Temas) */}
-        <div className="w-full lg:w-2/4 grid grid-cols-1 md:grid-cols-2 gap-2">
-          {temas.map((tema, index) => (
-            <div key={tema.id} className="bg-white p-2 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
-              <div className="flex items-center gap-1.5 mb-1">
-                <span className="text-slate-400 font-bold text-sm w-4">{index + 1}.</span>
-                <span className="text-lg">{tema.icon}</span>
-                <span className="text-sm font-bold text-slate-700 truncate">{tema.name}</span>
-              </div>
-              
-              <input
-                type="text"
-                value={respostas[tema.id] || ''}
-                onChange={(e) => handleResposta(tema.id, e.target.value)}
-                placeholder="Escreva aqui..."
-                className="w-full p-2 text-sm mb-2 rounded-lg border-2 border-indigo-200 bg-indigo-50 text-indigo-900 font-bold uppercase outline-none focus:border-indigo-400 focus:bg-indigo-100 transition-colors placeholder:font-normal placeholder:normal-case placeholder:text-indigo-300"
-              />
-              
-              <div className="grid grid-cols-4 gap-1">
-                {pointOptions.map((opt) => {
-                  const isSelected = scores[tema.id] === opt.value;
-                  return (
-                    <button
-                      key={opt.value}
-                      onClick={() => handleScore(tema.id, opt.value)}
-                      className={`py-0.5 flex flex-col items-center justify-center rounded-lg border ${
-                        isSelected 
-                          ? 'bg-indigo-600 border-indigo-600 text-white' 
-                          : 'bg-white border-slate-300 text-slate-600'
-                      }`}
-                    >
-                      <span className="text-xs">{opt.icon}</span>
-                      <span className="font-bold text-xs">{opt.value}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Painel Direito (Ranking) */}
-        <div className="w-full lg:w-1/4 bg-white p-3 rounded-xl shadow-md border border-slate-200 flex flex-col">
-          <div className="text-center mb-2">
-            <h2 className="text-2xl font-display text-indigo-600 flex items-center justify-center gap-2 tracking-wide">
-              🏆 Ranking da Turma
-            </h2>
-            <p className="text-[10px] text-slate-500 uppercase font-bold">Adicione os pontos na caixinha e clique em +</p>
-          </div>
-          
-          <div className="flex-1 overflow-y-auto pr-1" style={{ maxHeight: 'calc(100vh - 120px)' }}>
-            <div className="flex flex-col gap-1.5">
-              {sortedPlayers.map((player, index) => (
-                <div key={player.id} className={`flex items-center gap-1 p-1.5 rounded-lg border ${player.score > 0 && index === 0 ? 'bg-yellow-50 border-yellow-300' : (player.score > 0 && index === 1 ? 'bg-slate-100 border-slate-300' : (player.score > 0 && index === 2 ? 'bg-orange-50 border-orange-200' : 'bg-slate-50 border-slate-200'))}`}>
-                  <span className={`font-black text-xs w-5 text-center ${index === 0 && player.score > 0 ? 'text-yellow-600' : (index === 1 && player.score > 0 ? 'text-slate-500' : (index === 2 && player.score > 0 ? 'text-orange-600' : 'text-slate-400'))}`}>
-                    {index + 1}º
-                  </span>
-                  <input 
-                    type="text" 
-                    value={player.name}
-                    onChange={(e) => handlePlayerChange(player.id, 'name', e.target.value)}
-                    placeholder={`Aluno ${player.id}`}
-                    className="flex-1 w-0 p-1 text-xs font-bold rounded border border-slate-300 outline-none focus:border-indigo-400 bg-white"
-                  />
-                  <div className="font-black text-indigo-600 w-7 text-center text-sm" title="Pontuação Total">
-                    {player.score}
-                  </div>
-                  <input 
-                    type="number" 
-                    value={player.roundScore}
-                    onChange={(e) => handlePlayerChange(player.id, 'roundScore', e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && addPlayerScore(player.id)}
-                    placeholder="+pts"
-                    className="w-11 p-1 text-xs rounded border border-slate-300 outline-none focus:border-indigo-400 bg-white text-center"
-                    title="Pontos da rodada"
-                  />
-                  <button 
-                    onClick={() => addPlayerScore(player.id)}
-                    className="bg-green-500 hover:bg-green-600 text-white w-6 h-6 rounded flex items-center justify-center font-bold transition-colors"
-                    title="Adicionar pontos"
-                  >
-                    +
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
+    <div className="relative flex items-center justify-center h-full">
+      <canvas ref={canvasRef} width={420} height={420} className="rounded-full shadow-2xl bg-white p-2" />
+      <div className="absolute flex items-center justify-center">
+         {selectedLetter && !isSpinning && (
+            <motion.div initial={{scale:0}} animate={{scale:1.2}} className="bg-white/95 w-32 h-32 rounded-full flex items-center justify-center shadow-2xl border-8 border-slate-800">
+               <span className="text-8xl font-black text-slate-800 font-mine-large">{selectedLetter}</span>
+            </motion.div>
+         )}
       </div>
     </div>
   );
-}
+};
+
+const AdedonhaGame = ({ onBack }: { onBack: () => void }) => {
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
+  const [showLargeLetter, setShowLargeLetter] = useState(false);
+  const [showParou, setShowParou] = useState(false);
+  const [letterHistory, setLetterHistory] = useState<string[]>([]);
+  const [timer, setTimer] = useState(300);
+  const [isTimerActive, setIsTimerActive] = useState(false);
+  const [isMSNShake, setIsMSNShake] = useState(false);
+  
+  const [ranking, setRanking] = useState(() => {
+    const saved = localStorage.getItem('adedonha_ranking');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Error parsing ranking", e);
+      }
+    }
+    return Array.from({ length: 34 }, (_, i) => ({ id: `player-${i}`, name: '', score: 0 }));
+  });
+
+  useEffect(() => {
+    localStorage.setItem('adedonha_ranking', JSON.stringify(ranking));
+  }, [ranking]);
+
+  useEffect(() => {
+    let interval: any = null;
+    if (isTimerActive && timer > 0) {
+      interval = setInterval(() => {
+        setTimer(t => {
+          const newTime = t - 1;
+          if (newTime <= 10 && newTime > 0) playBeep(880, 0.1); 
+          if (newTime === 0) {
+            playHorn();
+            setIsMSNShake(true);
+            setShowParou(true);
+            setTimeout(() => setIsMSNShake(false), 2000);
+            setTimeout(() => setShowParou(false), 6000);
+          }
+          return newTime;
+        });
+      }, 1000);
+    } else if (timer === 0) {
+      setIsTimerActive(false);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerActive, timer]);
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const handleSpin = () => {
+    if (isSpinning) return;
+    
+    // Ativa o AudioContext no primeiro clique
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      audioCtx.resume();
+    } catch (e) {}
+
+    setIsSpinning(true);
+    setSelectedLetter(null);
+    setShowParou(false);
+    setTimer(300);
+    setIsTimerActive(false);
+  };
+
+  const onSpinFinished = (letter: string) => {
+    setIsSpinning(false);
+    setSelectedLetter(letter);
+    setShowLargeLetter(true);
+    setLetterHistory(prev => !prev.includes(letter) ? [...prev, letter] : prev);
+    setIsTimerActive(true);
+    setTimeout(() => setShowLargeLetter(false), 5000);
+  };
+
+  const updateRankingScore = (id: string, value: string) => {
+    const newScore = parseInt(value) || 0;
+    setRanking((prev: any[]) => {
+      const updated = prev.map(p => p.id === id ? { ...p, score: newScore } : p);
+      return [...updated].sort((a, b) => b.score - a.score);
+    });
+  };
+
+  const updateRankingName = (id: string, value: string) => {
+    setRanking((prev: any[]) => prev.map(p => p.id === id ? { ...p, name: value } : p));
+  };
+
+  const resetGame = () => {
+    setTimer(300);
+    setIsTimerActive(false);
+    setSelectedLetter(null);
+    setLetterHistory([]);
+    setIsMSNShake(false);
+    setShowParou(false);
+  };
+
+  const [showBackModal, setShowBackModal] = useState(false);
+
+  const handleBack = () => {
+    setShowBackModal(true);
+  };
+
+  const confirmBack = () => {
+    setShowBackModal(false);
+    onBack();
+  };
+
+  const cancelBack = () => {
+    setShowBackModal(false);
+  };
+
+  const rankingCol1 = ranking.slice(0, 17);
+  const rankingCol2 = ranking.slice(17, 34);
+
+  const screenVariants = {
+    shake: {
+      x: [0, -20, 20, -20, 20, -15, 15, -10, 10, 0],
+      y: [0, 10, -10, 10, -10, 5, -5, 5, -5, 0],
+      transition: { duration: 0.4, repeat: 4 }
+    },
+    jitter: {
+      x: [0, -3, 3, -3, 3, 0],
+      transition: { duration: 0.1, repeat: Infinity }
+    }
+  };
+
+  return (
+    <motion.div 
+      animate={isMSNShake ? "shake" : (timer <= 10 && timer > 0 ? "jitter" : {})}
+      variants={screenVariants}
+      className="h-screen bg-[#fdf8f4] text-slate-900 p-2 overflow-hidden flex flex-col gap-2 font-general"
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Lobster&family=Montserrat:ital,wght@1,900&display=swap');
+        .font-creative { font-family: 'Lobster', cursive; text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 2px 2px 0 #000; }
+        .font-general { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 14px; }
+        .font-mine-large {
+          font-family: 'Lobster', cursive;
+          color: white;
+          text-shadow: -4px -4px 0 #ef4444, 4px -4px 0 #ef4444, -4px 4px 0 #ef4444, 4px 4px 0 #ef4444, 0px 4px 0 #ef4444, 0px -4px 0 #ef4444, 4px 0px 0 #ef4444, -4px 0px 0 #ef4444, 8px 8px 0 #000;
+        }
+        .font-parou {
+          font-family: 'Lobster', cursive;
+          color: #ef4444;
+          text-shadow: 4px 4px 0 #fff, -4px -4px 0 #fff, 4px -4px 0 #fff, -4px 4px 0 #fff, 8px 8px 0 #000;
+        }
+        .font-digital { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; color: #ef4444; text-shadow: 0px 0px 10px rgba(239, 68, 68, 0.2); }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+      `}</style>
+
+      {/* OVERLAY LETRA GIGANTE */}
+      <AnimatePresence>
+        {showLargeLetter && (
+          <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 2 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md">
+            <h1 className="text-[35rem] font-mine-large leading-none select-none drop-shadow-2xl">{selectedLetter}</h1>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* OVERLAY PAROU! */}
+      <AnimatePresence>
+        {showParou && (
+          <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1.5 }} exit={{ opacity: 0, scale: 5 }} className="fixed inset-0 z-[60] flex items-center justify-center bg-red-600/10 backdrop-blur-xl">
+             <h1 className="text-[20rem] font-parou select-none">PAROU!</h1>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* MODAL DE CONFIRMAÇÃO DE VOLTAR */}
+      <AnimatePresence>
+        {showBackModal && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }} className="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full border-4 border-slate-800">
+              <h2 className="text-2xl font-creative text-slate-800 mb-4 text-center">Sair do Jogo?</h2>
+              <p className="text-slate-600 font-general text-center mb-6">Deseja salvar o progresso da rodada atual e voltar ao menu principal?</p>
+              <div className="flex gap-4 justify-center">
+                <button onClick={cancelBack} className="px-6 py-2 bg-slate-200 text-slate-700 rounded-full font-general hover:bg-slate-300 transition-colors">Cancelar</button>
+                <button onClick={confirmBack} className="px-6 py-2 bg-red-500 text-white rounded-full font-general hover:bg-red-600 transition-colors">Sim, Sair</button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <header className="flex justify-between items-center bg-white px-8 py-1 rounded-full shadow-sm border border-slate-100 h-14 flex-shrink-0">
+        <div className="flex items-center gap-4">
+          <button onClick={handleBack} className="text-slate-400 hover:text-slate-600 transition-colors mr-2">
+            <ArrowLeft size={24} />
+          </button>
+          <RefreshCw className="text-slate-400" size={24} />
+          <h1 className="text-3xl font-creative text-slate-800 italic" style={{ textShadow: '2px 2px 0 #000', color: 'white' }}>ADEDONHA INTERATIVA</h1>
+        </div>
+        <div className="flex items-center gap-6">
+          <button onClick={() => setIsTimerActive(!isTimerActive)} className="text-emerald-500">
+            <Play size={32} fill="currentColor" className={isTimerActive ? 'animate-pulse' : ''} />
+          </button>
+          <span className="text-6xl font-digital italic">{formatTime(timer)}</span>
+          <p className="text-[10px] uppercase font-general text-slate-400 w-14 leading-tight">TEMPO DE AULA</p>
+        </div>
+        <button onClick={resetGame} className="w-10 h-10 bg-red-100 text-red-500 rounded-full flex items-center justify-center"><RotateCcw size={22} /></button>
+      </header>
+
+      <div className="flex-1 flex gap-2 overflow-hidden min-h-0">
+        {/* COLUNA 1: ROLETA */}
+        <aside className="w-[32%] bg-white rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col items-center justify-between p-4 min-h-0 overflow-hidden">
+           <div className="flex-1 w-full flex items-center justify-center scale-90">
+              <RouletteCanvas onFinished={onSpinFinished} isSpinning={isSpinning} selectedLetter={selectedLetter} />
+           </div>
+           <button onClick={handleSpin} disabled={isSpinning} className="w-full h-16 bg-[#1e293b] text-white rounded-[2rem] text-3xl font-general shadow-xl active:scale-95 transition-all uppercase mt-2 border-b-4 border-black">SORTEIO!</button>
+        </aside>
+
+        {/* COLUNA 2: CATEGORIAS */}
+        <section className="w-[24%] bg-[#f8f9ff] rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col p-4 overflow-hidden min-h-0">
+           <div className="flex items-center gap-3 mb-2 border-b border-slate-100 pb-1">
+              <Star className="text-blue-500" fill="currentColor" size={20} />
+              <h2 className="text-2xl font-creative italic text-slate-800">Categories</h2>
+           </div>
+           <div className="flex-1 flex flex-col justify-between py-1">
+              {CATEGORIES.map((cat, i) => (
+                <div key={i} className="flex items-center gap-3 h-8">
+                   <span className="text-xl font-general text-slate-300 w-6 text-center">{i + 1}.</span>
+                   <div className="bg-white p-0.5 rounded-lg shadow-sm border border-slate-50 scale-90 flex-shrink-0"><CartoonIcon type={cat.type} /></div>
+                   <span className="text-slate-800 text-[13px] font-general uppercase truncate tracking-tighter">{cat.name}</span>
+                </div>
+              ))}
+           </div>
+        </section>
+
+        {/* COLUNA 3: RANKING DINÂMICO */}
+        <aside className="flex-1 bg-[#fffbf8] rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col overflow-hidden min-h-0">
+           <div className="p-2 bg-white/50 flex items-center justify-center gap-3 border-b border-slate-100">
+              <Trophy className="text-yellow-500" size={24} />
+              <h2 className="text-3xl font-creative italic text-slate-800">Ranking Dinâmico</h2>
+           </div>
+           <div className="flex-1 flex gap-3 p-3 overflow-hidden">
+              <div className="flex-1 flex flex-col gap-0.5 justify-between">
+                {rankingCol1.map((player: any, idx: number) => (
+                  <motion.div key={player.id} layout className="flex items-center gap-2 h-[22px]">
+                    <div className={`w-6 h-6 rounded flex items-center justify-center text-[10px] font-general flex-shrink-0 ${idx < 3 ? 'bg-orange-400 text-white' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}>{idx + 1}</div>
+                    <div className="flex-1"><input type="text" placeholder="NOME____" value={player.name} onChange={(e) => updateRankingName(player.id, e.target.value)} className="w-full bg-transparent border-b border-slate-200 focus:border-blue-400 outline-none text-[11px] font-general uppercase text-slate-600"/></div>
+                    <input type="number" placeholder="0" value={player.score === 0 ? '' : player.score} onChange={(e) => updateRankingScore(player.id, e.target.value)} className="w-9 bg-slate-100 rounded text-center text-slate-800 outline-none py-0.5 text-[11px] font-black shadow-inner"/>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="w-px bg-slate-200 h-full opacity-30" />
+              <div className="flex-1 flex flex-col gap-0.5 justify-between">
+                {rankingCol2.map((player: any, idx: number) => (
+                  <motion.div key={player.id} layout className="flex items-center gap-2 h-[22px]">
+                    <div className="w-6 h-6 rounded bg-slate-50 text-slate-400 border border-slate-100 flex items-center justify-center text-[10px] font-general flex-shrink-0">{idx + 18}</div>
+                    <div className="flex-1"><input type="text" placeholder="NOME____" value={player.name} onChange={(e) => updateRankingName(player.id, e.target.value)} className="w-full bg-transparent border-b border-slate-200 focus:border-blue-400 outline-none text-[11px] font-general uppercase text-slate-600"/></div>
+                    <input type="number" placeholder="0" value={player.score === 0 ? '' : player.score} onChange={(e) => updateRankingScore(player.id, e.target.value)} className="w-9 bg-slate-100 rounded text-center text-slate-800 outline-none py-0.5 text-[11px] font-black shadow-inner"/>
+                  </motion.div>
+                ))}
+              </div>
+           </div>
+        </aside>
+      </div>
+
+      <footer className="h-4 flex justify-between items-center text-[9px] text-slate-400 px-10 uppercase font-general opacity-60 flex-shrink-0">
+         <div className="flex gap-6"><span>ADEDONHA INTERATIVA | ESCOLA</span><span className="text-blue-500">LETRAS: {letterHistory.join(' - ')}</span></div>
+         <div className="flex gap-6"><span>RODADA: {letterHistory.length}</span><span>ALUNOS: 34</span></div>
+      </footer>
+    </motion.div>
+  );
+};
+
+export default AdedonhaGame;
