@@ -46,7 +46,7 @@ const JOGOS = [
 ];
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState(() => localStorage.getItem('currentScreen') || 'menu');
+  const [currentScreen, setCurrentScreen] = useState('menu');
   const [user, setUser] = useState<any>(null);
   const [ndaAccepted, setNdaAccepted] = useState(true);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -108,7 +108,7 @@ export default function App() {
   }
 
   if (!user) {
-    return <LoginScreen onLogin={() => {}} />;
+    return <LoginScreen onLogin={() => setCurrentScreen('menu')} />;
   }
 
   // ... (renderScreen and Main Menu remain, but need to add UserProfile)
@@ -136,8 +136,8 @@ export default function App() {
     };
 
     return (
-      <div className="min-h-screen bg-blue-900 text-white p-4">
-        <ScreenComponent onBack={() => { history.back(); setCurrentScreen('menu'); }} />
+      <div className="min-h-screen bg-[#121212] text-white p-4 overflow-y-auto">
+        <ScreenComponent onBack={() => setCurrentScreen('menu')} />
         
         {/* RODAPÉ NAS TELAS DE JOGO */}
         <footer className="mt-10 py-6 text-center text-white/50 font-sans text-xs border-t border-white/10">
@@ -152,7 +152,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#121212] font-sans text-white overflow-hidden relative flex flex-col">
+    <div className="min-h-screen bg-[#121212] font-sans text-white overflow-y-auto overflow-x-hidden relative flex flex-col">
       {backgroundImage && (
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-20 transition-opacity duration-1000"
@@ -161,7 +161,7 @@ export default function App() {
       )}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#121212]/80 to-[#121212]" />
 
-      <div className="flex flex-col h-screen relative z-10 p-8">
+      <div className="flex flex-col min-h-screen relative z-10 p-8">
         {/* Header/Nav area */}
         <div className="flex justify-between items-center mb-12">
           <h1 className="font-display text-5xl text-yellow-400 tracking-widest drop-shadow-[0_0_10px_rgba(250,204,21,0.5)]">ARENA DE JOGOS</h1>
@@ -179,22 +179,22 @@ export default function App() {
 
         {showProfile && <UserProfile user={user} onClose={() => setShowProfile(false)} />}
 
-        {/* Console-style Grid */}
-        <div className="flex-1 overflow-x-auto hide-scrollbar pb-8 flex items-center">
-          <div className="flex gap-6 px-4">
+        {/* Vertical Game List */}
+        <div className="flex-1 -mx-4 px-4">
+          <div className="flex flex-col gap-6 pb-[120px]">
             {JOGOS.map(({ id, nome, category, Icon, color }, index) => {
-              const isFocused = index === 2; // Mocking focus for demonstration, usually handled by state/keyboard navigation
+              const isFocused = index === 2; // Mocking focus for demonstration
               const neonClass = isFocused ? 'neon-border-green focused' : 'neon-border-purple';
               return (
                 <button 
                   key={id} 
                   onClick={() => navigateToGame(id)}
-                  className={`neon-card w-64 h-80 flex flex-col items-center justify-between p-6 group flex-shrink-0 ${neonClass}`}
+                  className={`neon-card w-full max-w-[400px] mx-auto h-64 flex flex-col items-center justify-between p-6 group ${neonClass}`}
                 >
                   <div className="flex-1 flex items-center justify-center w-full">
                     {/* Placeholder for game art, using large icon for now */}
-                    <div className={`w-32 h-32 rounded-2xl bg-white/5 flex items-center justify-center ${color} group-hover:scale-110 transition-transform duration-300`}>
-                      <Icon className="w-20 h-20" />
+                    <div className={`w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center ${color} group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="w-16 h-16" />
                     </div>
                   </div>
                   <div className="w-full text-center mt-4">

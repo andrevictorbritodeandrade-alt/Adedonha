@@ -113,12 +113,12 @@ export default function Forca({ onBack }: { onBack: () => void }) {
   return (
     <div className="min-h-screen bg-magical font-sans p-4 text-white flex flex-col items-center">
       
-      <header className="text-center mb-6 relative w-full max-w-6xl">
+      <header className="text-center mb-6 relative w-full max-w-6xl z-20">
         <button 
           onClick={onBack}
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-white text-emerald-600 font-bold py-2 px-4 rounded-lg shadow hover:bg-emerald-50 transition-colors border border-emerald-200"
+          className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/10 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:bg-white/20 transition-all border border-white/20 z-30 flex items-center gap-2"
         >
-          ⬅ Voltar
+          <span className="text-xl">⬅</span> Voltar
         </button>
         <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic text-emerald-400">
           <span className="inline-block animate-bounce mr-2">🪢</span>

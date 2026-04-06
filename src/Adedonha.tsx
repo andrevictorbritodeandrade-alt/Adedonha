@@ -320,21 +320,6 @@ const AdedonhaGame = ({ onBack }: { onBack: () => void }) => {
     setShowParou(false);
   };
 
-  const [showBackModal, setShowBackModal] = useState(false);
-
-  const handleBack = () => {
-    setShowBackModal(true);
-  };
-
-  const confirmBack = () => {
-    setShowBackModal(false);
-    onBack();
-  };
-
-  const cancelBack = () => {
-    setShowBackModal(false);
-  };
-
   const rankingCol1 = ranking.slice(0, 17);
   const rankingCol2 = ranking.slice(17, 34);
 
@@ -354,7 +339,7 @@ const AdedonhaGame = ({ onBack }: { onBack: () => void }) => {
     <motion.div 
       animate={isMSNShake ? "shake" : (timer <= 10 && timer > 0 ? "jitter" : {})}
       variants={screenVariants}
-      className="min-h-screen bg-[#121212] text-white p-4 overflow-y-auto overflow-x-hidden flex flex-col gap-6 font-sans relative"
+      className="min-h-screen bg-[#121212] text-white p-4 flex flex-col gap-6 font-sans relative"
     >
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#121212]/80 to-[#121212] pointer-events-none" />
 
@@ -376,26 +361,14 @@ const AdedonhaGame = ({ onBack }: { onBack: () => void }) => {
         )}
       </AnimatePresence>
 
-      {/* MODAL DE CONFIRMAÇÃO DE VOLTAR */}
-      <AnimatePresence>
-        {showBackModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm">
-            <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }} className="bg-[#1e1e1e] p-8 rounded-3xl shadow-2xl max-w-sm w-full border border-white/10">
-              <h2 className="text-3xl font-display text-yellow-400 mb-4 text-center">Sair do Jogo?</h2>
-              <p className="text-gray-300 font-sans text-center mb-8">Deseja salvar o progresso da rodada atual e voltar ao menu principal?</p>
-              <div className="flex flex-col gap-4 justify-center">
-                <button onClick={confirmBack} className="w-full py-4 bg-red-600 text-white rounded-xl font-bold hover:bg-red-500 transition-colors">SIM, SAIR</button>
-                <button onClick={cancelBack} className="w-full py-4 bg-white/10 text-white rounded-xl font-bold hover:bg-white/20 transition-colors">CANCELAR</button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* 1. Cabeçalho */}
-      <header className="flex flex-col items-center justify-center relative z-10 pt-4">
-        <button onClick={handleBack} className="absolute left-0 top-4 text-gray-400 hover:text-white transition-colors p-2 bg-white/5 rounded-full">
-          <ArrowLeft size={24} />
+      <header className="flex flex-col items-center justify-center relative z-20 pt-4 px-12">
+        <button 
+          onClick={onBack} 
+          className="absolute left-0 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/10 rounded-full z-30 shadow-lg border border-white/20 flex items-center justify-center"
+          aria-label="Voltar"
+        >
+          <ArrowLeft size={28} />
         </button>
         <h1 className="text-5xl font-display text-white tracking-widest drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] text-center">ADEDONHA INTERATIVA</h1>
         <div className="flex items-center gap-4 mt-4 bg-white/5 px-6 py-2 rounded-full border border-white/10">
