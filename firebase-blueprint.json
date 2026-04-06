@@ -1,67 +1,55 @@
 {
   "entities": {
-    "RegistroNDA": {
-      "title": "RegistroNDA",
-      "description": "Registro de aceite do termo de confidencialidade",
+    "User": {
+      "title": "User",
+      "description": "Represents a registered user.",
       "type": "object",
       "properties": {
-        "usuario": {
-          "type": "string",
-          "description": "Nome ou identificador do usuário"
-        },
-        "ip": {
-          "type": "string",
-          "description": "Endereço IP do usuário"
-        },
-        "data": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Data e hora do aceite"
-        },
-        "versao_termo": {
-          "type": "string",
-          "description": "Versão do termo aceito"
-        },
-        "plataforma": {
-          "type": "string",
-          "description": "Plataforma de acesso"
-        }
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "description": "User email" },
+        "type": { "type": "string", "description": "Account type: 'google' or 'email'" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Account creation timestamp" }
       },
-      "required": ["usuario", "ip", "data", "versao_termo", "plataforma"]
+      "required": ["uid", "email", "type", "createdAt"]
     },
-    "LeaderboardEntry": {
-      "title": "LeaderboardEntry",
-      "description": "Entrada no placar de líderes do jogo",
+    "AccessLog": {
+      "title": "AccessLog",
+      "description": "Records a user login/access event.",
       "type": "object",
       "properties": {
-        "name": {
-          "type": "string"
-        },
-        "time": {
-          "type": "number"
-        },
-        "scenario": {
-          "type": "string"
-        },
-        "difficulty": {
-          "type": "string"
-        },
-        "timestamp": {
-          "type": "string",
-          "format": "date-time"
-        }
+        "userId": { "type": "string", "description": "User ID" },
+        "email": { "type": "string", "description": "User email" },
+        "type": { "type": "string", "description": "Login type" },
+        "ip": { "type": "string", "description": "IP Address" },
+        "location": { "type": "string", "description": "City/Country" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "Access timestamp" }
       },
-      "required": ["name", "time", "scenario", "difficulty", "timestamp"]
+      "required": ["userId", "email", "type", "ip", "location", "timestamp"]
+    },
+    "NDA": {
+      "title": "NDA",
+      "description": "Records NDA acceptance.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "User ID" },
+        "email": { "type": "string", "description": "User email" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "Acceptance timestamp" }
+      },
+      "required": ["userId", "email", "timestamp"]
     }
   },
   "firestore": {
-    "/registros_nda/{registroId}": {
-      "schema": "RegistroNDA",
-      "description": "Registros de aceite do NDA"
+    "/users/{userId}": {
+      "schema": { "$ref": "User" },
+      "description": "User profiles"
     },
-    "/artifacts/{appId}/public/data/leaderboard/{entryId}": {
-      "schema": "LeaderboardEntry",
-      "description": "Placar de líderes do jogo"
+    "/accessLogs/{logId}": {
+      "schema": { "$ref": "AccessLog" },
+      "description": "History of user access"
+    },
+    "/registros_nda/{logId}": {
+      "schema": { "$ref": "NDA" },
+      "description": "NDA acceptance logs"
     }
   }
 }

@@ -1,68 +1,53 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // ===============================================================
-    // Helper Functions
-    // ===============================================================
-    function isAuthenticated() {
-      return request.auth != null;
+    // Helper functions
+    function isAuthenticated() { return request.auth != null; }
+    function isOwner(userId) { return isAuthenticated() && request.auth.uid == userId; }
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.email == "andrevictorbritodeandrade@gmail.com";
     }
 
-    function hasOnlyAllowedFields(fields) {
-      return request.resource.data.keys().hasOnly(fields);
+    // Data Validators
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'type', 'createdAt']) &&
+             data.uid is string && data.uid.size() < 100 &&
+             data.email is string && data.email.size() < 255 &&
+             data.type is string && data.type.size() < 20;
+    }
+    function isValidAccessLog(data) {
+      return data.keys().hasAll(['userId', 'email', 'type', 'ip', 'location', 'timestamp']) &&
+             data.userId is string && data.userId.size() < 100 &&
+             data.email is string && data.email.size() < 255 &&
+             data.type is string && data.type.size() < 20 &&
+             data.ip is string && data.ip.size() < 50 &&
+             data.location is string && data.location.size() < 255;
+    }
+    function isValidNDA(data) {
+      return data.keys().hasAll(['userId', 'email', 'timestamp']) &&
+             data.userId is string && data.userId.size() < 100 &&
+             data.email is string && data.email.size() < 255;
     }
 
-    function hasRequiredFields(fields) {
-      return request.resource.data.keys().hasAll(fields);
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.uid == request.auth.uid;
+      allow update: if isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.uid == resource.data.uid;
     }
 
-    function isValidStringLength(field, minLen, maxLen) {
-      return request.resource.data[field] is string &&
-             request.resource.data[field].size() >= minLen &&
-             request.resource.data[field].size() <= maxLen;
+    match /accessLogs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated() && isValidAccessLog(request.resource.data);
     }
 
-    // ===============================================================
-    // Domain Validators
-    // ===============================================================
-    function isValidRegistroNDA() {
-      return hasOnlyAllowedFields(['usuario', 'ip', 'data', 'versao_termo', 'plataforma']) &&
-             hasRequiredFields(['usuario', 'ip', 'data', 'versao_termo', 'plataforma']) &&
-             isValidStringLength('usuario', 1, 100) &&
-             isValidStringLength('ip', 1, 50) &&
-             isValidStringLength('data', 1, 50) &&
-             isValidStringLength('versao_termo', 1, 20) &&
-             isValidStringLength('plataforma', 1, 50);
+    match /registros_nda/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated() && isValidNDA(request.resource.data);
     }
 
-    function isValidLeaderboardEntry() {
-      return hasOnlyAllowedFields(['name', 'time', 'scenario', 'difficulty', 'timestamp']) &&
-             hasRequiredFields(['name', 'time', 'scenario', 'difficulty', 'timestamp']) &&
-             isValidStringLength('name', 1, 50) &&
-             request.resource.data.time is number &&
-             request.resource.data.time >= 0 &&
-             isValidStringLength('scenario', 1, 100) &&
-             isValidStringLength('difficulty', 1, 50) &&
-             isValidStringLength('timestamp', 1, 50);
-    }
-
-    // ===============================================================
-    // Rules
-    // ===============================================================
-    
-    // NDA Records - Anyone can create, no one can read or update
-    match /registros_nda/{registroId} {
-      allow create: if isValidRegistroNDA();
-      allow read, update, delete: if false;
-    }
-
-    // Leaderboard - Anyone can read, authenticated users can create
-    match /artifacts/{appId}/public/data/leaderboard/{entryId} {
-      allow read: if true;
-      allow create: if isAuthenticated() && isValidLeaderboardEntry();
-      allow update, delete: if false;
+    match /artifacts/{appId}/public/data/leaderboard/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated(); // Needs hardening based on business logic
     }
   }
 }

@@ -6,8 +6,10 @@ const apiKey = "";
 const Tatuzin = ({ onBack }) => {
   const canvasRef = useRef(null);
   const [gameState, setGameState] = useState('START');
-  const [score, setScore] = useState(0);
+  const [mumbucas, setMumbucas] = useState(0);
   const [lives, setLives] = useState(3);
+  const [level, setLevel] = useState(1);
+  const [villain, setVillain] = useState({ active: false, x: 0, y: 0, health: 3 });
   const [countdown, setCountdown] = useState(10);
   const [currentBiome, setCurrentBiome] = useState('CERRADO');
   
@@ -286,9 +288,9 @@ const Tatuzin = ({ onBack }) => {
 
       if (tatu.y > height - groundHeight/2) {
          tatu.isHiding = true;
-         if (score > 0) {
-            const loss = Math.ceil(score * 0.25);
-            setScore(s => Math.max(0, s - loss));
+         if (mumbucas > 0) {
+            const loss = Math.ceil(mumbucas * 0.25);
+            setMumbucas(s => Math.max(0, s - loss));
             tatu.y = height - groundHeight - 120;
             tatu.dy = -12;
             tatu.invincible = 60;
@@ -316,7 +318,7 @@ const Tatuzin = ({ onBack }) => {
            ctx.restore();
 
            if (Math.abs(tatu.x + tatuSize/2 - sx) < 55 && Math.abs(tatu.y + tatuSize/2 - m.y) < 55) {
-             m.collected = true; setScore(s => s + 1);
+             m.collected = true; setMumbucas(s => s + 1);
              const o = audioCtx.current.createOscillator();
              const g = audioCtx.current.createGain();
              o.frequency.setValueAtTime(1300, audioCtx.current.currentTime);
@@ -336,8 +338,8 @@ const Tatuzin = ({ onBack }) => {
             ctx.moveTo(sx, obs.y + 40); ctx.lineTo(sx+20, obs.y); ctx.lineTo(sx+40, obs.y+40);
             ctx.fill();
             if (tatu.invincible === 0 && Math.abs(tatu.x + tatuSize/2 - (sx+20)) < 40 && Math.abs(tatu.y + tatuSize/2 - (obs.y+20)) < 40) {
-               if (score > 0) {
-                  setScore(0);
+               if (mumbucas > 0) {
+                  setMumbucas(0);
                   tatu.invincible = 60;
                } else {
                   die();
@@ -349,6 +351,12 @@ const Tatuzin = ({ onBack }) => {
       // Mudança de bioma baseada no progresso
       if (worldX > 10000 && currentBiome === 'CERRADO') setCurrentBiome('MATA ATLÂNTICA');
       if (worldX > 20000 && currentBiome === 'MATA ATLÂNTICA') setCurrentBiome('CAATINGA');
+
+      // Villain
+      if (villain.active) {
+        ctx.fillStyle = 'red';
+        ctx.beginPath(); ctx.arc(villain.x - worldX, villain.y, 40, 0, Math.PI*2); ctx.fill();
+      }
     };
 
     const die = () => {
@@ -411,7 +419,7 @@ const Tatuzin = ({ onBack }) => {
   };
 
   const resetGame = () => { 
-    setLives(3); setScore(0); setGameState('PLAYING'); 
+    setLives(3); setMumbucas(0); setGameState('PLAYING'); 
     if (bgMusic.current) {
         const p = bgMusic.current.play();
         if (p !== undefined) p.catch(() => {});
@@ -428,8 +436,13 @@ const Tatuzin = ({ onBack }) => {
           <div className="flex justify-between items-center w-full">
             <div className="bg-white/95 backdrop-blur-md px-4 sm:px-8 py-2 sm:py-4 rounded-2xl sm:rounded-3xl border-b-4 sm:border-b-8 border-green-700 flex items-center gap-4 sm:gap-10 shadow-2xl">
               <div className="flex flex-col">
-                <span className="text-green-900 text-[10px] sm:text-xs font-black uppercase tracking-widest opacity-40">MOEDAS</span>
-                <span className="text-yellow-600 text-2xl sm:text-5xl font-black italic">{score}</span>
+                <span className="text-green-900 text-[10px] sm:text-xs font-black uppercase tracking-widest opacity-40">MUMBUCAS</span>
+                <span className="text-yellow-600 text-2xl sm:text-5xl font-black italic">{mumbucas}</span>
+              </div>
+              <div className="w-px h-8 sm:h-12 bg-black/10"></div>
+              <div className="flex flex-col">
+                <span className="text-green-900 text-[10px] sm:text-xs font-black uppercase tracking-widest opacity-40">NÍVEL</span>
+                <span className="text-blue-600 text-2xl sm:text-5xl font-black italic">{level}</span>
               </div>
               <div className="w-px h-8 sm:h-12 bg-black/10"></div>
               <div className="flex gap-1 sm:gap-3">

@@ -133,17 +133,28 @@ export default function Memoria({ onBack }: { onBack: () => void }) {
           <div 
             key={card.id}
             onClick={() => handleCardClick(index)}
-            className={`relative w-full aspect-square cursor-pointer transition-transform duration-500 transform-style-3d ${
-              card.isFlipped || card.isMatched ? 'rotate-y-180' : ''
-            } ${card.isMatched ? 'opacity-50' : 'hover:scale-105'}`}
+            className={`relative w-full aspect-square cursor-pointer transition-all duration-500 transform-style-3d ${
+              card.isMatched 
+                ? 'bg-amber-200 border-4 border-amber-600 rounded-lg' 
+                : (card.isFlipped ? 'rotate-y-180' : 'hover:scale-105')
+            }`}
             style={{ transformStyle: 'preserve-3d' }}
           >
-            <div className="absolute w-full h-full backface-hidden bg-[#556b2f] rounded-lg border-2 border-[#3a4a20] shadow-sm flex items-center justify-center">
-              <span className="text-2xl md:text-4xl opacity-30">🌿</span>
-            </div>
-            <div className="absolute w-full h-full backface-hidden bg-amber-50 rounded-lg border-2 border-amber-300 shadow-sm flex items-center justify-center rotate-y-180">
-              <span className="text-3xl md:text-5xl">{card.emoji}</span>
-            </div>
+            {!card.isMatched && (
+              <>
+                <div className="absolute w-full h-full backface-hidden bg-[#556b2f] rounded-lg border-2 border-[#3a4a20] shadow-sm flex items-center justify-center">
+                  <span className="text-2xl md:text-4xl opacity-30">🌿</span>
+                </div>
+                <div className="absolute w-full h-full backface-hidden bg-amber-50 rounded-lg border-2 border-amber-300 shadow-sm flex items-center justify-center rotate-y-180">
+                  <span className="text-3xl md:text-5xl">{card.emoji}</span>
+                </div>
+              </>
+            )}
+            {card.isMatched && (
+              <div className="w-full h-full flex items-center justify-center text-3xl md:text-5xl">
+                {card.emoji}
+              </div>
+            )}
           </div>
         ))}
       </div>

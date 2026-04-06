@@ -64,9 +64,9 @@ const SCENARIOS = [
 ];
 
 const DIFFICULTIES = [
-  { id: 'easy', name: 'Fácil', scale: 20, label: 'Passageiro Comum' },
-  { id: 'medium', name: 'Médio', scale: 10, label: 'Nível Sinistro' },
-  { id: 'hard', name: 'Difícil', scale: 6, label: 'Expert Impossível' }
+  { id: 'easy', name: 'Fácil', scale: 100, zoom: 1.5, label: 'Passageiro Comum' },
+  { id: 'medium', name: 'Médio', scale: 60, zoom: 2.5, label: 'Nível Sinistro' },
+  { id: 'hard', name: 'Difícil', scale: 30, zoom: 4, label: 'Expert Impossível' }
 ];
 
 interface VermelhinhoProps {
@@ -176,7 +176,7 @@ export default function Vermelhinho({ onBack }: VermelhinhoProps) {
       setZoomLevel(1);
       setOffset({ x: 0, y: 0 });
     } else {
-      setZoomLevel(2.5);
+      setZoomLevel(difficulty.zoom);
     }
   };
 

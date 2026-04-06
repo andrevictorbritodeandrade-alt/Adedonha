@@ -349,8 +349,7 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
 
                 <button
                   onClick={sortearCategoria}
-                  disabled={isSpinning}
-                  className="w-full max-w-sm bg-gradient-to-r from-orange-500 to-red-500 text-white font-black text-2xl py-4 px-8 rounded-full shadow-lg hover:shadow-xl active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100"
+                  className="w-full max-w-sm bg-gradient-to-r from-orange-500 to-red-500 text-white font-black text-2xl py-4 px-8 rounded-full shadow-lg hover:shadow-xl active:scale-95 transition-all"
                 >
                   {isSpinning ? 'GIRANDO...' : 'GIRAR ROLETA!'}
                 </button>

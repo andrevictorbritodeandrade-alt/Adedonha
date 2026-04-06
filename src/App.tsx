@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { 
   Hand, MessageSquareText, Skull, Hash, Brain, Flag, Map, 
   Gamepad2, Target, LayoutGrid, Crown, AirVent, Search, Bug, 
-  Crosshair, Download, QrCode
+  Crosshair, Download, QrCode, User as UserIcon
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import NDA from './NDA';
+import LoginScreen from './LoginScreen';
 import AdedonhaGame from './Adedonha';
 import Perguntados from './Perguntados';
 import Forca from './Forca';
@@ -21,35 +22,55 @@ import Vermelhinho from './Vermelhinho';
 import Tatuzin from './Tatuzin';
 import Cruzaletras from './Cruzaletras';
 import JogoDosMapas from './JogoDosMapas';
+import { generateMenuBackground } from './ImageGen';
+import { auth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { UserProfile } from './components/UserProfile';
 
-// Lista de jogos com ícones do Lucide React e cores temáticas
 const JOGOS = [
-  { id: 'adedonha', nome: 'ADEDONHA INTERATIVA', Icon: Hand, color: 'text-purple-500' },
-  { id: 'perguntados', nome: 'PERGUNTADOS', Icon: MessageSquareText, color: 'text-blue-500' },
-  { id: 'forca', nome: 'JOGO DA FORCA', Icon: Skull, color: 'text-red-600' },
-  { id: 'velha', nome: 'JOGO DA VELHA', Icon: Hash, color: 'text-yellow-500' },
-  { id: 'memoria', nome: 'JOGO DO MEMÓRIA', Icon: Brain, color: 'text-pink-500' },
-  { id: 'bandeiras', nome: 'JOGO DAS BANDEIRAS', Icon: Flag, color: 'text-green-500' },
-  { id: 'mapas', nome: 'JOGO DOS MAPAS', Icon: Map, color: 'text-emerald-600' },
-  { id: 'ludo', nome: 'LUDO', Icon: Gamepad2, color: 'text-green-600' },
-  { id: 'uno', nome: 'UNO', Icon: LayoutGrid, color: 'text-orange-500' },
-  { id: 'truco', nome: 'TRUCO', Icon: Target, color: 'text-orange-600' },
-  { id: 'xadrez', nome: 'XADREZ SORTUDO', Icon: Crown, color: 'text-yellow-600' },
-  { id: 'balaozinho', nome: 'JOGO DO BALÃOZINHO', Icon: AirVent, color: 'text-sky-400' },
-  { id: 'vermelhinho', nome: 'ONDE ESTÁ O VERMELHINHO?', Icon: Search, color: 'text-red-500' },
-  { id: 'tatuzin', nome: 'TATUZIN', Icon: Bug, color: 'text-amber-700' },
-  { id: 'cruzaletras', nome: 'CRUZALETRAS', Icon: Crosshair, color: 'text-indigo-600' },
-  { id: 'install', nome: 'BAIXAR APP', Icon: Download, color: 'text-yellow-400' },
-  { id: 'qrcode', nome: 'COMPARTILHAR', Icon: QrCode, color: 'text-green-500' },
+  { id: 'adedonha', nome: 'ADEDONHA INTERATIVA', category: 'Palavras & Raciocínio', Icon: Hand, color: 'text-purple-500' },
+  { id: 'perguntados', nome: 'PERGUNTADOS', category: 'Quiz & Conhecimento', Icon: MessageSquareText, color: 'text-blue-500' },
+  { id: 'forca', nome: 'JOGO DA FORCA', category: 'Palavras & Clássico', Icon: Skull, color: 'text-red-600' },
+  { id: 'velha', nome: 'JOGO DA VELHA', category: 'Estratégia Rápida', Icon: Hash, color: 'text-yellow-500' },
+  { id: 'memoria', nome: 'JOGO DO MEMÓRIA', category: 'Foco & Concentração', Icon: Brain, color: 'text-pink-500' },
+  { id: 'bandeiras', nome: 'JOGO DAS BANDEIRAS', category: 'Geografia & Mundo', Icon: Flag, color: 'text-green-500' },
+  { id: 'mapas', nome: 'JOGO DOS MAPAS', category: 'Geografia & Localização', Icon: Map, color: 'text-emerald-600' },
+  { id: 'ludo', nome: 'LUDO', category: 'Tabuleiro Clássico', Icon: Gamepad2, color: 'text-green-600' },
+  { id: 'uno', nome: 'UNO', category: 'Cartas & Diversão', Icon: LayoutGrid, color: 'text-orange-500' },
+  { id: 'truco', nome: 'TRUCO', category: 'Cartas & Blefe', Icon: Target, color: 'text-orange-600' },
+  { id: 'xadrez', nome: 'XADREZ SORTUDO', category: 'Estratégia & Sorte', Icon: Crown, color: 'text-yellow-600' },
+  { id: 'balaozinho', nome: 'JOGO DO BALÃOZINHO', category: 'Ação Rápida', Icon: AirVent, color: 'text-sky-400' },
+  { id: 'vermelhinho', nome: 'ONDE ESTÁ O VERMELHINHO?', category: 'Atenção Visual', Icon: Search, color: 'text-red-500' },
+  { id: 'tatuzin', nome: 'TATUZIN', category: 'Aventura Plataforma', Icon: Bug, color: 'text-amber-700' },
+  { id: 'cruzaletras', nome: 'CRUZALETRAS', category: 'Palavras Cruzadas', Icon: Crosshair, color: 'text-indigo-600' },
 ];
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('menu');
+  const [currentScreen, setCurrentScreen] = useState(() => localStorage.getItem('currentScreen') || 'menu');
+  const [user, setUser] = useState<any>(null);
   const [ndaAccepted, setNdaAccepted] = useState(true);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [showInstallInfo, setShowInstallInfo] = useState(false);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
+    generateMenuBackground().then(setBackgroundImage);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('currentScreen', currentScreen);
+  }, [currentScreen]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentScreen('menu');
+    };
+    window.addEventListener('popstate', handlePopState);
+
     const accepted = localStorage.getItem('nda_accepted');
     if (!accepted) {
       setNdaAccepted(false);
@@ -61,8 +82,16 @@ export default function App() {
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, []);
+
+  const navigateToGame = (id: string) => {
+    history.pushState(null, '', null);
+    setCurrentScreen(id);
+  };
 
   const handleInstall = async () => {
     if (deferredPrompt) {
@@ -77,6 +106,12 @@ export default function App() {
   if (!ndaAccepted) {
     return <NDA onAccept={() => setNdaAccepted(true)} />;
   }
+
+  if (!user) {
+    return <LoginScreen onLogin={() => {}} />;
+  }
+
+  // ... (renderScreen and Main Menu remain, but need to add UserProfile)
 
   const renderScreen = () => {
     const ScreenComponent = ({ onBack }: { onBack: () => void }) => {
@@ -102,13 +137,7 @@ export default function App() {
 
     return (
       <div className="min-h-screen bg-blue-900 text-white p-4">
-        <button 
-          onClick={() => setCurrentScreen('menu')}
-          className="mb-6 flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold py-3 px-6 rounded-full text-xl shadow-lg transition-transform hover:scale-105"
-        >
-          <Crosshair className="w-6 h-6" /> VOLTAR
-        </button>
-        <ScreenComponent onBack={() => setCurrentScreen('menu')} />
+        <ScreenComponent onBack={() => { history.back(); setCurrentScreen('menu'); }} />
         
         {/* RODAPÉ NAS TELAS DE JOGO */}
         <footer className="mt-10 py-6 text-center text-white/50 font-sans text-xs border-t border-white/10">
@@ -123,116 +152,83 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 via-blue-600 to-blue-900 font-sans text-white overflow-hidden relative">
-      {/* Background decoration */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 20% 30%, #fbbf24 0%, transparent 20%), radial-gradient(circle at 80% 70%, #ef4444 0%, transparent 20%)' }}></div>
+    <div className="min-h-screen bg-[#121212] font-sans text-white overflow-hidden relative flex flex-col">
+      {backgroundImage && (
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-20 transition-opacity duration-1000"
+          style={{ backgroundImage: `url(${backgroundImage})` }}
+        />
+      )}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#121212]/80 to-[#121212]" />
 
-      <div className="flex flex-col h-screen relative z-10">
-        {/* BOTÃO DE INSTALAÇÃO */}
-        {deferredPrompt && (
-          <button 
-            onClick={handleInstall}
-            className="absolute top-4 left-4 z-50 bg-white text-blue-900 font-bold py-2 px-4 rounded-full shadow-lg flex items-center gap-2 hover:bg-gray-100"
-          >
-            <Download className="w-5 h-5" /> Instalar App
-          </button>
-        )}
-
-        {/* DIREITA: Lista/Grade para os jogos (agora full width) */}
-        <div className="w-full h-screen flex flex-col overflow-y-auto custom-scrollbar p-6 lg:p-12">
-          
-          {/* Título */}
-          <div className="flex flex-col items-center justify-center mb-10 w-full text-center px-2">
-            <h1 className="font-display text-6xl md:text-9xl text-yellow-400 text-shadow-comic-lg tracking-wider transform -rotate-2 w-full">
-              SALA DE JOGOS
-            </h1>
+      <div className="flex flex-col h-screen relative z-10 p-8">
+        {/* Header/Nav area */}
+        <div className="flex justify-between items-center mb-12">
+          <h1 className="font-display text-5xl text-yellow-400 tracking-widest drop-shadow-[0_0_10px_rgba(250,204,21,0.5)]">ARENA DE JOGOS</h1>
+          <div className="flex items-center gap-4">
+            {user.photoURL ? (
+              <img src={user.photoURL} alt="Avatar" onClick={() => setShowProfile(true)} className="w-12 h-12 rounded-full border-2 border-white cursor-pointer hover:scale-110 transition-transform" />
+            ) : (
+              <UserIcon onClick={() => setShowProfile(true)} className="w-12 h-12 p-2 rounded-full bg-white/10 cursor-pointer hover:bg-white/20 transition-colors" />
+            )}
+            {user.email === 'admin@admin.com' && (
+              <button className="btn-admin px-4 py-2 rounded-lg text-sm">Dashboard Admin</button>
+            )}
           </div>
+        </div>
 
-          {/* GRADE DE JOGOS */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 pb-20 max-w-6xl mx-auto w-full">
-            {JOGOS.map(({ id, nome, Icon, color }) => (
-              id === 'qrcode' ? (
-                <div key={id} className="pixar-card flex flex-col items-center p-4 gap-2">
-                  <QRCodeSVG value="https://saladejogos.vercel.app" size={80} />
-                  <span className="font-display text-sm text-blue-900 text-center leading-tight">
-                    {nome}
-                  </span>
-                </div>
-              ) : id === 'install' ? (
+        {showProfile && <UserProfile user={user} onClose={() => setShowProfile(false)} />}
+
+        {/* Console-style Grid */}
+        <div className="flex-1 overflow-x-auto hide-scrollbar pb-8 flex items-center">
+          <div className="flex gap-6 px-4">
+            {JOGOS.map(({ id, nome, category, Icon, color }, index) => {
+              const isFocused = index === 2; // Mocking focus for demonstration, usually handled by state/keyboard navigation
+              const neonClass = isFocused ? 'neon-border-green focused' : 'neon-border-purple';
+              return (
                 <button 
                   key={id} 
-                  onClick={() => {
-                    if (deferredPrompt) {
-                      handleInstall();
-                    } else {
-                      setShowInstallInfo(true);
-                    }
-                  }} 
-                  className={`pixar-card flex flex-col items-center p-4 gap-2 group ${!deferredPrompt ? 'opacity-80' : 'animate-bounce'}`}
-                  title="Instalar App"
+                  onClick={() => navigateToGame(id)}
+                  className={`neon-card w-64 h-80 flex flex-col items-center justify-between p-6 group flex-shrink-0 ${neonClass}`}
                 >
-                  <Icon className={`w-20 h-20 ${color} group-hover:scale-110 transition-transform`} />
-                  <span className="font-display text-sm text-blue-900 text-center leading-tight">
-                    {nome}
-                  </span>
+                  <div className="flex-1 flex items-center justify-center w-full">
+                    {/* Placeholder for game art, using large icon for now */}
+                    <div className={`w-32 h-32 rounded-2xl bg-white/5 flex items-center justify-center ${color} group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="w-20 h-20" />
+                    </div>
+                  </div>
+                  <div className="w-full text-center mt-4">
+                    <h2 className="font-display text-2xl text-yellow-400 tracking-wide mb-1 leading-tight">{nome}</h2>
+                    <p className="text-gray-300 text-sm font-medium">{category}</p>
+                  </div>
                 </button>
-              ) : (
-                <button 
-                  key={id} 
-                  onClick={() => setCurrentScreen(id)} 
-                  className="pixar-card flex flex-col items-center p-4 gap-2 group"
-                >
-                  <Icon className={`w-20 h-20 ${color} group-hover:scale-110 transition-transform`} />
-                  <span className="font-display text-sm text-blue-900 text-center leading-tight">
-                    {nome}
-                  </span>
-                </button>
-              )
-            ))}
+              );
+            })}
           </div>
-          
-          {/* RODAPÉ */}
-          <footer className="mt-auto py-6 text-center text-white/70 font-sans text-sm border-t border-white/10">
-            <p>Desenvolvido por André Victor Brito de Andrade ©</p>
-            <p>Contato: <a href="mailto:andrevictorbritodeandrade@gmail.com" className="underline">andrevictorbritodeandrade@gmail.com</a></p>
-            <p>© 2026 Todos os direitos reservados. | Versão 1.6.0</p>
-            <button onClick={() => setNdaAccepted(false)} className="mt-2 text-yellow-400 underline hover:text-yellow-300">
-              Ver Termo de Confidencialidade (NDA)
+        </div>
+
+        {/* Footer Area */}
+        <div className="mt-auto pt-6 flex justify-between items-end border-t border-white/10">
+          <div className="text-xs text-gray-400 space-y-1">
+            <p>ESTADO ADMIN: <span className="text-green-400 font-bold">ATIVO</span></p>
+            <p>IPs ÚNICOS: 142</p>
+            <p>ÚLTIMO ACESSO: 14/03/2026 21:30</p>
+          </div>
+          <div className="flex gap-4">
+            <button className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors">
+              <LayoutGrid className="w-5 h-5" /> COLEÇÃO COMPLETA
             </button>
-            <div className="mt-4 text-xs text-white/40 max-w-md mx-auto">
-              Dica: Se o botão "BAIXAR APP" não aparecer, você pode instalar manualmente clicando nos três pontinhos do navegador e selecionando "Instalar aplicativo" ou "Adicionar à tela de início".
-            </div>
-          </footer>
-
-          {/* MODAL DE INFORMAÇÃO DE INSTALAÇÃO */}
-          {showInstallInfo && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-              <div className="bg-white text-blue-900 p-6 rounded-2xl max-w-sm w-full shadow-2xl animate-in zoom-in duration-200">
-                <h3 className="text-xl font-bold mb-4">Como Instalar</h3>
-                <p className="text-sm mb-6 leading-relaxed">
-                  Para instalar este aplicativo no seu Android:
-                  <br /><br />
-                  1. Clique nos <strong>três pontinhos</strong> (⋮) no canto superior do navegador.
-                  <br />
-                  2. Selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela de início"</strong>.
-                </p>
-                <button 
-                  onClick={() => setShowInstallInfo(false)}
-                  className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors"
-                >
-                  ENTENDI
-                </button>
-              </div>
-            </div>
-          )}
+            <button className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors">
+              <QrCode className="w-5 h-5" /> COMPARTILHAR QR
+            </button>
+            {deferredPrompt && (
+              <button onClick={handleInstall} className="bg-yellow-500 hover:bg-yellow-400 text-black px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors">
+                <Download className="w-5 h-5" /> BAIXAR APP
+              </button>
+            )}
+          </div>
         </div>
       </div>
-      
-      <style dangerouslySetInnerHTML={{__html: `
-        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
-      `}} />
     </div>
   );
 }

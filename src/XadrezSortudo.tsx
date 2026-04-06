@@ -1,24 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Trophy, Coins, Zap, ChevronLeft, Info, Users, User } from 'lucide-react';
+import { Trophy, Coins, Zap, ChevronLeft, Info, Users, User, Circle, Square, Triangle, Hexagon, Diamond, Star, Heart, Shield, Sword } from 'lucide-react';
 
 interface XadrezSortudoProps {
   onBack: () => void;
 }
 
 const PIECES = [
-  { id: 'w_pawn', img: 'https://img.icons8.com/3d-fluency/200/chess-pawn.png', color: 'white', name: 'Peão Branco', weight: 50, value: 5 },
-  { id: 'b_pawn', img: 'https://img.icons8.com/3d-fluency/200/chess-pawn--v2.png', color: 'black', name: 'Peão Preto', weight: 50, value: 5 },
-  { id: 'w_knight', img: 'https://img.icons8.com/3d-fluency/200/chess-knight.png', color: 'white', name: 'Cavalo Branco', weight: 30, value: 15 },
-  { id: 'b_knight', img: 'https://img.icons8.com/3d-fluency/200/chess-knight--v2.png', color: 'black', name: 'Cavalo Preto', weight: 30, value: 15 },
-  { id: 'w_bishop', img: 'https://img.icons8.com/3d-fluency/200/chess-bishop.png', color: 'white', name: 'Bispo Branco', weight: 25, value: 20 },
-  { id: 'b_bishop', img: 'https://img.icons8.com/3d-fluency/200/chess-bishop--v2.png', color: 'black', name: 'Bispo Preto', weight: 25, value: 20 },
-  { id: 'w_rook', img: 'https://img.icons8.com/3d-fluency/200/chess-rook.png', color: 'white', name: 'Torre Branca', weight: 15, value: 50 },
-  { id: 'b_rook', img: 'https://img.icons8.com/3d-fluency/200/chess-rook--v2.png', color: 'black', name: 'Torre Preta', weight: 15, value: 50 },
-  { id: 'w_queen', img: 'https://img.icons8.com/3d-fluency/200/chess-queen.png', color: 'white', name: 'Rainha Branca', weight: 5, value: 200 },
-  { id: 'b_queen', img: 'https://img.icons8.com/3d-fluency/200/chess-queen--v2.png', color: 'black', name: 'Rainha Preta', weight: 5, value: 200 },
-  { id: 'w_king', img: 'https://img.icons8.com/3d-fluency/200/chess-king.png', color: 'white', name: 'Rei Branco', weight: 1, value: 1000 },
-  { id: 'b_king', img: 'https://img.icons8.com/3d-fluency/200/chess-king--v2.png', color: 'black', name: 'Rei Preto', weight: 1, value: 1000 },
+  { id: 'w_pawn', Icon: Circle, color: 'text-white', name: 'Peão Branco', weight: 50, value: 5 },
+  { id: 'b_pawn', Icon: Circle, color: 'text-gray-800', name: 'Peão Preto', weight: 50, value: 5 },
+  { id: 'w_knight', Icon: Triangle, color: 'text-white', name: 'Cavalo Branco', weight: 30, value: 15 },
+  { id: 'b_knight', Icon: Triangle, color: 'text-gray-800', name: 'Cavalo Preto', weight: 30, value: 15 },
+  { id: 'w_bishop', Icon: Square, color: 'text-white', name: 'Bispo Branco', weight: 25, value: 20 },
+  { id: 'b_bishop', Icon: Square, color: 'text-gray-800', name: 'Bispo Preto', weight: 25, value: 20 },
+  { id: 'w_rook', Icon: Hexagon, color: 'text-white', name: 'Torre Branca', weight: 15, value: 50 },
+  { id: 'b_rook', Icon: Hexagon, color: 'text-gray-800', name: 'Torre Preta', weight: 15, value: 50 },
+  { id: 'w_queen', Icon: Diamond, color: 'text-white', name: 'Rainha Branca', weight: 5, value: 200 },
+  { id: 'b_queen', Icon: Diamond, color: 'text-gray-800', name: 'Rainha Preta', weight: 5, value: 200 },
+  { id: 'w_king', Icon: Star, color: 'text-white', name: 'Rei Branco', weight: 1, value: 1000 },
+  { id: 'b_king', Icon: Star, color: 'text-gray-800', name: 'Rei Preto', weight: 1, value: 1000 },
 ];
 
 type GameMode = 'select' | 'single' | 'multi' | 'guide';
@@ -180,10 +180,10 @@ export default function XadrezSortudo({ onBack }: XadrezSortudoProps) {
           <p className="font-group-b text-slate-300 text-center mb-6">Alinhe 3 peças idênticas na linha central para ganhar moedas! Acumule moedas para trocar por prêmios com seu professor.</p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {PIECES.map(p => (
+                {PIECES.map(p => (
               <div key={p.id} className="flex items-center justify-between bg-black/50 p-4 rounded-xl border border-white/5">
                 <div className="flex items-center gap-4">
-                  <img src={p.img} alt={p.name} className="w-12 h-12 object-contain" />
+                  <p.Icon className={`w-12 h-12 ${p.color}`} />
                   <span className="font-group-b text-white">{p.name}</span>
                 </div>
                 <div className="font-group-a text-yellow-500 text-xl">{p.value}</div>
@@ -202,10 +202,6 @@ export default function XadrezSortudo({ onBack }: XadrezSortudoProps) {
 
       <audio ref={audioRef} src="https://assets.mixkit.co/music/preview/mixkit-chinese-new-year-111.mp3" loop />
       <audio ref={winAudioRef} src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" />
-
-      <button onClick={() => setGameMode('select')} className="absolute top-4 left-4 z-50 bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-2 font-group-b text-white">
-        <ChevronLeft size={18} /> Voltar
-      </button>
 
       <button onClick={toggleMute} className="absolute top-4 right-4 z-50 bg-slate-800/80 backdrop-blur-md p-3 rounded-full border border-slate-700 hover:bg-slate-700 transition-all text-yellow-400">
         {isMuted ? <Zap size={20} className="opacity-50" /> : <Zap size={20} className="animate-pulse" />}
@@ -256,7 +252,7 @@ export default function XadrezSortudo({ onBack }: XadrezSortudoProps) {
                           transition={isSpinning ? { repeat: Infinity, duration: 0.2 } : { repeat: Infinity, duration: 4, ease: "easeInOut" }}
                           className="w-full h-full flex items-center justify-center p-2"
                         >
-                          <img src={piece.img} alt={piece.name} className="w-full h-full object-contain drop-shadow-[0_10px_15px_rgba(0,0,0,0.5)]" />
+                          <piece.Icon className={`w-16 h-16 ${piece.color} drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]`} />
                         </motion.div>
                       </div>
                     ))}

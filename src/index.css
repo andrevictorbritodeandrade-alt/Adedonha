@@ -1,103 +1,67 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Luckiest+Guy&family=Nunito:wght@400;600;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Nunito", "Fredoka", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Luckiest Guy", cursive;
+  --font-sans: "Fredoka", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bangers", cursive;
 }
 
-body {
-  overflow-x: hidden;
-}
-
-@keyframes msn-shake {
-  0% { transform: translate(0, 0); }
-  10% { transform: translate(-10px, -10px); }
-  20% { transform: translate(10px, -10px); }
-  30% { transform: translate(-10px, 10px); }
-  40% { transform: translate(10px, 10px); }
-  50% { transform: translate(-10px, 0); }
-  60% { transform: translate(10px, 0); }
-  70% { transform: translate(0, -10px); }
-  80% { transform: translate(0, 10px); }
-  90% { transform: translate(-5px, -5px); }
-  100% { transform: translate(0, 0); }
-}
-
-.animate-msn-shake {
-  animation: msn-shake 0.1s infinite;
-}
-
-@utility text-shadow-comic {
-  text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-}
-
-@utility text-shadow-comic-lg {
-  text-shadow: 5px 5px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
-}
-
-@utility font-group-a {
-  font-family: var(--font-sans);
-  font-weight: 900;
-  font-style: italic;
-  text-transform: uppercase;
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  background-color: #121212;
   color: white;
-  text-shadow: 4px 4px 0 rgba(0,0,0,0.8);
 }
 
-@utility font-group-b {
-  font-family: var(--font-sans);
-  font-weight: 500;
-  text-transform: none;
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
-.bg-magical {
-  background: linear-gradient(-45deg, #0f172a, #312e81, #4c1d95, #1e1b4b);
-  background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite;
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.pixar-card {
-  background: rgba(255, 255, 255, 0.95);
+.neon-card {
+  background: rgba(30, 30, 30, 0.8);
   backdrop-filter: blur(10px);
-  border-radius: 2rem;
-  border: 6px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 
-    0 20px 40px rgba(0,0,0,0.3),
-    inset 0 8px 0 rgba(255,255,255,1),
-    inset 0 -8px 0 rgba(0,0,0,0.05);
+  border-radius: 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.pixar-card:hover {
-  transform: translateY(-10px) scale(1.02);
-  box-shadow: 
-    0 30px 50px rgba(0,0,0,0.4),
-    inset 0 8px 0 rgba(255,255,255,1),
-    inset 0 -8px 0 rgba(0,0,0,0.05);
-  border-color: #fff;
+.neon-card:hover, .neon-card:focus {
+  transform: scale(1.05);
+  border-color: #8A2BE2;
+  box-shadow: 0 0 20px #8A2BE2, inset 0 0 10px #8A2BE2;
+  outline: none;
 }
 
-.btn-3d {
-  position: relative;
-  border: none;
-  box-shadow: 
-    0 8px 0 rgba(0,0,0,0.2),
-    0 15px 20px rgba(0,0,0,0.3),
-    inset 0 4px 0 rgba(255,255,255,0.4);
-  transition: all 0.1s;
+.neon-card.focused {
+  transform: scale(1.05);
+  border-color: #107C10;
+  box-shadow: 0 0 30px #107C10, inset 0 0 15px #107C10;
+  z-index: 10;
 }
 
-.btn-3d:active {
-  transform: translateY(8px);
-  box-shadow: 
-    0 0 0 rgba(0,0,0,0.2),
-    0 5px 10px rgba(0,0,0,0.3),
-    inset 0 4px 0 rgba(255,255,255,0.4);
+.btn-admin {
+  background-color: #FFC107;
+  color: #121212;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+.btn-admin:hover {
+  background-color: #FFD54F;
+  transform: scale(1.05);
 }

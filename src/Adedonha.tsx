@@ -166,7 +166,8 @@ const RouletteCanvas = ({ onFinished, isSpinning, selectedLetter }: any) => {
         ctx.rotate(startAngle + sliceAngle / 2);
         ctx.textAlign = "right";
         ctx.fillStyle = "#333";
-        ctx.font = "italic 900 24px Montserrat";
+        // FIX: Use the requested font for the roulette
+        ctx.font = 'bold 24px "Bangers", Impact, sans-serif';
         ctx.fillText(letter, radius - 15, 8);
         ctx.restore();
       });
@@ -205,12 +206,12 @@ const RouletteCanvas = ({ onFinished, isSpinning, selectedLetter }: any) => {
   }, [isSpinning]);
 
   return (
-    <div className="relative flex items-center justify-center h-full">
-      <canvas ref={canvasRef} width={420} height={420} className="rounded-full shadow-2xl bg-white p-2" />
+    <div className="relative flex items-center justify-center w-full max-w-[320px] aspect-square mx-auto">
+      <canvas ref={canvasRef} width={420} height={420} className="w-full h-full rounded-full shadow-2xl bg-white p-2" />
       <div className="absolute flex items-center justify-center">
          {selectedLetter && !isSpinning && (
             <motion.div initial={{scale:0}} animate={{scale:1.2}} className="bg-white/95 w-32 h-32 rounded-full flex items-center justify-center shadow-2xl border-8 border-slate-800">
-               <span className="text-8xl font-black text-slate-800 font-mine-large">{selectedLetter}</span>
+               <span className="text-8xl font-display text-slate-800">{selectedLetter}</span>
             </motion.div>
          )}
       </div>
@@ -353,32 +354,15 @@ const AdedonhaGame = ({ onBack }: { onBack: () => void }) => {
     <motion.div 
       animate={isMSNShake ? "shake" : (timer <= 10 && timer > 0 ? "jitter" : {})}
       variants={screenVariants}
-      className="h-screen bg-[#fdf8f4] text-slate-900 p-2 overflow-hidden flex flex-col gap-2 font-general"
+      className="min-h-screen bg-[#121212] text-white p-4 overflow-y-auto overflow-x-hidden flex flex-col gap-6 font-sans relative"
     >
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Lobster&family=Montserrat:ital,wght@1,900&display=swap');
-        .font-creative { font-family: 'Lobster', cursive; text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 2px 2px 0 #000; }
-        .font-general { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; font-size: 14px; }
-        .font-mine-large {
-          font-family: 'Lobster', cursive;
-          color: white;
-          text-shadow: -4px -4px 0 #ef4444, 4px -4px 0 #ef4444, -4px 4px 0 #ef4444, 4px 4px 0 #ef4444, 0px 4px 0 #ef4444, 0px -4px 0 #ef4444, 4px 0px 0 #ef4444, -4px 0px 0 #ef4444, 8px 8px 0 #000;
-        }
-        .font-parou {
-          font-family: 'Lobster', cursive;
-          color: #ef4444;
-          text-shadow: 4px 4px 0 #fff, -4px -4px 0 #fff, 4px -4px 0 #fff, -4px 4px 0 #fff, 8px 8px 0 #000;
-        }
-        .font-digital { font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; color: #ef4444; text-shadow: 0px 0px 10px rgba(239, 68, 68, 0.2); }
-        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-      `}</style>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#121212]/80 to-[#121212] pointer-events-none" />
 
       {/* OVERLAY LETRA GIGANTE */}
       <AnimatePresence>
         {showLargeLetter && (
-          <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 2 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md">
-            <h1 className="text-[35rem] font-mine-large leading-none select-none drop-shadow-2xl">{selectedLetter}</h1>
+          <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 2 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md">
+            <h1 className="text-[20rem] font-display text-yellow-400 leading-none select-none drop-shadow-[0_0_30px_rgba(250,204,21,0.8)]">{selectedLetter}</h1>
           </motion.div>
         )}
       </AnimatePresence>
@@ -386,8 +370,8 @@ const AdedonhaGame = ({ onBack }: { onBack: () => void }) => {
       {/* OVERLAY PAROU! */}
       <AnimatePresence>
         {showParou && (
-          <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1.5 }} exit={{ opacity: 0, scale: 5 }} className="fixed inset-0 z-[60] flex items-center justify-center bg-red-600/10 backdrop-blur-xl">
-             <h1 className="text-[20rem] font-parou select-none">PAROU!</h1>
+          <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1.5 }} exit={{ opacity: 0, scale: 5 }} className="fixed inset-0 z-[60] flex items-center justify-center bg-red-900/50 backdrop-blur-xl">
+             <h1 className="text-[10rem] font-display text-red-500 select-none drop-shadow-[0_0_30px_rgba(239,68,68,0.8)]">PAROU!</h1>
           </motion.div>
         )}
       </AnimatePresence>
@@ -395,97 +379,104 @@ const AdedonhaGame = ({ onBack }: { onBack: () => void }) => {
       {/* MODAL DE CONFIRMAÇÃO DE VOLTAR */}
       <AnimatePresence>
         {showBackModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }} className="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full border-4 border-slate-800">
-              <h2 className="text-2xl font-creative text-slate-800 mb-4 text-center">Sair do Jogo?</h2>
-              <p className="text-slate-600 font-general text-center mb-6">Deseja salvar o progresso da rodada atual e voltar ao menu principal?</p>
-              <div className="flex gap-4 justify-center">
-                <button onClick={cancelBack} className="px-6 py-2 bg-slate-200 text-slate-700 rounded-full font-general hover:bg-slate-300 transition-colors">Cancelar</button>
-                <button onClick={confirmBack} className="px-6 py-2 bg-red-500 text-white rounded-full font-general hover:bg-red-600 transition-colors">Sim, Sair</button>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+            <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }} className="bg-[#1e1e1e] p-8 rounded-3xl shadow-2xl max-w-sm w-full border border-white/10">
+              <h2 className="text-3xl font-display text-yellow-400 mb-4 text-center">Sair do Jogo?</h2>
+              <p className="text-gray-300 font-sans text-center mb-8">Deseja salvar o progresso da rodada atual e voltar ao menu principal?</p>
+              <div className="flex flex-col gap-4 justify-center">
+                <button onClick={confirmBack} className="w-full py-4 bg-red-600 text-white rounded-xl font-bold hover:bg-red-500 transition-colors">SIM, SAIR</button>
+                <button onClick={cancelBack} className="w-full py-4 bg-white/10 text-white rounded-xl font-bold hover:bg-white/20 transition-colors">CANCELAR</button>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <header className="flex justify-between items-center bg-white px-8 py-1 rounded-full shadow-sm border border-slate-100 h-14 flex-shrink-0">
-        <div className="flex items-center gap-4">
-          <button onClick={handleBack} className="text-slate-400 hover:text-slate-600 transition-colors mr-2">
-            <ArrowLeft size={24} />
+      {/* 1. Cabeçalho */}
+      <header className="flex flex-col items-center justify-center relative z-10 pt-4">
+        <button onClick={handleBack} className="absolute left-0 top-4 text-gray-400 hover:text-white transition-colors p-2 bg-white/5 rounded-full">
+          <ArrowLeft size={24} />
+        </button>
+        <h1 className="text-5xl font-display text-white tracking-widest drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] text-center">ADEDONHA INTERATIVA</h1>
+        <div className="flex items-center gap-4 mt-4 bg-white/5 px-6 py-2 rounded-full border border-white/10">
+          <button onClick={() => setIsTimerActive(!isTimerActive)} className="text-green-500 hover:text-green-400 transition-colors">
+            <Play size={24} fill="currentColor" className={isTimerActive ? 'animate-pulse' : ''} />
           </button>
-          <RefreshCw className="text-slate-400" size={24} />
-          <h1 className="text-3xl font-creative text-slate-800 italic" style={{ textShadow: '2px 2px 0 #000', color: 'white' }}>ADEDONHA INTERATIVA</h1>
-        </div>
-        <div className="flex items-center gap-6">
-          <button onClick={() => setIsTimerActive(!isTimerActive)} className="text-emerald-500">
-            <Play size={32} fill="currentColor" className={isTimerActive ? 'animate-pulse' : ''} />
+          <span className="text-4xl font-sans font-bold text-yellow-400 tracking-wider">{formatTime(timer)}</span>
+          <button onClick={resetGame} className="text-red-500 hover:text-red-400 transition-colors ml-2">
+            <RotateCcw size={20} />
           </button>
-          <span className="text-6xl font-digital italic">{formatTime(timer)}</span>
-          <p className="text-[10px] uppercase font-general text-slate-400 w-14 leading-tight">TEMPO DE AULA</p>
         </div>
-        <button onClick={resetGame} className="w-10 h-10 bg-red-100 text-red-500 rounded-full flex items-center justify-center"><RotateCcw size={22} /></button>
       </header>
 
-      <div className="flex-1 flex gap-2 overflow-hidden min-h-0">
-        {/* COLUNA 1: ROLETA */}
-        <aside className="w-[32%] bg-white rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col items-center justify-between p-4 min-h-0 overflow-hidden">
-           <div className="flex-1 w-full flex items-center justify-center scale-90">
-              <RouletteCanvas onFinished={onSpinFinished} isSpinning={isSpinning} selectedLetter={selectedLetter} />
-           </div>
-           <button onClick={handleSpin} disabled={isSpinning} className="w-full h-16 bg-[#1e293b] text-white rounded-[2rem] text-3xl font-general shadow-xl active:scale-95 transition-all uppercase mt-2 border-b-4 border-black">SORTEIO!</button>
-        </aside>
+      {/* 2. Elemento Superior (Roleta e Botão) */}
+      <section className="relative z-10 flex flex-col items-center w-full max-w-md mx-auto">
+        <div className="bg-white/10 backdrop-blur-xl rounded-[3rem] border border-white/20 shadow-[0_0_30px_rgba(138,43,226,0.2)] p-6 w-full flex flex-col items-center">
+          <div className="w-full aspect-square relative mb-6">
+            <RouletteCanvas onFinished={onSpinFinished} isSpinning={isSpinning} selectedLetter={selectedLetter} />
+          </div>
+          <button 
+            onClick={handleSpin} 
+            disabled={isSpinning} 
+            className="w-full py-5 bg-[#107C10] text-white rounded-2xl text-4xl font-display tracking-widest shadow-[0_0_20px_rgba(16,124,16,0.5)] hover:bg-[#128c12] hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
+          >
+            GIRAR
+          </button>
+        </div>
+      </section>
 
-        {/* COLUNA 2: CATEGORIAS */}
-        <section className="w-[24%] bg-[#f8f9ff] rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col p-4 overflow-hidden min-h-0">
-           <div className="flex items-center gap-3 mb-2 border-b border-slate-100 pb-1">
-              <Star className="text-blue-500" fill="currentColor" size={20} />
-              <h2 className="text-2xl font-creative italic text-slate-800">Categories</h2>
-           </div>
-           <div className="flex-1 flex flex-col justify-between py-1">
-              {CATEGORIES.map((cat, i) => (
-                <div key={i} className="flex items-center gap-3 h-8">
-                   <span className="text-xl font-general text-slate-300 w-6 text-center">{i + 1}.</span>
-                   <div className="bg-white p-0.5 rounded-lg shadow-sm border border-slate-50 scale-90 flex-shrink-0"><CartoonIcon type={cat.type} /></div>
-                   <span className="text-slate-800 text-[13px] font-general uppercase truncate tracking-tighter">{cat.name}</span>
-                </div>
-              ))}
-           </div>
-        </section>
+      {/* 3. Elemento Central (Categorias) */}
+      <section className="relative z-10 w-full max-w-md mx-auto flex flex-col gap-4">
+        <h2 className="text-3xl font-display text-yellow-400 tracking-widest text-center drop-shadow-[0_0_10px_rgba(250,204,21,0.3)]">CATEGORIAS</h2>
+        <div className="flex flex-col gap-3">
+          {CATEGORIES.map((cat, i) => (
+            <div key={i} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 flex items-center gap-4 hover:bg-white/10 transition-colors">
+               <div className="w-8 h-8 rounded-full bg-[#8A2BE2] flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-[0_0_10px_rgba(138,43,226,0.5)]">
+                 {i + 1}
+               </div>
+               <div className="bg-white/10 p-2 rounded-xl flex-shrink-0">
+                 <CartoonIcon type={cat.type} />
+               </div>
+               <span className="text-white text-xl font-sans font-bold uppercase tracking-wider">{cat.name}</span>
+            </div>
+          ))}
+        </div>
+      </section>
 
-        {/* COLUNA 3: RANKING DINÂMICO */}
-        <aside className="flex-1 bg-[#fffbf8] rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col overflow-hidden min-h-0">
-           <div className="p-2 bg-white/50 flex items-center justify-center gap-3 border-b border-slate-100">
-              <Trophy className="text-yellow-500" size={24} />
-              <h2 className="text-3xl font-creative italic text-slate-800">Ranking Dinâmico</h2>
-           </div>
-           <div className="flex-1 flex gap-3 p-3 overflow-hidden">
-              <div className="flex-1 flex flex-col gap-0.5 justify-between">
-                {rankingCol1.map((player: any, idx: number) => (
-                  <motion.div key={player.id} layout className="flex items-center gap-2 h-[22px]">
-                    <div className={`w-6 h-6 rounded flex items-center justify-center text-[10px] font-general flex-shrink-0 ${idx < 3 ? 'bg-orange-400 text-white' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}>{idx + 1}</div>
-                    <div className="flex-1"><input type="text" placeholder="NOME____" value={player.name} onChange={(e) => updateRankingName(player.id, e.target.value)} className="w-full bg-transparent border-b border-slate-200 focus:border-blue-400 outline-none text-[11px] font-general uppercase text-slate-600"/></div>
-                    <input type="number" placeholder="0" value={player.score === 0 ? '' : player.score} onChange={(e) => updateRankingScore(player.id, e.target.value)} className="w-9 bg-slate-100 rounded text-center text-slate-800 outline-none py-0.5 text-[11px] font-black shadow-inner"/>
-                  </motion.div>
-                ))}
+      {/* 4. Elemento Inferior (Ranking Dinâmico) */}
+      <section className="relative z-10 w-full max-w-md mx-auto flex flex-col gap-4 pb-12">
+        <h2 className="text-3xl font-display text-yellow-400 tracking-widest text-center drop-shadow-[0_0_10px_rgba(250,204,21,0.3)]">RANKING DINÂMICO</h2>
+        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-4 flex flex-col gap-2">
+          <div className="flex text-xs text-gray-400 font-bold uppercase tracking-wider px-2 pb-2 border-b border-white/10">
+            <div className="w-12 text-center">Pos</div>
+            <div className="flex-1">Nome</div>
+            <div className="w-16 text-center">Pts</div>
+          </div>
+          {ranking.slice(0, 10).map((player: any, idx: number) => (
+            <motion.div key={player.id} layout className="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-colors">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-lg ${idx < 3 ? 'bg-[#f97316] text-white shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-white/10 text-gray-300'}`}>
+                {idx + 1}
               </div>
-              <div className="w-px bg-slate-200 h-full opacity-30" />
-              <div className="flex-1 flex flex-col gap-0.5 justify-between">
-                {rankingCol2.map((player: any, idx: number) => (
-                  <motion.div key={player.id} layout className="flex items-center gap-2 h-[22px]">
-                    <div className="w-6 h-6 rounded bg-slate-50 text-slate-400 border border-slate-100 flex items-center justify-center text-[10px] font-general flex-shrink-0">{idx + 18}</div>
-                    <div className="flex-1"><input type="text" placeholder="NOME____" value={player.name} onChange={(e) => updateRankingName(player.id, e.target.value)} className="w-full bg-transparent border-b border-slate-200 focus:border-blue-400 outline-none text-[11px] font-general uppercase text-slate-600"/></div>
-                    <input type="number" placeholder="0" value={player.score === 0 ? '' : player.score} onChange={(e) => updateRankingScore(player.id, e.target.value)} className="w-9 bg-slate-100 rounded text-center text-slate-800 outline-none py-0.5 text-[11px] font-black shadow-inner"/>
-                  </motion.div>
-                ))}
+              <div className="flex-1">
+                <input 
+                  type="text" 
+                  placeholder="NOME" 
+                  value={player.name} 
+                  onChange={(e) => updateRankingName(player.id, e.target.value)} 
+                  className="w-full bg-transparent border-b border-white/10 focus:border-[#8A2BE2] outline-none text-lg font-sans font-bold uppercase text-white placeholder-gray-600 transition-colors"
+                />
               </div>
-           </div>
-        </aside>
-      </div>
-
-      <footer className="h-4 flex justify-between items-center text-[9px] text-slate-400 px-10 uppercase font-general opacity-60 flex-shrink-0">
-         <div className="flex gap-6"><span>ADEDONHA INTERATIVA | ESCOLA</span><span className="text-blue-500">LETRAS: {letterHistory.join(' - ')}</span></div>
-         <div className="flex gap-6"><span>RODADA: {letterHistory.length}</span><span>ALUNOS: 34</span></div>
-      </footer>
+              <input 
+                type="number" 
+                placeholder="0" 
+                value={player.score === 0 ? '' : player.score} 
+                onChange={(e) => updateRankingScore(player.id, e.target.value)} 
+                className="w-16 bg-black/30 rounded-lg text-center text-yellow-400 outline-none py-2 text-lg font-bold border border-white/5 focus:border-[#107C10] transition-colors"
+              />
+            </motion.div>
+          ))}
+        </div>
+      </section>
     </motion.div>
   );
 };
