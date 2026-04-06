@@ -28,21 +28,21 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { UserProfile } from './components/UserProfile';
 
 const JOGOS = [
-  { id: 'adedonha', nome: 'ADEDONHA INTERATIVA', category: 'Palavras & Raciocínio', emoji: '✋' },
-  { id: 'perguntados', nome: 'PERGUNTADOS', category: 'Quiz & Conhecimento', emoji: '🧠' },
-  { id: 'forca', nome: 'JOGO DA FORCA', category: 'Palavras & Clássico', emoji: '💀' },
-  { id: 'velha', nome: 'JOGO DA VELHA', category: 'Estratégia Rápida', emoji: '❌' },
-  { id: 'memoria', nome: 'JOGO DO MEMÓRIA', category: 'Foco & Concentração', emoji: '🧩' },
-  { id: 'bandeiras', nome: 'JOGO DAS BANDEIRAS', category: 'Geografia & Mundo', emoji: '🌎' },
-  { id: 'mapas', nome: 'JOGO DOS MAPAS', category: 'Geografia & Localização', emoji: '🗺️' },
-  { id: 'ludo', nome: 'LUDO', category: 'Tabuleiro Clássico', emoji: '🎲' },
-  { id: 'uno', nome: 'UNO', category: 'Cartas & Diversão', emoji: '🃏' },
-  { id: 'truco', nome: 'TRUCO', category: 'Cartas & Blefe', emoji: '♣️' },
-  { id: 'xadrez', nome: 'XADREZ SORTUDO', category: 'Estratégia & Sorte', emoji: '♟️' },
-  { id: 'balaozinho', nome: 'JOGO DO BALÃOZINHO', category: 'Ação Rápida', emoji: '🎈' },
-  { id: 'vermelhinho', nome: 'ONDE ESTÁ O VERMELHINHO?', category: 'Atenção Visual', emoji: '🔍' },
-  { id: 'tatuzin', nome: 'TATUZIN', category: 'Aventura Plataforma', emoji: '🦔' },
-  { id: 'cruzaletras', nome: 'CRUZALETRAS', category: 'Palavras Cruzadas', emoji: '📝' },
+  { id: 'adedonha', nome: 'ADEDONHA INTERATIVA', category: 'Mickey Mouse', image: 'https://picsum.photos/seed/mickey-mouse/600/600' },
+  { id: 'perguntados', nome: 'PERGUNTADOS', category: 'Gênio (Aladdin)', image: 'https://picsum.photos/seed/disney-genie/600/600' },
+  { id: 'forca', nome: 'JOGO DA FORCA', category: 'Capitão Gancho', image: 'https://picsum.photos/seed/captain-hook/600/600' },
+  { id: 'velha', nome: 'JOGO DA VELHA', category: 'Olaf (Frozen)', image: 'https://picsum.photos/seed/olaf-disney/600/600' },
+  { id: 'memoria', nome: 'JOGO DO MEMÓRIA', category: 'Dory (Nemo)', image: 'https://picsum.photos/seed/dory-fish/600/600' },
+  { id: 'bandeiras', nome: 'JOGO DAS BANDEIRAS', category: 'Castelo Disney', image: 'https://picsum.photos/seed/disney-castle/600/600' },
+  { id: 'mapas', nome: 'JOGO DOS MAPAS', category: 'Woody (Toy Story)', image: 'https://picsum.photos/seed/woody-toy-story/600/600' },
+  { id: 'ludo', nome: 'LUDO', category: 'Sininho', image: 'https://picsum.photos/seed/tinkerbell/600/600' },
+  { id: 'uno', nome: 'UNO', category: 'Elsa (Frozen)', image: 'https://picsum.photos/seed/elsa-frozen/600/600' },
+  { id: 'truco', nome: 'TRUCO', category: 'Scar (Rei Leão)', image: 'https://picsum.photos/seed/scar-lion-king/600/600' },
+  { id: 'xadrez', nome: 'XADREZ SORTUDO', category: 'Malévola', image: 'https://picsum.photos/seed/maleficent/600/600' },
+  { id: 'balaozinho', nome: 'JOGO DO BALÃOZINHO', category: 'Carl (Up)', image: 'https://picsum.photos/seed/up-movie/600/600' },
+  { id: 'vermelhinho', nome: 'ONDE ESTÁ O VERMELHINHO?', category: 'Mickey Detetive', image: 'https://picsum.photos/seed/detective-mickey/600/600' },
+  { id: 'tatuzin', nome: 'TATUZIN', category: 'Pumba (Rei Leão)', image: 'https://picsum.photos/seed/pumbaa/600/600' },
+  { id: 'cruzaletras', nome: 'CRUZALETRAS', category: 'Bela', image: 'https://picsum.photos/seed/belle-disney/600/600' },
 ];
 
 export default function App() {
@@ -216,7 +216,7 @@ export default function App() {
         {/* Xbox 360 Style Tile Grid */}
         <div className="flex-1 overflow-y-auto hide-scrollbar pb-20">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4 max-w-[1600px] mx-auto">
-            {JOGOS.map(({ id, nome, category, emoji }, index) => {
+            {JOGOS.map(({ id, nome, category, image }, index) => {
               // Metro UI style sizing logic
               const isLarge = index === 0 || index === 7;
               const isWide = index === 3 || index === 10 || index === 13;
@@ -230,15 +230,24 @@ export default function App() {
                   key={id} 
                   onClick={() => navigateToGame(id)}
                   className={`relative overflow-hidden group ${spanClass} rounded-sm shadow-lg transition-all duration-300 hover:scale-[1.02] hover:z-10 focus:outline-none focus:ring-4 focus:ring-white border border-white/10`}
-                  style={{ backgroundColor: getTileColor(index) }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="absolute top-4 left-4">
-                    <span className={`transition-transform duration-300 group-hover:scale-110 drop-shadow-md ${isLarge ? 'text-5xl md:text-6xl' : 'text-3xl md:text-4xl'}`}>{emoji}</span>
-                  </div>
-                  <div className="absolute bottom-4 left-4 right-4 text-left">
-                    <h2 className={`font-display text-white tracking-wide leading-tight drop-shadow-md group-hover:translate-x-1 transition-transform ${isLarge ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>{nome}</h2>
-                    <p className="text-white/80 text-xs font-medium mt-1 truncate">{category}</p>
+                  {/* Full Card Avatar Image */}
+                  <img 
+                    src={image} 
+                    alt={category} 
+                    referrerPolicy="no-referrer"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  
+                  {/* Gradient Overlay for Text Readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                  {/* Hover Highlight */}
+                  <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                  <div className="absolute bottom-4 left-4 right-4 text-left z-10">
+                    <h2 className={`font-display text-white tracking-wide leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] group-hover:translate-x-1 transition-transform ${isLarge ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>{nome}</h2>
+                    <p className="text-white/90 text-xs font-bold mt-1 truncate uppercase tracking-wider drop-shadow-md">{category}</p>
                   </div>
                 </button>
               );
