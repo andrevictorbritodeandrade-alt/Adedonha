@@ -28,21 +28,21 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { UserProfile } from './components/UserProfile';
 
 const JOGOS = [
-  { id: 'adedonha', nome: 'ADEDONHA INTERATIVA', category: 'Palavras & Raciocínio', Icon: Hand, color: 'text-purple-500' },
-  { id: 'perguntados', nome: 'PERGUNTADOS', category: 'Quiz & Conhecimento', Icon: MessageSquareText, color: 'text-blue-500' },
-  { id: 'forca', nome: 'JOGO DA FORCA', category: 'Palavras & Clássico', Icon: Skull, color: 'text-red-600' },
-  { id: 'velha', nome: 'JOGO DA VELHA', category: 'Estratégia Rápida', Icon: Hash, color: 'text-yellow-500' },
-  { id: 'memoria', nome: 'JOGO DO MEMÓRIA', category: 'Foco & Concentração', Icon: Brain, color: 'text-pink-500' },
-  { id: 'bandeiras', nome: 'JOGO DAS BANDEIRAS', category: 'Geografia & Mundo', Icon: Flag, color: 'text-green-500' },
-  { id: 'mapas', nome: 'JOGO DOS MAPAS', category: 'Geografia & Localização', Icon: Map, color: 'text-emerald-600' },
-  { id: 'ludo', nome: 'LUDO', category: 'Tabuleiro Clássico', Icon: Gamepad2, color: 'text-green-600' },
-  { id: 'uno', nome: 'UNO', category: 'Cartas & Diversão', Icon: LayoutGrid, color: 'text-orange-500' },
-  { id: 'truco', nome: 'TRUCO', category: 'Cartas & Blefe', Icon: Target, color: 'text-orange-600' },
-  { id: 'xadrez', nome: 'XADREZ SORTUDO', category: 'Estratégia & Sorte', Icon: Crown, color: 'text-yellow-600' },
-  { id: 'balaozinho', nome: 'JOGO DO BALÃOZINHO', category: 'Ação Rápida', Icon: AirVent, color: 'text-sky-400' },
-  { id: 'vermelhinho', nome: 'ONDE ESTÁ O VERMELHINHO?', category: 'Atenção Visual', Icon: Search, color: 'text-red-500' },
-  { id: 'tatuzin', nome: 'TATUZIN', category: 'Aventura Plataforma', Icon: Bug, color: 'text-amber-700' },
-  { id: 'cruzaletras', nome: 'CRUZALETRAS', category: 'Palavras Cruzadas', Icon: Crosshair, color: 'text-indigo-600' },
+  { id: 'adedonha', nome: 'ADEDONHA INTERATIVA', category: 'Palavras & Raciocínio', emoji: '✋' },
+  { id: 'perguntados', nome: 'PERGUNTADOS', category: 'Quiz & Conhecimento', emoji: '🧠' },
+  { id: 'forca', nome: 'JOGO DA FORCA', category: 'Palavras & Clássico', emoji: '💀' },
+  { id: 'velha', nome: 'JOGO DA VELHA', category: 'Estratégia Rápida', emoji: '❌' },
+  { id: 'memoria', nome: 'JOGO DO MEMÓRIA', category: 'Foco & Concentração', emoji: '🧩' },
+  { id: 'bandeiras', nome: 'JOGO DAS BANDEIRAS', category: 'Geografia & Mundo', emoji: '🌎' },
+  { id: 'mapas', nome: 'JOGO DOS MAPAS', category: 'Geografia & Localização', emoji: '🗺️' },
+  { id: 'ludo', nome: 'LUDO', category: 'Tabuleiro Clássico', emoji: '🎲' },
+  { id: 'uno', nome: 'UNO', category: 'Cartas & Diversão', emoji: '🃏' },
+  { id: 'truco', nome: 'TRUCO', category: 'Cartas & Blefe', emoji: '♣️' },
+  { id: 'xadrez', nome: 'XADREZ SORTUDO', category: 'Estratégia & Sorte', emoji: '♟️' },
+  { id: 'balaozinho', nome: 'JOGO DO BALÃOZINHO', category: 'Ação Rápida', emoji: '🎈' },
+  { id: 'vermelhinho', nome: 'ONDE ESTÁ O VERMELHINHO?', category: 'Atenção Visual', emoji: '🔍' },
+  { id: 'tatuzin', nome: 'TATUZIN', category: 'Aventura Plataforma', emoji: '🦔' },
+  { id: 'cruzaletras', nome: 'CRUZALETRAS', category: 'Palavras Cruzadas', emoji: '📝' },
 ];
 
 export default function App() {
@@ -147,58 +147,98 @@ export default function App() {
     return <ScreenComponent onBack={() => setCurrentScreen('menu')} />;
   };
 
+  const getTileColor = (index: number) => {
+    const colors = [
+      '#107C10', // Xbox Green
+      '#0078D7', // Windows Blue
+      '#D83B01', // Orange
+      '#E81123', // Red
+      '#68217A', // Purple
+      '#00B294', // Teal
+      '#E3008C', // Magenta
+      '#00CC6A', // Light Green
+      '#5C2D91', // Deep Purple
+      '#00188F', // Deep Blue
+      '#A80000', // Dark Red
+      '#008272', // Dark Teal
+    ];
+    return colors[index % colors.length];
+  };
+
   if (currentScreen !== 'menu') {
     return renderScreen();
   }
 
   return (
-    <div className="min-h-screen bg-[#121212] font-sans text-white overflow-y-auto overflow-x-hidden relative flex flex-col">
-      {backgroundImage && (
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-20 transition-opacity duration-1000"
-          style={{ backgroundImage: `url(${backgroundImage})` }}
-        />
-      )}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#121212]/80 to-[#121212]" />
+    <div className="min-h-screen font-sans text-white overflow-y-auto overflow-x-hidden relative flex flex-col bg-[#1a1a1a]">
+      {/* Xbox 360 Style Background Waves */}
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[120%] h-[120%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#107C10]/30 via-[#1a1a1a]/80 to-[#1a1a1a] transform -rotate-12 blur-3xl"></div>
+        <div className="absolute bottom-[-20%] right-[-10%] w-[80%] h-[80%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#107C10]/20 via-transparent to-transparent transform rotate-12 blur-3xl"></div>
+        <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500/10 via-transparent to-transparent blur-3xl"></div>
+        {/* Animated scanlines effect */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSJ0cmFuc3BhcmVudCI+PC9yZWN0Pgo8cGF0aCBkPSJNIDAgMCBMIDQgMCIgc3Ryb2tlPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuMDUpIiBzdHJva2Utd2lkdGg9IjEiPjwvcGF0aD4KPC9zdmc+')] opacity-50 pointer-events-none mix-blend-overlay"></div>
+      </div>
 
-      <div className="flex flex-col min-h-screen relative z-10 p-8">
+      <div className="flex flex-col min-h-screen relative z-10 p-6 md:p-12">
         {/* Header/Nav area */}
-        <div className="flex justify-between items-center mb-12">
-          <h1 className="font-display text-5xl text-yellow-400 tracking-widest drop-shadow-[0_0_10px_rgba(250,204,21,0.5)]">ARENA DE JOGOS</h1>
-          <div className="flex items-center gap-4">
+        <div className="flex justify-between items-start mb-12">
+          <div>
+            <h1 className="font-display text-5xl md:text-7xl text-white tracking-widest drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] mb-2">ARENA DE JOGOS</h1>
+            <div className="flex gap-6 text-lg font-bold text-gray-400 uppercase tracking-wider">
+              <span className="text-white border-b-4 border-[#107C10] pb-1">Jogos</span>
+              <span className="hover:text-white cursor-pointer transition-colors">Aplicativos</span>
+              <span className="hover:text-white cursor-pointer transition-colors">Configurações</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 bg-black/30 backdrop-blur-md p-2 pr-6 rounded-full border border-white/10 shadow-lg">
             {user.photoURL ? (
-              <img src={user.photoURL} alt="Avatar" onClick={() => setShowProfile(true)} className="w-12 h-12 rounded-full border-2 border-white cursor-pointer hover:scale-110 transition-transform" />
+              <img src={user.photoURL} alt="Avatar" onClick={() => setShowProfile(true)} className="w-12 h-12 rounded-full border-2 border-[#107C10] cursor-pointer hover:scale-105 transition-transform" />
             ) : (
-              <UserIcon onClick={() => setShowProfile(true)} className="w-12 h-12 p-2 rounded-full bg-white/10 cursor-pointer hover:bg-white/20 transition-colors" />
+              <div onClick={() => setShowProfile(true)} className="w-12 h-12 rounded-full bg-[#107C10] flex items-center justify-center cursor-pointer hover:scale-105 transition-transform border-2 border-white/20">
+                <UserIcon className="w-6 h-6 text-white" />
+              </div>
             )}
+            <div className="flex flex-col">
+              <span className="font-bold text-sm leading-tight">{user.displayName || 'Visitante'}</span>
+              <span className="text-xs text-[#107C10] font-bold flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-[#107C10] animate-pulse"></div> Online
+              </span>
+            </div>
             {user.email === 'admin@admin.com' && (
-              <button className="btn-admin px-4 py-2 rounded-lg text-sm">Dashboard Admin</button>
+              <button className="ml-4 bg-[#FFC107] text-black px-3 py-1 rounded-md text-xs font-bold hover:bg-[#FFD54F] transition-colors">Admin</button>
             )}
           </div>
         </div>
 
         {showProfile && <UserProfile user={user} onClose={() => setShowProfile(false)} />}
 
-        {/* Vertical Game List */}
-        <div className="flex-1 -mx-4 px-4 overflow-y-auto hide-scrollbar">
-          <div className="flex flex-col gap-6 pb-[120px]">
-            {JOGOS.map(({ id, nome, category, Icon, color }, index) => {
-              const isFocused = index === 2; // Mocking focus for demonstration
-              const neonClass = isFocused ? 'neon-border-green focused' : 'neon-border-purple';
+        {/* Xbox 360 Style Tile Grid */}
+        <div className="flex-1 overflow-y-auto hide-scrollbar pb-20">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4 max-w-[1600px] mx-auto">
+            {JOGOS.map(({ id, nome, category, emoji }, index) => {
+              // Metro UI style sizing logic
+              const isLarge = index === 0 || index === 7;
+              const isWide = index === 3 || index === 10 || index === 13;
+              
+              let spanClass = "col-span-1 row-span-1 aspect-square";
+              if (isLarge) spanClass = "col-span-2 row-span-2 aspect-square md:aspect-auto";
+              if (isWide) spanClass = "col-span-2 row-span-1 aspect-[2/1]";
+
               return (
                 <button 
                   key={id} 
                   onClick={() => navigateToGame(id)}
-                  className={`neon-card w-full max-w-[400px] mx-auto h-64 flex flex-col items-center justify-between p-6 group ${neonClass}`}
+                  className={`relative overflow-hidden group ${spanClass} rounded-sm shadow-lg transition-all duration-300 hover:scale-[1.02] hover:z-10 focus:outline-none focus:ring-4 focus:ring-white border border-white/10`}
+                  style={{ backgroundColor: getTileColor(index) }}
                 >
-                  <div className="flex-1 flex items-center justify-center w-full">
-                    <div className={`w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center ${color} group-hover:scale-110 transition-transform duration-300`}>
-                      <Icon className="w-16 h-16" />
-                    </div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute top-4 left-4">
+                    <span className={`transition-transform duration-300 group-hover:scale-110 drop-shadow-md ${isLarge ? 'text-5xl md:text-6xl' : 'text-3xl md:text-4xl'}`}>{emoji}</span>
                   </div>
-                  <div className="w-full text-center mt-4">
-                    <h2 className="font-display text-2xl text-yellow-400 tracking-wide mb-1 leading-tight">{nome}</h2>
-                    <p className="text-gray-300 text-sm font-medium">{category}</p>
+                  <div className="absolute bottom-4 left-4 right-4 text-left">
+                    <h2 className={`font-display text-white tracking-wide leading-tight drop-shadow-md group-hover:translate-x-1 transition-transform ${isLarge ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>{nome}</h2>
+                    <p className="text-white/80 text-xs font-medium mt-1 truncate">{category}</p>
                   </div>
                 </button>
               );
@@ -208,38 +248,40 @@ export default function App() {
             {deferredPrompt && (
               <button 
                 onClick={handleInstall}
-                className="neon-card w-full max-w-[400px] mx-auto h-64 flex flex-col items-center justify-between p-6 group neon-border-green"
+                className="relative overflow-hidden group col-span-2 row-span-1 aspect-[2/1] rounded-sm shadow-lg transition-all duration-300 hover:scale-[1.02] hover:z-10 focus:outline-none focus:ring-4 focus:ring-white border border-white/10"
+                style={{ backgroundColor: '#008272' }}
               >
-                <div className="flex-1 flex items-center justify-center w-full">
-                  <div className="w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform duration-300">
-                    <Download className="w-16 h-16" />
-                  </div>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute top-4 left-4">
+                  <Download className="w-8 h-8 text-white/90 transition-transform duration-300 group-hover:scale-110" />
                 </div>
-                <div className="w-full text-center mt-4">
-                  <h2 className="font-display text-2xl text-yellow-400 tracking-wide mb-1 leading-tight">BAIXAR APP</h2>
-                  <p className="text-gray-300 text-sm font-medium">Instale no seu celular</p>
+                <div className="absolute bottom-4 left-4 right-4 text-left">
+                  <h2 className="font-display text-2xl text-white tracking-wide leading-tight drop-shadow-md group-hover:translate-x-1 transition-transform">BAIXAR APP</h2>
+                  <p className="text-white/80 text-xs font-medium mt-1 truncate">Instale no seu dispositivo</p>
                 </div>
               </button>
             )}
 
             {/* CARD QR CODE */}
-            <div className="neon-card w-full max-w-[400px] mx-auto h-80 flex flex-col items-center justify-between p-6 neon-border-purple">
-              <div className="flex-1 flex items-center justify-center w-full bg-white p-4 rounded-2xl">
-                <QRCodeSVG value="https://saladejogos.vercel.app" size={180} />
+            <div className="relative overflow-hidden col-span-2 row-span-2 aspect-square md:aspect-auto rounded-sm shadow-lg border border-white/10 bg-[#1a1a1a] flex flex-col items-center justify-center p-6">
+              <div className="bg-white p-4 rounded-xl shadow-inner mb-4">
+                <QRCodeSVG value="https://saladejogos.vercel.app" size={160} />
               </div>
-              <div className="w-full text-center mt-4">
-                <h2 className="font-display text-2xl text-yellow-400 tracking-wide mb-1 leading-tight">COMPARTILHAR</h2>
-                <p className="text-gray-300 text-sm font-medium">saladejogos.vercel.app</p>
-              </div>
+              <h2 className="font-display text-2xl text-white tracking-wide leading-tight drop-shadow-md">COMPARTILHAR</h2>
+              <p className="text-gray-400 text-xs font-medium mt-1">saladejogos.vercel.app</p>
             </div>
           </div>
         </div>
 
         {/* Footer Area */}
-        <div className="mt-auto pt-6 flex flex-col items-center gap-2 border-t border-white/10 text-center">
-          <p className="text-sm text-gray-300 font-medium">Desenvolvido por André Victor Brito de Andrade</p>
-          <p className="text-xs text-gray-500">Contato: {user.email}</p>
-          <p className="text-xs text-gray-600">Versão 1.0.0</p>
+        <div className="absolute bottom-6 left-12 right-12 flex justify-between items-end pointer-events-none">
+          <div className="text-left pointer-events-auto">
+            <p className="text-sm text-gray-400 font-medium">Desenvolvido por André Victor Brito de Andrade</p>
+            <p className="text-xs text-gray-500">Contato: {user.email}</p>
+          </div>
+          <div className="text-right pointer-events-auto">
+            <p className="text-xs text-gray-500 font-bold">V 1.0.0</p>
+          </div>
         </div>
       </div>
     </div>

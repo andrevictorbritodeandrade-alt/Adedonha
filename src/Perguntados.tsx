@@ -3,16 +3,16 @@ import { PERGUNTAS } from './perguntas';
 import { ArrowLeft } from 'lucide-react';
 
 const CATEGORIAS = [
-  { id: 1, name: "Português", icon: "📚", color: "#1982C4" },
-  { id: 2, name: "Matemática", icon: "🔢", color: "#FF595E" },
-  { id: 3, name: "Geografia", icon: "🌍", color: "#8AC926" },
-  { id: 4, name: "História", icon: "🏛️", color: "#FFCA3A" },
-  { id: 5, name: "Ciências", icon: "🔬", color: "#2A9D8F" },
-  { id: 6, name: "Entretenimento", icon: "🍿", color: "#FF99C8" },
-  { id: 7, name: "Educação Física", icon: "⚽", color: "#F4A261" },
-  { id: 8, name: "Artes", icon: "🎨", color: "#6A4C93" },
-  { id: 9, name: "Inglês", icon: "🇺🇸", color: "#264653" },
-  { id: 10, name: "Francês", icon: "🇫🇷", color: "#E76F51" },
+  { id: 1, name: "Português", icon: "🧙‍♂️", color: "#FF3366" }, // Pink/Red
+  { id: 2, name: "Matemática", icon: "👽", color: "#33CCFF" }, // Light Blue
+  { id: 3, name: "Geografia", icon: "🌋", color: "#33FF66" }, // Neon Green
+  { id: 4, name: "História", icon: "👑", color: "#FFCC00" }, // Gold/Yellow
+  { id: 5, name: "Ciências", icon: "🧪", color: "#9933FF" }, // Purple
+  { id: 6, name: "Entretenimento", icon: "🎪", color: "#FF66CC" }, // Hot Pink
+  { id: 7, name: "Educação Física", icon: "🥋", color: "#FF6600" }, // Orange
+  { id: 8, name: "Artes", icon: "🎨", color: "#00CC99" }, // Teal
+  { id: 9, name: "Inglês", icon: "🗽", color: "#0066FF" }, // Blue
+  { id: 10, name: "Francês", icon: "🥐", color: "#FF3333" }, // Red
 ];
 
 const TEMPO_INICIAL = 30; // 30 segundos para responder
@@ -303,30 +303,47 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
       <div className="max-w-[1400px] w-full mx-auto flex flex-col lg:flex-row gap-6 justify-center">
         
         {/* Painel Esquerdo (Roleta/Pergunta e Timer) */}
-        <div className="w-full lg:w-2/3 bg-white p-6 rounded-xl shadow-md border border-slate-200 flex flex-col">
+        <div className="w-full lg:w-2/3 bg-[#1a1a2e] p-6 rounded-3xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-white/10 flex flex-col relative overflow-hidden">
           
-          <div className="bg-orange-50 p-6 rounded-lg flex flex-col items-center justify-center mb-6 border border-orange-100 min-h-[500px]">
+          <div className="bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 p-6 rounded-2xl flex flex-col items-center justify-center mb-6 border-4 border-indigo-500/30 min-h-[500px] shadow-inner relative overflow-hidden">
+            {/* Background decoration */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent opacity-50"></div>
             
             {!perguntaAtual ? (
               <>
                 {/* Roleta */}
-                <div className="relative w-80 h-80 sm:w-96 sm:h-96 md:w-[500px] md:h-[500px] lg:w-[600px] lg:h-[600px] mb-8 mt-4">
+                <div className="relative w-80 h-80 sm:w-96 sm:h-96 md:w-[500px] md:h-[500px] lg:w-[600px] lg:h-[600px] mb-8 mt-4 z-10">
                   {/* Pointer */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 w-0 h-0 border-l-[20px] border-r-[20px] border-t-[40px] border-l-transparent border-r-transparent border-t-red-600 z-20 drop-shadow-md"></div>
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-6 w-0 h-0 border-l-[25px] border-r-[25px] border-t-[50px] border-l-transparent border-r-transparent border-t-yellow-400 z-30 drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]" style={{ filter: 'drop-shadow(0 0 10px rgba(250,204,21,0.8))' }}></div>
                   
                   {/* Wheel */}
                   <div 
-                    className="w-full h-full rounded-full border-8 border-white relative overflow-hidden shadow-xl"
+                    className="w-full h-full rounded-full border-[12px] border-slate-800 relative overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.8)]"
                     style={{
                       background: `conic-gradient(from -${360 / CATEGORIAS.length / 2}deg, ${CATEGORIAS.map((cat, i) => `${cat.color} ${i * (360/CATEGORIAS.length)}deg ${(i+1) * (360/CATEGORIAS.length)}deg`).join(', ')})`,
                       transform: `rotate(${rotation}deg)`,
                       transition: 'transform 3s cubic-bezier(0.25, 1, 0.5, 1)'
                     }}
                   >
+                    {/* Inner shadow overlay */}
+                    <div className="absolute inset-0 rounded-full shadow-[inset_0_0_50px_rgba(0,0,0,0.6)] pointer-events-none z-20"></div>
+                    
+                    {/* Segment separators */}
+                    {CATEGORIAS.map((_, i) => (
+                      <div 
+                        key={`sep-${i}`}
+                        className="absolute top-0 left-1/2 origin-bottom w-1.5 bg-slate-900/40 z-10"
+                        style={{
+                          height: '50%',
+                          transform: `translateX(-50%) rotate(${(i + 0.5) * (360/CATEGORIAS.length)}deg)`,
+                        }}
+                      />
+                    ))}
+
                     {CATEGORIAS.map((cat, i) => (
                       <div 
                         key={cat.id}
-                        className="absolute top-0 left-1/2 origin-bottom flex items-start justify-center pt-6 sm:pt-10 md:pt-12"
+                        className="absolute top-0 left-1/2 origin-bottom flex items-start justify-center pt-2 sm:pt-3 md:pt-4 z-10"
                         style={{
                           height: '50%',
                           transform: `translateX(-50%) rotate(${i * (360/CATEGORIAS.length)}deg)`,
@@ -334,54 +351,54 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
                         }}
                       >
                         <div className="flex flex-col items-center">
-                          <span className="text-3xl sm:text-4xl md:text-5xl drop-shadow-md mb-1">{cat.icon}</span>
-                          <span className="block text-center font-black text-white drop-shadow-md text-[10px] sm:text-xs md:text-sm leading-tight uppercase px-1" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.9)' }}>
+                          <span className="block text-center font-black text-white drop-shadow-lg text-[10px] sm:text-xs md:text-sm leading-tight uppercase px-1 mb-1 sm:mb-2" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9), -1px -1px 0 rgba(0,0,0,0.5)' }}>
                             {cat.name}
                           </span>
+                          <span className="text-4xl sm:text-5xl md:text-6xl drop-shadow-xl" style={{ filter: 'drop-shadow(0px 5px 5px rgba(0,0,0,0.6))' }}>{cat.icon}</span>
                         </div>
                       </div>
                     ))}
                   </div>
                   
                   {/* Center dot */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-orange-600 rounded-full z-10 shadow-lg border-4 border-white flex items-center justify-center">
-                    <span className="text-white font-black text-2xl sm:text-3xl md:text-4xl">?</span>
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gradient-to-br from-yellow-300 to-yellow-600 rounded-full z-30 shadow-[0_0_20px_rgba(0,0,0,0.5)] border-4 border-white flex items-center justify-center">
+                    <span className="text-slate-900 font-black text-3xl sm:text-4xl md:text-5xl drop-shadow-sm">?</span>
                   </div>
                 </div>
 
                 <button
                   onClick={sortearCategoria}
-                  className="w-full max-w-sm bg-gradient-to-r from-orange-500 to-red-500 text-white font-black text-2xl py-4 px-8 rounded-full shadow-lg hover:shadow-xl active:scale-95 transition-all"
+                  className="w-full max-w-sm bg-gradient-to-r from-yellow-400 to-orange-500 text-slate-900 font-black text-2xl py-4 px-8 rounded-full shadow-[0_0_20px_rgba(250,204,21,0.4)] hover:shadow-[0_0_30px_rgba(250,204,21,0.6)] hover:scale-105 active:scale-95 transition-all z-10 border-2 border-yellow-200"
                 >
                   {isSpinning ? 'GIRANDO...' : 'GIRAR ROLETA!'}
                 </button>
               </>
             ) : (
-              <div className="w-full flex flex-col items-center animate-in fade-in zoom-in duration-300">
-                <div className="flex items-center gap-3 mb-6 bg-white px-6 py-2 rounded-full shadow-sm border border-slate-200">
-                  <span className="text-3xl">{categoriaSorteada.icon}</span>
-                  <span className="text-2xl font-black uppercase" style={{ color: categoriaSorteada.color }}>
+              <div className="w-full flex flex-col items-center animate-in fade-in zoom-in duration-300 z-10">
+                <div className="flex items-center gap-3 mb-6 bg-slate-900/80 backdrop-blur-sm px-8 py-3 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-white/10">
+                  <span className="text-4xl" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}>{categoriaSorteada.icon}</span>
+                  <span className="text-3xl font-black uppercase tracking-wider" style={{ color: categoriaSorteada.color, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                     {categoriaSorteada.name}
                   </span>
                 </div>
 
-                <div className="w-full bg-white p-8 rounded-2xl shadow-lg border-2 border-orange-200 mb-8">
-                  <h2 className="text-3xl md:text-4xl font-black text-slate-800 text-center leading-tight">
+                <div className="w-full bg-white/10 backdrop-blur-md p-8 rounded-3xl shadow-xl border border-white/20 mb-8">
+                  <h2 className="text-3xl md:text-4xl font-black text-white text-center leading-tight drop-shadow-md">
                     {perguntaAtual.p}
                   </h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl">
                   {perguntaAtual.options.map((opcao: string, index: number) => {
-                    let btnClass = "bg-white border-slate-200 text-slate-700 hover:border-orange-400 hover:bg-orange-50";
+                    let btnClass = "bg-white/5 border-white/10 text-white hover:border-yellow-400 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(250,204,21,0.3)]";
                     
                     if (isAnswered) {
                       if (opcao === perguntaAtual.r) {
-                        btnClass = "bg-green-500 border-green-600 text-white scale-105 shadow-lg z-10"; // Correct answer always green
+                        btnClass = "bg-green-500 border-green-400 text-white scale-105 shadow-[0_0_20px_rgba(34,197,94,0.6)] z-10"; 
                       } else if (opcao === opcaoSelecionada) {
-                        btnClass = "bg-red-500 border-red-600 text-white"; // Wrong selected answer red
+                        btnClass = "bg-red-500 border-red-400 text-white shadow-[0_0_20px_rgba(239,68,68,0.6)]"; 
                       } else {
-                        btnClass = "bg-slate-100 border-slate-200 text-slate-400 opacity-50"; // Other options faded
+                        btnClass = "bg-white/5 border-white/10 text-white/30 opacity-50"; 
                       }
                     }
 
@@ -390,7 +407,7 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
                         key={index}
                         onClick={() => handleOptionClick(opcao)}
                         disabled={isAnswered}
-                        className={`p-6 rounded-xl border-4 font-black text-xl md:text-2xl transition-all duration-300 ${btnClass}`}
+                        className={`p-6 rounded-2xl border-2 font-black text-xl md:text-2xl transition-all duration-300 backdrop-blur-sm ${btnClass}`}
                       >
                         {opcao}
                       </button>
@@ -401,7 +418,7 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
                 {isAnswered && (
                   <button
                     onClick={handleContinuar}
-                    className="mt-8 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-black text-2xl py-4 px-12 rounded-full shadow-lg hover:shadow-xl active:scale-95 transition-all animate-bounce"
+                    className="mt-10 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-black text-2xl py-4 px-12 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:shadow-[0_0_30px_rgba(59,130,246,0.7)] hover:scale-105 active:scale-95 transition-all animate-bounce border-2 border-blue-300"
                   >
                     CONTINUAR ➔
                   </button>
@@ -410,14 +427,14 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
             )}
           </div>
           
-          <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
-            <h2 className={`text-7xl font-display tracking-widest mb-4 ${timeLeft <= 10 ? 'text-red-600' : 'text-slate-700'}`}>
+          <div className="bg-slate-900/50 p-6 rounded-2xl border border-white/10 text-center backdrop-blur-sm">
+            <h2 className={`text-7xl font-display tracking-widest mb-4 drop-shadow-lg ${timeLeft <= 10 ? 'text-red-500 animate-pulse' : 'text-white'}`}>
               {timeString}
             </h2>
             
-            <div className="w-full bg-slate-200 h-6 rounded-full mb-6 overflow-hidden shadow-inner">
+            <div className="w-full bg-slate-800 h-6 rounded-full mb-6 overflow-hidden shadow-inner border border-white/5">
               <div 
-                className={`${barColor} h-full transition-all duration-1000 ease-linear`}
+                className={`${barColor} h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_currentColor]`}
                 style={{ width: `${percentage}%` }}
               ></div>
             </div>
@@ -426,13 +443,13 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
               <button 
                 onClick={toggleTimer} 
                 disabled={isAnswered || !perguntaAtual}
-                className={`flex-1 py-3 rounded-xl font-black text-xl text-white shadow-md active:scale-95 transition-transform disabled:opacity-50 disabled:active:scale-100 ${isRunning ? 'bg-orange-500' : 'bg-green-500'}`}
+                className={`flex-1 py-4 rounded-xl font-black text-xl text-white shadow-lg active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100 ${isRunning ? 'bg-orange-600 hover:bg-orange-500' : 'bg-green-600 hover:bg-green-500'}`}
               >
                 {isRunning ? 'PAUSAR' : 'PLAY'}
               </button>
               <button 
                 onClick={resetRound} 
-                className="flex-1 py-3 rounded-xl font-black text-xl bg-slate-200 text-slate-700 shadow-md active:scale-95 transition-transform"
+                className="flex-1 py-4 rounded-xl font-black text-xl bg-slate-700 text-white hover:bg-slate-600 shadow-lg active:scale-95 transition-all"
               >
                 LIMPAR
               </button>
@@ -441,19 +458,19 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* Painel Direito (Ranking) */}
-        <div className="w-full lg:w-1/3 bg-white p-4 rounded-xl shadow-md border border-slate-200 flex flex-col">
-          <div className="text-center mb-4">
-            <h2 className="text-3xl font-display tracking-wide text-orange-600 flex items-center justify-center gap-2">
+        <div className="w-full lg:w-1/3 bg-[#1a1a2e] p-6 rounded-3xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-white/10 flex flex-col">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl font-display tracking-wide text-yellow-400 flex items-center justify-center gap-2 drop-shadow-md">
               🏆 Ranking da Turma
             </h2>
-            <p className="text-xs text-slate-500 uppercase font-bold mt-1">Adicione os pontos na caixinha e clique em +</p>
+            <p className="text-xs text-slate-400 uppercase font-bold mt-2">Adicione os pontos na caixinha e clique em +</p>
           </div>
           
-          <div className="flex-1 overflow-y-auto pr-2" style={{ maxHeight: 'calc(100vh - 140px)' }}>
-            <div className="flex flex-col gap-2">
+          <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar" style={{ maxHeight: 'calc(100vh - 160px)' }}>
+            <div className="flex flex-col gap-3">
               {sortedPlayers.map((player, index) => (
-                <div key={player.id} className={`flex items-center gap-2 p-2 rounded-xl border-2 ${player.score > 0 && index === 0 ? 'bg-yellow-50 border-yellow-300' : (player.score > 0 && index === 1 ? 'bg-slate-100 border-slate-300' : (player.score > 0 && index === 2 ? 'bg-orange-50 border-orange-200' : 'bg-slate-50 border-slate-200'))}`}>
-                  <span className={`font-black text-sm w-6 text-center ${index === 0 && player.score > 0 ? 'text-yellow-600' : (index === 1 && player.score > 0 ? 'text-slate-500' : (index === 2 && player.score > 0 ? 'text-orange-600' : 'text-slate-400'))}`}>
+                <div key={player.id} className={`flex items-center gap-2 p-3 rounded-2xl border ${player.score > 0 && index === 0 ? 'bg-yellow-500/20 border-yellow-500/50' : (player.score > 0 && index === 1 ? 'bg-slate-400/20 border-slate-400/50' : (player.score > 0 && index === 2 ? 'bg-orange-500/20 border-orange-500/50' : 'bg-white/5 border-white/10'))} transition-colors`}>
+                  <span className={`font-black text-lg w-8 text-center ${index === 0 && player.score > 0 ? 'text-yellow-400 drop-shadow-md' : (index === 1 && player.score > 0 ? 'text-slate-300 drop-shadow-md' : (index === 2 && player.score > 0 ? 'text-orange-400 drop-shadow-md' : 'text-slate-500'))}`}>
                     {index + 1}º
                   </span>
                   <input 
@@ -461,9 +478,9 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
                     value={player.name}
                     onChange={(e) => handlePlayerChange(player.id, 'name', e.target.value)}
                     placeholder={`Aluno ${player.id}`}
-                    className="flex-1 w-0 p-2 text-sm font-bold rounded-lg border border-slate-300 outline-none focus:border-orange-400 bg-white"
+                    className="flex-1 w-0 p-2 text-sm font-bold rounded-xl border border-transparent outline-none focus:border-yellow-400/50 bg-black/20 text-white placeholder-slate-600 transition-colors"
                   />
-                  <div className="font-black text-orange-600 w-10 text-center text-lg" title="Pontuação Total">
+                  <div className="font-black text-yellow-400 w-12 text-center text-xl drop-shadow-md" title="Pontuação Total">
                     {player.score}
                   </div>
                   <input 
@@ -472,12 +489,12 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
                     onChange={(e) => handlePlayerChange(player.id, 'roundScore', e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && addPlayerScore(player.id)}
                     placeholder="+pts"
-                    className="w-14 p-2 text-sm font-bold rounded-lg border border-slate-300 outline-none focus:border-orange-400 bg-white text-center"
+                    className="w-16 p-2 text-sm font-bold rounded-xl border border-transparent outline-none focus:border-green-400/50 bg-black/20 text-white placeholder-slate-600 text-center transition-colors"
                     title="Pontos da rodada"
                   />
                   <button 
                     onClick={() => addPlayerScore(player.id)}
-                    className="bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-lg flex items-center justify-center font-black text-lg transition-colors shadow-sm active:scale-95"
+                    className="bg-green-500 hover:bg-green-400 text-slate-900 w-10 h-10 rounded-xl flex items-center justify-center font-black text-xl transition-all shadow-[0_0_10px_rgba(34,197,94,0.3)] hover:shadow-[0_0_15px_rgba(34,197,94,0.5)] active:scale-95"
                     title="Adicionar pontos"
                   >
                     +
