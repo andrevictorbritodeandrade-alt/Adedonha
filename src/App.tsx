@@ -125,37 +125,26 @@ export default function App() {
   const renderScreen = () => {
     const ScreenComponent = ({ onBack }: { onBack: () => void }) => {
       switch (currentScreen) {
-        case 'adedonha': return <AdedonhaGame onBack={onBack} />;
-        case 'perguntados': return <Perguntados onBack={onBack} />;
-        case 'forca': return <Forca onBack={onBack} />;
-        case 'velha': return <Velha onBack={onBack} />;
-        case 'memoria': return <Memoria onBack={onBack} />;
-        case 'bandeiras': return <Bandeiras onBack={onBack} />;
-        case 'ludo': return <Ludo onBack={onBack} />;
-        case 'uno': return <Uno onBack={onBack} />;
-        case 'truco': return <Truco onBack={onBack} />;
-        case 'xadrez': return <XadrezSortudo onBack={onBack} />;
-        case 'balaozinho': return <Balaozinho onBack={onBack} />;
-        case 'vermelhinho': return <Vermelhinho onBack={onBack} />;
-        case 'tatuzin': return <Tatuzin onBack={onBack} />;
-        case 'cruzaletras': return <Cruzaletras onBack={onBack} />;
-        case 'mapas': return <JogoDosMapas onBack={onBack} />;
+        case 'adedonha': return <AdedonhaGame onBack={() => setCurrentScreen('menu')} />;
+        case 'perguntados': return <Perguntados onBack={() => setCurrentScreen('menu')} />;
+        case 'forca': return <Forca onBack={() => setCurrentScreen('menu')} />;
+        case 'velha': return <Velha onBack={() => setCurrentScreen('menu')} />;
+        case 'memoria': return <Memoria onBack={() => setCurrentScreen('menu')} />;
+        case 'bandeiras': return <Bandeiras onBack={() => setCurrentScreen('menu')} />;
+        case 'ludo': return <Ludo onBack={() => setCurrentScreen('menu')} />;
+        case 'uno': return <Uno onBack={() => setCurrentScreen('menu')} />;
+        case 'truco': return <Truco onBack={() => setCurrentScreen('menu')} />;
+        case 'xadrez': return <XadrezSortudo onBack={() => setCurrentScreen('menu')} />;
+        case 'balaozinho': return <Balaozinho onBack={() => setCurrentScreen('menu')} />;
+        case 'vermelhinho': return <Vermelhinho onBack={() => setCurrentScreen('menu')} />;
+        case 'tatuzin': return <Tatuzin onBack={() => setCurrentScreen('menu')} />;
+        case 'cruzaletras': return <Cruzaletras onBack={() => setCurrentScreen('menu')} />;
+        case 'mapas': return <JogoDosMapas onBack={() => setCurrentScreen('menu')} />;
         default: return null;
       }
     };
 
-    return (
-      <div className="min-h-screen bg-[#121212] text-white p-4 overflow-y-auto">
-        <ScreenComponent onBack={() => setCurrentScreen('menu')} />
-        
-        {/* RODAPÉ NAS TELAS DE JOGO */}
-        <footer className="mt-auto pt-6 flex flex-col items-center gap-2 border-t border-white/10 text-center pb-8">
-          <p className="text-sm text-gray-300 font-medium">Desenvolvido por André Victor Brito de Andrade</p>
-          <p className="text-xs text-gray-500">Contato: {user.email}</p>
-          <p className="text-xs text-gray-600">Versão 1.0.0</p>
-        </footer>
-      </div>
-    );
+    return <ScreenComponent onBack={() => setCurrentScreen('menu')} />;
   };
 
   if (currentScreen !== 'menu') {
