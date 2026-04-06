@@ -47,7 +47,12 @@ const JOGOS = [
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('menu');
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>({
+    uid: 'guest',
+    email: 'visitante@arena.com',
+    displayName: 'Visitante',
+    photoURL: null
+  });
   const [ndaAccepted, setNdaAccepted] = useState(true);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
@@ -56,7 +61,9 @@ export default function App() {
   useEffect(() => {
     generateMenuBackground().then(setBackgroundImage);
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+      if (currentUser) {
+        setUser(currentUser);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -107,9 +114,11 @@ export default function App() {
     return <NDA onAccept={() => setNdaAccepted(true)} />;
   }
 
+  /* 
   if (!user) {
     return <LoginScreen onLogin={() => setCurrentScreen('menu')} />;
   }
+  */
 
   // ... (renderScreen and Main Menu remain, but need to add UserProfile)
 
