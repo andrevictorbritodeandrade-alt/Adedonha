@@ -28,21 +28,21 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { UserProfile } from './components/UserProfile';
 
 const JOGOS = [
-  { id: 'adedonha', nome: 'ADEDONHA INTERATIVA', category: 'Mickey Mouse', image: 'https://picsum.photos/seed/mickey-mouse/600/600' },
-  { id: 'perguntados', nome: 'PERGUNTADOS', category: 'Gênio (Aladdin)', image: 'https://picsum.photos/seed/disney-genie/600/600' },
-  { id: 'forca', nome: 'JOGO DA FORCA', category: 'Capitão Gancho', image: 'https://picsum.photos/seed/captain-hook/600/600' },
-  { id: 'velha', nome: 'JOGO DA VELHA', category: 'Olaf (Frozen)', image: 'https://picsum.photos/seed/olaf-disney/600/600' },
-  { id: 'memoria', nome: 'JOGO DO MEMÓRIA', category: 'Dory (Nemo)', image: 'https://picsum.photos/seed/dory-fish/600/600' },
-  { id: 'bandeiras', nome: 'JOGO DAS BANDEIRAS', category: 'Castelo Disney', image: 'https://picsum.photos/seed/disney-castle/600/600' },
-  { id: 'mapas', nome: 'JOGO DOS MAPAS', category: 'Woody (Toy Story)', image: 'https://picsum.photos/seed/woody-toy-story/600/600' },
-  { id: 'ludo', nome: 'LUDO', category: 'Sininho', image: 'https://picsum.photos/seed/tinkerbell/600/600' },
-  { id: 'uno', nome: 'UNO', category: 'Elsa (Frozen)', image: 'https://picsum.photos/seed/elsa-frozen/600/600' },
-  { id: 'truco', nome: 'TRUCO', category: 'Scar (Rei Leão)', image: 'https://picsum.photos/seed/scar-lion-king/600/600' },
-  { id: 'xadrez', nome: 'XADREZ SORTUDO', category: 'Malévola', image: 'https://picsum.photos/seed/maleficent/600/600' },
-  { id: 'balaozinho', nome: 'JOGO DO BALÃOZINHO', category: 'Carl (Up)', image: 'https://picsum.photos/seed/up-movie/600/600' },
-  { id: 'vermelhinho', nome: 'ONDE ESTÁ O VERMELHINHO?', category: 'Mickey Detetive', image: 'https://picsum.photos/seed/detective-mickey/600/600' },
-  { id: 'tatuzin', nome: 'TATUZIN', category: 'Pumba (Rei Leão)', image: 'https://picsum.photos/seed/pumbaa/600/600' },
-  { id: 'cruzaletras', nome: 'CRUZALETRAS', category: 'Bela', image: 'https://picsum.photos/seed/belle-disney/600/600' },
+  { id: 'adedonha', nome: 'ADEDONHA INTERATIVA', category: 'Mickey Mouse', image: 'https://picsum.photos/seed/mickey-mouse-disney/600/600' },
+  { id: 'perguntados', nome: 'PERGUNTADOS', category: 'Gênio (Aladdin)', image: 'https://picsum.photos/seed/disney-genie-blue/600/600' },
+  { id: 'forca', nome: 'JOGO DA FORCA', category: 'Capitão Gancho', image: 'https://picsum.photos/seed/captain-hook-pirate/600/600' },
+  { id: 'velha', nome: 'JOGO DA VELHA', category: 'Olaf (Frozen)', image: 'https://picsum.photos/seed/olaf-snowman/600/600' },
+  { id: 'memoria', nome: 'JOGO DO MEMÓRIA', category: 'Dory (Nemo)', image: 'https://picsum.photos/seed/dory-fish-blue/600/600' },
+  { id: 'bandeiras', nome: 'JOGO DAS BANDEIRAS', category: 'Castelo Disney', image: 'https://picsum.photos/seed/disney-castle-magic/600/600' },
+  { id: 'mapas', nome: 'JOGO DOS MAPAS', category: 'Woody (Toy Story)', image: 'https://picsum.photos/seed/woody-cowboy/600/600' },
+  { id: 'ludo', nome: 'LUDO', category: 'Sininho', image: 'https://picsum.photos/seed/tinkerbell-fairy/600/600' },
+  { id: 'uno', nome: 'UNO', category: 'Cartas Uno', image: 'https://picsum.photos/seed/uno-cards-game/600/600' },
+  { id: 'truco', nome: 'TRUCO', category: 'Scar (Rei Leão)', image: 'https://picsum.photos/seed/scar-lion/600/600' },
+  { id: 'xadrez', nome: 'XADREZ SORTUDO', category: 'Peças de Xadrez', image: 'https://picsum.photos/seed/chess-pieces-board/600/600' },
+  { id: 'balaozinho', nome: 'JOGO DO BALÃOZINHO', category: 'Balão Vermelho', image: 'https://picsum.photos/seed/red-balloon-sky/600/600' },
+  { id: 'vermelhinho', nome: 'ONDE ESTÁ O VERMELHINHO?', category: 'Mickey Detetive', image: 'https://picsum.photos/seed/mickey-detective/600/600' },
+  { id: 'tatuzin', nome: 'TATUZIN', category: 'Tatu Real', image: 'https://picsum.photos/seed/armadillo-animal/600/600' },
+  { id: 'cruzaletras', nome: 'CRUZALETRAS', category: 'Livros da Bela', image: 'https://picsum.photos/seed/belle-books/600/600' },
 ];
 
 export default function App() {
@@ -184,7 +184,7 @@ export default function App() {
         {/* Header/Nav area */}
         <div className="flex justify-between items-start mb-12">
           <div>
-            <h1 className="font-display text-5xl md:text-7xl text-white tracking-widest drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] mb-2">ARENA DE JOGOS</h1>
+            <h1 className="font-display font-extrabold text-5xl md:text-7xl text-white tracking-widest drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] mb-2">ARENA DE JOGOS</h1>
             <div className="flex gap-6 text-lg font-bold text-gray-400 uppercase tracking-wider">
               <span className="text-white border-b-4 border-[#107C10] pb-1">Jogos</span>
               <span className="hover:text-white cursor-pointer transition-colors">Aplicativos</span>
@@ -246,7 +246,7 @@ export default function App() {
                   <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                   <div className="absolute bottom-4 left-4 right-4 text-left z-10">
-                    <h2 className={`font-display text-white tracking-wide leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] group-hover:translate-x-1 transition-transform ${isLarge ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>{nome}</h2>
+                    <h2 className={`font-display font-bold text-white tracking-wide leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] group-hover:translate-x-1 transition-transform ${isLarge ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>{nome}</h2>
                     <p className="text-white/90 text-xs font-bold mt-1 truncate uppercase tracking-wider drop-shadow-md">{category}</p>
                   </div>
                 </button>
