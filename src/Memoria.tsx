@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+import { ArrowLeft } from 'lucide-react';
+
 const ANIMAIS = ['🦁', '🐘', '🦒', '🦓', '🦏', '🦛', '🐆', '🐅', '🐊', '🐍', '🐢', '🦎', '🦜', '🦚', '🦋', '🐝'];
 
 interface CardData {
@@ -114,11 +116,12 @@ export default function Memoria({ onBack }: { onBack: () => void }) {
       <header className="text-center mb-6 relative w-full max-w-4xl z-10 bg-white/80 p-4 rounded-2xl shadow-md border border-amber-200">
         <button 
           onClick={onBack}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-amber-600 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-amber-700 transition-colors"
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-amber-800 hover:text-amber-600 transition-all p-3 bg-amber-100 rounded-full z-30 shadow-md border border-amber-200 flex items-center justify-center"
+          aria-label="Voltar"
         >
-          ⬅ Voltar
+          <ArrowLeft size={32} />
         </button>
-        <h1 className="text-3xl md:text-5xl font-display mb-2 text-amber-800">EPIC MEMÓRIA</h1>
+        <h1 className="text-3xl md:text-5xl font-display mb-2 text-amber-800">JOGO DA MEMÓRIA</h1>
         <div className="flex justify-center gap-6 text-amber-900 font-bold text-lg">
           <span>Tempo: {timer}s</span>
           <span>Tentativas: {moves}</span>

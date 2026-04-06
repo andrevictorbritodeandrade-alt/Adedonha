@@ -11,9 +11,9 @@ body, html {
   padding: 0;
   width: 100%;
   min-height: 100%;
-  overflow-x: hidden;
-  overscroll-behavior: auto;
-  touch-action: auto;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: pan-y;
   -webkit-tap-highlight-color: transparent;
   background-color: #121212;
   color: white;
@@ -21,7 +21,15 @@ body, html {
 
 #root {
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#root::-webkit-scrollbar {
+  display: none;
 }
 
 .hide-scrollbar::-webkit-scrollbar {

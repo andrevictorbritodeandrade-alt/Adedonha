@@ -140,8 +140,10 @@ export default function App() {
         <ScreenComponent onBack={() => setCurrentScreen('menu')} />
         
         {/* RODAPÉ NAS TELAS DE JOGO */}
-        <footer className="mt-10 py-6 text-center text-white/50 font-sans text-xs border-t border-white/10">
-          <p>Desenvolvido por André Victor Brito de Andrade © | © 2026 Todos os direitos reservados. | Versão 1.6.0</p>
+        <footer className="mt-auto pt-6 flex flex-col items-center gap-2 border-t border-white/10 text-center pb-8">
+          <p className="text-sm text-gray-300 font-medium">Desenvolvido por André Victor Brito de Andrade</p>
+          <p className="text-xs text-gray-500">Contato: {user.email}</p>
+          <p className="text-xs text-gray-600">Versão 1.0.0</p>
         </footer>
       </div>
     );

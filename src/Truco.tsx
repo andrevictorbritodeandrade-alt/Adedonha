@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Trophy, Users, RefreshCw, Eye, EyeOff, AlertCircle, Play, Lock, ShieldAlert, XCircle, CheckCircle, ArrowUpCircle, Layers, Info, ArrowRight, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Trophy, Users, RefreshCw, Eye, EyeOff, AlertCircle, Play, Lock, ShieldAlert, XCircle, CheckCircle, ArrowUpCircle, Layers, Info, ArrowRight, ChevronRight, ArrowLeft } from 'lucide-react';
 
 const SUITS = [
   { name: 'Paus', symbol: '♣', color: 'text-slate-950', order: 4, label: 'Zap' },
@@ -27,7 +27,7 @@ export default function Truco({ onBack }: { onBack: () => void }) {
   const [table, setTable] = useState<any[]>([]);
   const [vazas, setVazas] = useState<number[]>([]);
   const [roundPoints, setRoundPoints] = useState(1);
-  const [message, setMessage] = useState('Bem-vindo ao TRUCO PEDGO!');
+  const [message, setMessage] = useState('Bem-vindo ao TRUCO!');
   const [isGameOver, setIsGameOver] = useState(false);
   const [winnerTeam, setWinnerTeam] = useState<string | null>(null);
   const [trucoState, setTrucoState] = useState({
@@ -164,12 +164,12 @@ export default function Truco({ onBack }: { onBack: () => void }) {
   if (!gameStarted) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 text-white font-sans relative">
-        <button onClick={onBack} className="absolute top-4 left-4 z-50 bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-2 font-group-b text-white">
-          <ChevronLeft size={18} /> Voltar
+        <button onClick={onBack} className="absolute left-4 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-50 shadow-lg border border-white/10 flex items-center justify-center" aria-label="Voltar">
+          <ArrowLeft size={32} />
         </button>
         <div className="bg-slate-800 p-10 rounded-[50px] shadow-2xl w-full max-w-2xl border-4 border-yellow-500">
           <div className="text-center mb-10">
-            <h1 className="text-7xl font-group-a text-yellow-500 mb-4 tracking-tighter">TRUCO PEDGO</h1>
+            <h1 className="text-7xl font-group-a text-yellow-500 mb-4 tracking-tighter">TRUCO</h1>
             <p className="text-slate-400 text-xl font-group-b uppercase tracking-widest text-center">Escola Interativa</p>
           </div>
           <div className="grid grid-cols-2 gap-8 mb-10">
@@ -184,7 +184,7 @@ export default function Truco({ onBack }: { onBack: () => void }) {
                 <input className="w-full bg-slate-800 p-4 rounded-2xl text-center text-xl font-group-b border border-white/10" value={playerNames[3]} onChange={e => {const n=[...playerNames]; n[3]=e.target.value; setPlayerNames(n);}} />
             </div>
           </div>
-          <button onClick={() => {setGameStarted(true); startNewHand();}} className="w-full bg-yellow-500 text-slate-950 font-group-a py-6 rounded-3xl text-4xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl uppercase">INICIAR TRUCO PEDGO</button>
+          <button onClick={() => {setGameStarted(true); startNewHand();}} className="w-full bg-yellow-500 text-slate-950 font-group-a py-6 rounded-3xl text-4xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl uppercase">INICIAR TRUCO</button>
         </div>
       </div>
     );
@@ -192,8 +192,12 @@ export default function Truco({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="h-screen bg-emerald-950 text-white flex flex-col select-none overflow-hidden relative font-sans">
-      <button onClick={onBack} className="absolute top-4 left-4 z-50 bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-2 font-group-b text-white">
-        <ChevronLeft size={18} /> Voltar
+      <button 
+        onClick={onBack}
+        className="absolute left-4 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-50 shadow-lg border border-white/10 flex items-center justify-center"
+        aria-label="Voltar"
+      >
+        <ArrowLeft size={32} />
       </button>
      
       {/* BARRA DE HIERARQUIA ATUALIZADA */}
@@ -256,7 +260,7 @@ export default function Truco({ onBack }: { onBack: () => void }) {
         <div className="flex-1 px-2 text-center">
           <div className="inline-flex items-center gap-3 bg-white/5 px-6 py-2 rounded-full border border-white/10 shadow-inner">
             <div className="w-2 h-2 bg-yellow-500 rounded-full animate-ping" />
-            <span className="font-group-a text-lg tracking-[0.2em] uppercase drop-shadow-md">TRUCO PEDGO</span>
+            <span className="font-group-a text-lg tracking-[0.2em] uppercase drop-shadow-md">TRUCO</span>
           </div>
         </div>
 
@@ -402,7 +406,7 @@ export default function Truco({ onBack }: { onBack: () => void }) {
             <div className="bg-slate-800 p-10 rounded-[50px] border-[10px] border-yellow-500 shadow-2xl max-w-lg w-full">
                 <Trophy size={100} className="text-yellow-500 mx-auto mb-6 animate-bounce" />
                 <h1 className="text-7xl text-white mb-2 font-group-a tracking-tighter uppercase">{winnerTeam}</h1>
-                <p className="text-xl uppercase text-yellow-500 font-group-b tracking-[0.3em] mb-10">Vencedores do TRUCO PEDGO</p>
+                <p className="text-xl uppercase text-yellow-500 font-group-b tracking-[0.3em] mb-10">Vencedores do TRUCO</p>
                 <button onClick={() => window.location.reload()} className="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-group-a py-6 rounded-[35px] text-3xl flex items-center justify-center gap-4 transition-all shadow-xl uppercase tracking-tighter">Novo Jogo</button>
             </div>
         </div>
@@ -423,7 +427,7 @@ const CardComponent = ({ card, size = 'md', hidden = false }: any) => {
       <div className={`${sizeClasses[size]} bg-slate-100 rounded-[14px] shadow-lg border-[3px] border-white flex flex-col items-center justify-center shrink-0`}>
         <div className="w-full h-full bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-950 rounded-[11px] flex items-center justify-center border-2 border-blue-600/50 overflow-hidden relative">
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '8px 8px' }} />
-            <div className={`text-blue-200/20 font-group-a select-none ${size === 'sm' ? 'text-lg' : 'text-3xl'} transform -rotate-45`}>PEDGO</div>
+            <div className={`text-blue-200/20 font-group-a select-none ${size === 'sm' ? 'text-lg' : 'text-3xl'} transform -rotate-45`}>ARENA</div>
         </div>
       </div>
     );

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Trophy, Users, Dices, RotateCcw, Info, Play,
   UserCircle2, AlertCircle, Move, History,
-  Volume2, VolumeX, ChevronLeft
+  Volume2, VolumeX, ArrowLeft
 } from 'lucide-react';
 
 // --- Constantes do Jogo ---
@@ -45,7 +45,7 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
   const [diceValue, setDiceValue] = useState<number | null>(null);
   const [isRolling, setIsRolling] = useState(false);
   const [turnPhase, setTurnPhase] = useState('ROLL');
-  const [gameLog, setGameLog] = useState('Bem-vindo ao Ludo Pedgo!');
+  const [gameLog, setGameLog] = useState('Bem-vindo ao Ludo!');
   const [history, setHistory] = useState<any[]>([]);
   const [winner, setWinner] = useState<any>(null);
   const [dragInfo, setDragInfo] = useState<any>(null);
@@ -375,14 +375,18 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="min-h-screen bg-slate-50 p-2 md:p-6 font-sans flex flex-col items-center select-none overflow-x-hidden relative">
-      <button onClick={onBack} className="absolute top-4 left-4 z-50 bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-2 font-group-b text-white">
-        <ChevronLeft size={18} /> Voltar
+      <button 
+        onClick={onBack}
+        className="absolute left-4 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-50 shadow-lg border border-white/10 flex items-center justify-center"
+        aria-label="Voltar"
+      >
+        <ArrowLeft size={32} />
       </button>
 
       <div className="flex-grow flex flex-col items-center justify-center w-full">
         {gameState === 'SETUP' ? (
           <div className="bg-white p-10 rounded-[3rem] shadow-2xl max-w-md w-full text-center border-t-[12px] border-red-500 animate-in fade-in zoom-in duration-500">
-            <h1 className="text-5xl font-group-a text-slate-800 mb-2 tracking-tighter uppercase">LUDO PEDGO</h1>
+            <h1 className="text-5xl font-group-a text-slate-800 mb-2 tracking-tighter uppercase">LUDO</h1>
             <p className="text-slate-400 mb-10 font-group-b uppercase tracking-[0.3em] text-xs text-center">Clássico Escolar</p>
             <div className="space-y-8">
               <div>

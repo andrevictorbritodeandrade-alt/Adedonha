@@ -166,9 +166,8 @@ const RouletteCanvas = ({ onFinished, isSpinning, selectedLetter }: any) => {
         ctx.rotate(startAngle + sliceAngle / 2);
         ctx.textAlign = "right";
         ctx.fillStyle = "#333";
-        // FIX: Use the requested font for the roulette
-        ctx.font = 'bold 24px "Bangers", Impact, sans-serif';
-        ctx.fillText(letter, radius - 15, 8);
+        ctx.font = 'bold 32px "Bangers", cursive';
+        ctx.fillText(letter, radius - 10, 10);
         ctx.restore();
       });
       ctx.beginPath();
@@ -185,8 +184,8 @@ const RouletteCanvas = ({ onFinished, isSpinning, selectedLetter }: any) => {
   useEffect(() => {
     if (isSpinning) {
       let start: number | null = null;
-      const duration = 4000;
-      const extraSpins = 15 + Math.random() * 10;
+      const duration = 5000;
+      const extraSpins = 20 + Math.random() * 10;
       const animate = (timestamp: number) => {
         if (!start) start = timestamp;
         const progress = timestamp - start;
@@ -365,10 +364,10 @@ const AdedonhaGame = ({ onBack }: { onBack: () => void }) => {
       <header className="flex flex-col items-center justify-center relative z-20 pt-4 px-12">
         <button 
           onClick={onBack} 
-          className="absolute left-0 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/10 rounded-full z-30 shadow-lg border border-white/20 flex items-center justify-center"
+          className="absolute left-0 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-30 shadow-lg border border-white/10 flex items-center justify-center"
           aria-label="Voltar"
         >
-          <ArrowLeft size={28} />
+          <ArrowLeft size={32} />
         </button>
         <h1 className="text-5xl font-display text-white tracking-widest drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] text-center">ADEDONHA INTERATIVA</h1>
         <div className="flex items-center gap-4 mt-4 bg-white/5 px-6 py-2 rounded-full border border-white/10">

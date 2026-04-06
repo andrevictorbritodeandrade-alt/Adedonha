@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Users, RotateCcw, VolumeX, Volume2, Hand, RefreshCw, AlertTriangle,
   UserPlus, Zap, ShieldAlert, Crown, Sparkles, BrainCircuit, MessageSquareQuote,
-  Music, Music2, Palette, CheckCircle2, Play, MousePointer2, ChevronLeft
+  Music, Music2, Palette, CheckCircle2, Play, MousePointer2, ArrowLeft
 } from 'lucide-react';
 
 const GEMINI_MODEL = "gemini-3.1-flash-preview";
@@ -284,7 +284,7 @@ export default function Uno({ onBack }: { onBack: () => void }) {
             <span className="text-yellow-400 rotate-6 -mr-1 drop-shadow-[0_4px_0_#fff]">N</span>
             <span className="text-blue-500 -rotate-6 drop-shadow-[0_4px_0_#fff]">O</span>
         </div>
-        <div className={`${smallSize} font-group-b text-white tracking-[0.3em] mt-[-8px] uppercase`}>PEDGO</div>
+        <div className={`${smallSize} font-group-b text-white tracking-[0.3em] mt-[-8px] uppercase`}>ARENA</div>
     </div>
   );
 
@@ -330,8 +330,12 @@ export default function Uno({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="h-screen w-screen bg-slate-950 text-white font-sans overflow-hidden flex flex-col select-none touch-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 to-black relative">
-      <button onClick={onBack} className="absolute top-4 left-4 z-50 bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-2 font-group-b text-white">
-        <ChevronLeft size={18} /> Voltar
+      <button 
+        onClick={onBack}
+        className="absolute left-4 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-50 shadow-lg border border-white/10 flex items-center justify-center"
+        aria-label="Voltar"
+      >
+        <ArrowLeft size={32} />
       </button>
 
       <div className="h-6 bg-purple-900/40 flex items-center px-4 border-b border-white/5 shrink-0 pl-32"><Sparkles size={12} className="text-purple-400 animate-pulse" /><p className="text-[9px] italic text-purple-100 truncate ml-2">{aiCommentary}</p></div>
@@ -434,8 +438,8 @@ export default function Uno({ onBack }: { onBack: () => void }) {
 
       {gameState === 'LOBBY' && (
         <div className="fixed inset-0 bg-slate-950 z-[500] flex flex-col items-center justify-center p-8 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
-          <button onClick={onBack} className="absolute top-4 left-4 z-50 bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-2 font-group-b text-white">
-            <ChevronLeft size={18} /> Voltar
+          <button onClick={onBack} className="absolute left-4 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-50 shadow-lg border border-white/10 flex items-center justify-center" aria-label="Voltar">
+            <ArrowLeft size={32} />
           </button>
           <div className="relative mb-12"><UnoLogo size="text-[10rem]" smallSize="text-3xl" /></div>
           <button onClick={startGame} className="bg-yellow-500 text-black px-24 py-6 rounded-full font-group-a text-6xl shadow-[0_10px_0_#ca8a04] active:translate-y-3 active:shadow-none border-4 border-white">START</button>

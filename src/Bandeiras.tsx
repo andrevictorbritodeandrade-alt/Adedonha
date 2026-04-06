@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ITEMS } from './bandeirasData';
+import { ArrowLeft } from 'lucide-react';
 
 type GameMode = 'continent' | 'world' | 'brazil';
 
@@ -52,8 +53,14 @@ export default function Bandeiras({ onBack }: { onBack: () => void }) {
   return (
     <div className={`min-h-screen font-sans p-4 flex flex-col items-center transition-colors duration-300 ${isFlashing ? 'bg-green-400' : 'bg-sky-100'}`}>
       <header className="text-center mb-6 relative w-full max-w-4xl">
-        <button onClick={onBack} className="absolute left-0 top-1/2 -translate-y-1/2 bg-white text-sky-600 font-bold py-2 px-4 rounded-lg shadow hover:bg-sky-50 transition-colors border border-sky-200">⬅ Voltar</button>
-        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic text-sky-400">EPIC BANDEIRAS!</h1>
+        <button 
+          onClick={onBack} 
+          className="absolute left-0 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-30 shadow-lg border border-white/10 flex items-center justify-center"
+          aria-label="Voltar"
+        >
+          <ArrowLeft size={32} />
+        </button>
+        <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic text-sky-400">JOGO DAS BANDEIRAS</h1>
         <div className="flex justify-center gap-2 mb-4">
           {(['continent', 'world', 'brazil'] as GameMode[]).map(m => (
             <button key={m} onClick={() => setMode(m)} className={`px-4 py-2 rounded-full font-bold ${mode === m ? 'bg-sky-600 text-white' : 'bg-white text-sky-600'}`}>
@@ -64,13 +71,9 @@ export default function Bandeiras({ onBack }: { onBack: () => void }) {
       </header>
 
       <div className="w-full max-w-3xl bg-white p-6 md:p-10 rounded-3xl shadow-xl border-4 border-sky-200 flex flex-col items-center">
-        <div className="flex gap-4 mb-8">
-          <div className="w-40 aspect-[3/2] rounded-xl overflow-hidden shadow-lg border-4 border-slate-100 bg-slate-50">
-            <img src={`https://flagcdn.com/w320/${currentCountry.code}.png`} alt="Bandeira" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-          </div>
-          <div className="w-40 aspect-square rounded-xl overflow-hidden shadow-lg border-4 border-slate-100 bg-slate-50 flex items-center justify-center">
-            {/* Map Placeholder - Needs actual map source */}
-            <span className="text-4xl">🗺️</span>
+        <div className="flex justify-center mb-8">
+          <div className="w-64 aspect-[3/2] rounded-xl overflow-hidden shadow-lg border-4 border-slate-100 bg-slate-50">
+            <img src={`https://flagcdn.com/w640/${currentCountry.code}.png`} alt="Bandeira" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
           </div>
         </div>
 

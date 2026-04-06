@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, MapPin, Trophy, RefreshCw, Bus, AlertCircle, Clock, ZoomIn, User, Medal, Move, Map as MapIcon, ChevronRight, Mail, Copyright, Sparkles, Skull, VolumeX, Volume2, ChevronLeft } from 'lucide-react';
+import { Search, MapPin, Trophy, RefreshCw, Bus, AlertCircle, Clock, ZoomIn, User, Medal, Move, Map as MapIcon, ChevronRight, Mail, Copyright, Sparkles, Skull, VolumeX, Volume2, ChevronLeft, ArrowLeft } from 'lucide-react';
 import { signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
 import { collection, addDoc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from './firebase';
@@ -125,6 +125,7 @@ export default function Vermelhinho({ onBack }: VermelhinhoProps) {
     setOffset({ x: 0, y: 0 });
     setZoomLevel(1);
     try {
+      if (!apiKey) throw new Error("No API Key");
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -224,9 +225,10 @@ export default function Vermelhinho({ onBack }: VermelhinhoProps) {
     <div className="min-h-screen bg-slate-950 text-white font-sans flex flex-col items-center p-4 select-none overflow-hidden relative">
       <button 
         onClick={onBack}
-        className="absolute top-4 left-4 z-50 bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700 hover:bg-slate-700 transition-all shadow-xl flex items-center gap-2 font-group-b text-white"
+        className="absolute left-4 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-50 shadow-lg border border-white/10 flex items-center justify-center"
+        aria-label="Voltar"
       >
-        <ChevronLeft size={18} /> Voltar
+        <ArrowLeft size={32} />
       </button>
 
       <header className="py-2 text-center mt-12 w-full px-4">

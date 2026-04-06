@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+import { ArrowLeft } from 'lucide-react';
+
 type Player = 'X' | 'O' | null;
 
 export default function Velha({ onBack }: { onBack: () => void }) {
@@ -61,14 +63,15 @@ export default function Velha({ onBack }: { onBack: () => void }) {
       <header className="text-center mb-6 relative w-full max-w-4xl z-20">
         <button 
           onClick={onBack}
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/10 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:bg-white/20 transition-all border border-white/20 z-30 flex items-center gap-2"
+          className="absolute left-0 top-1/2 -translate-y-1/2 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-30 shadow-lg border border-white/10 flex items-center justify-center"
+          aria-label="Voltar"
         >
-          <span className="text-xl">⬅</span> Voltar
+          <ArrowLeft size={32} />
         </button>
         <h1 className="text-4xl md:text-6xl font-display mb-2 tracking-wider text-shadow-comic text-rose-400">
           <span className="inline-block animate-bounce mr-2">⭕</span>
           <span className="uppercase">
-            EPIC VELHA!
+            JOGO DA VELHA
           </span>
           <span className="inline-block animate-bounce ml-2" style={{ animationDelay: '0.2s' }}>❌</span>
         </h1>

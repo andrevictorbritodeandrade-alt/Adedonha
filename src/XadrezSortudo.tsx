@@ -1,27 +1,43 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Trophy, Coins, Zap, ChevronLeft, Info, Users, User, Circle, Square, Triangle, Hexagon, Diamond, Star, Heart, Shield, Sword } from 'lucide-react';
+import { Trophy, Coins, Zap, ArrowLeft, Info, Users, User } from 'lucide-react';
+
+const ChessIcon = ({ type, color }: { type: string, color: string }) => {
+  const paths: Record<string, string> = {
+    pawn: "M12 2a2 2 0 0 1 2 2c0 1.1-.9 2-2 2s-2-.9-2-2 1-2 2-2M9 19h6v2H9v-2m3-12c-2.5 0-4 2-4 4 0 2.5 1.5 4.5 3 5.5V18h2v-1.5c1.5-1 3-3 3-5.5 0-2-1.5-4-4-4z",
+    rook: "M5 20h14v2H5v-2m12-15h2v4h-2V5M9 5h2v4H9V5M5 5h2v4H5V5m2 13h10v-7l-1-1H8l-1 1v7z",
+    knight: "M19 10c0-5-5-8-10-8C5 2 2 5 2 10c0 3 1 5 3 6l-1 4h12l-1-4c2-1 4-3 4-6zM9 4c1 0 2 1 2 2s-1 2-2 2-2-1-2-2 1-2 2-2z",
+    bishop: "M12 2l-3 3 3 3 3-3-3-3m-3 17h6v2h-6v-2m3-12c-2.5 0-4 2-4 4 0 2.5 1.5 4.5 3 5.5V18h2v-1.5c1.5-1 3-3 3-5.5 0-2-1.5-4-4-4z",
+    queen: "M12 2l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4zM5 20h14v2H5v-2m2-13h10v7H7V7z",
+    king: "M12 2v3m-3-3h6m-3 17h6v2h-6v-2m3-12c-2.5 0-4 2-4 4 0 2.5 1.5 4.5 3 5.5V18h2v-1.5c1.5-1 3-3 3-5.5 0-2-1.5-4-4-4z"
+  };
+  return (
+    <svg viewBox="0 0 24 24" className={`w-full h-full fill-current ${color}`}>
+      <path d={paths[type] || ""} />
+    </svg>
+  );
+};
+
+const PIECES = [
+  { id: 'w_pawn', type: 'pawn', color: 'text-white', name: 'Peão Branco', weight: 50, value: 5 },
+  { id: 'b_pawn', type: 'pawn', color: 'text-gray-800', name: 'Peão Preto', weight: 50, value: 5 },
+  { id: 'w_knight', type: 'knight', color: 'text-white', name: 'Cavalo Branco', weight: 30, value: 15 },
+  { id: 'b_knight', type: 'knight', color: 'text-gray-800', name: 'Cavalo Preto', weight: 30, value: 15 },
+  { id: 'w_bishop', type: 'bishop', color: 'text-white', name: 'Bispo Branco', weight: 25, value: 20 },
+  { id: 'b_bishop', type: 'bishop', color: 'text-gray-800', name: 'Bispo Preto', weight: 25, value: 20 },
+  { id: 'w_rook', type: 'rook', color: 'text-white', name: 'Torre Branca', weight: 15, value: 50 },
+  { id: 'b_rook', type: 'rook', color: 'text-gray-800', name: 'Torre Preta', weight: 15, value: 50 },
+  { id: 'w_queen', type: 'queen', color: 'text-white', name: 'Rainha Branca', weight: 5, value: 200 },
+  { id: 'b_queen', type: 'queen', color: 'text-gray-800', name: 'Rainha Preta', weight: 5, value: 200 },
+  { id: 'w_king', type: 'king', color: 'text-white', name: 'Rei Branco', weight: 1, value: 1000 },
+  { id: 'b_king', type: 'king', color: 'text-gray-800', name: 'Rei Preto', weight: 1, value: 1000 },
+];
+
+type GameMode = 'select' | 'single' | 'multi' | 'guide';
 
 interface XadrezSortudoProps {
   onBack: () => void;
 }
-
-const PIECES = [
-  { id: 'w_pawn', Icon: Circle, color: 'text-white', name: 'Peão Branco', weight: 50, value: 5 },
-  { id: 'b_pawn', Icon: Circle, color: 'text-gray-800', name: 'Peão Preto', weight: 50, value: 5 },
-  { id: 'w_knight', Icon: Triangle, color: 'text-white', name: 'Cavalo Branco', weight: 30, value: 15 },
-  { id: 'b_knight', Icon: Triangle, color: 'text-gray-800', name: 'Cavalo Preto', weight: 30, value: 15 },
-  { id: 'w_bishop', Icon: Square, color: 'text-white', name: 'Bispo Branco', weight: 25, value: 20 },
-  { id: 'b_bishop', Icon: Square, color: 'text-gray-800', name: 'Bispo Preto', weight: 25, value: 20 },
-  { id: 'w_rook', Icon: Hexagon, color: 'text-white', name: 'Torre Branca', weight: 15, value: 50 },
-  { id: 'b_rook', Icon: Hexagon, color: 'text-gray-800', name: 'Torre Preta', weight: 15, value: 50 },
-  { id: 'w_queen', Icon: Diamond, color: 'text-white', name: 'Rainha Branca', weight: 5, value: 200 },
-  { id: 'b_queen', Icon: Diamond, color: 'text-gray-800', name: 'Rainha Preta', weight: 5, value: 200 },
-  { id: 'w_king', Icon: Star, color: 'text-white', name: 'Rei Branco', weight: 1, value: 1000 },
-  { id: 'b_king', Icon: Star, color: 'text-gray-800', name: 'Rei Preto', weight: 1, value: 1000 },
-];
-
-type GameMode = 'select' | 'single' | 'multi' | 'guide';
 
 export default function XadrezSortudo({ onBack }: XadrezSortudoProps) {
   const [gameMode, setGameMode] = useState<GameMode>('select');
@@ -144,8 +160,12 @@ export default function XadrezSortudo({ onBack }: XadrezSortudoProps) {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1529699211952-734e80c4d42b?q=80&w=2071&auto=format&fit=crop')] bg-cover bg-center opacity-20" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black pointer-events-none" />
         
-        <button onClick={onBack} className="absolute top-4 left-4 z-50 bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-2 font-group-b text-white">
-          <ChevronLeft size={18} /> Voltar
+        <button 
+          onClick={onBack} 
+          className="absolute left-4 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-50 shadow-lg border border-white/10 flex items-center justify-center"
+          aria-label="Voltar"
+        >
+          <ArrowLeft size={32} />
         </button>
 
         <div className="relative z-10 flex flex-col items-center text-center max-w-2xl w-full">
@@ -170,8 +190,12 @@ export default function XadrezSortudo({ onBack }: XadrezSortudoProps) {
   if (gameMode === 'guide') {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center p-4 relative overflow-hidden">
-        <button onClick={() => setGameMode('select')} className="absolute top-4 left-4 z-50 bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-2 font-group-b text-white">
-          <ChevronLeft size={18} /> Voltar
+        <button 
+          onClick={() => setGameMode('select')} 
+          className="absolute left-4 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-50 shadow-lg border border-white/10 flex items-center justify-center"
+          aria-label="Voltar"
+        >
+          <ArrowLeft size={32} />
         </button>
         
         <h1 className="font-group-a text-4xl mt-16 mb-8 text-yellow-500">TABELA DE PRÊMIOS</h1>
@@ -180,13 +204,15 @@ export default function XadrezSortudo({ onBack }: XadrezSortudoProps) {
           <p className="font-group-b text-slate-300 text-center mb-6">Alinhe 3 peças idênticas na linha central para ganhar moedas! Acumule moedas para trocar por prêmios com seu professor.</p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {PIECES.map(p => (
-              <div key={p.id} className="flex items-center justify-between bg-black/50 p-4 rounded-xl border border-white/5">
+            {PIECES.map((piece) => (
+              <div key={piece.id} className="flex items-center justify-between bg-black/50 p-4 rounded-xl border border-white/5">
                 <div className="flex items-center gap-4">
-                  <p.Icon className={`w-12 h-12 ${p.color}`} />
-                  <span className="font-group-b text-white">{p.name}</span>
+                  <div className="w-12 h-12">
+                    <ChessIcon type={piece.type} color={piece.color} />
+                  </div>
+                  <span className="font-group-b text-white">{piece.name}</span>
                 </div>
-                <div className="font-group-a text-yellow-500 text-xl">{p.value}</div>
+                <div className="font-group-a text-yellow-500 text-xl">{piece.value}</div>
               </div>
             ))}
           </div>
@@ -252,7 +278,7 @@ export default function XadrezSortudo({ onBack }: XadrezSortudoProps) {
                           transition={isSpinning ? { repeat: Infinity, duration: 0.2 } : { repeat: Infinity, duration: 4, ease: "easeInOut" }}
                           className="w-full h-full flex items-center justify-center p-2"
                         >
-                          <piece.Icon className={`w-16 h-16 ${piece.color} drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]`} />
+                          <ChessIcon type={piece.type} color={piece.color} />
                         </motion.div>
                       </div>
                     ))}
