@@ -180,7 +180,7 @@ export default function App() {
         {showProfile && <UserProfile user={user} onClose={() => setShowProfile(false)} />}
 
         {/* Vertical Game List */}
-        <div className="flex-1 -mx-4 px-4">
+        <div className="flex-1 -mx-4 px-4 overflow-y-auto hide-scrollbar">
           <div className="flex flex-col gap-6 pb-[120px]">
             {JOGOS.map(({ id, nome, category, Icon, color }, index) => {
               const isFocused = index === 2; // Mocking focus for demonstration
@@ -192,7 +192,6 @@ export default function App() {
                   className={`neon-card w-full max-w-[400px] mx-auto h-64 flex flex-col items-center justify-between p-6 group ${neonClass}`}
                 >
                   <div className="flex-1 flex items-center justify-center w-full">
-                    {/* Placeholder for game art, using large icon for now */}
                     <div className={`w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center ${color} group-hover:scale-110 transition-transform duration-300`}>
                       <Icon className="w-16 h-16" />
                     </div>
@@ -204,29 +203,43 @@ export default function App() {
                 </button>
               );
             })}
+
+            {/* CARD INSTALAR APP */}
+            {deferredPrompt && (
+              <button 
+                onClick={handleInstall}
+                className="neon-card w-full max-w-[400px] mx-auto h-64 flex flex-col items-center justify-between p-6 group neon-border-green"
+              >
+                <div className="flex-1 flex items-center justify-center w-full">
+                  <div className="w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform duration-300">
+                    <Download className="w-16 h-16" />
+                  </div>
+                </div>
+                <div className="w-full text-center mt-4">
+                  <h2 className="font-display text-2xl text-yellow-400 tracking-wide mb-1 leading-tight">BAIXAR APP</h2>
+                  <p className="text-gray-300 text-sm font-medium">Instale no seu celular</p>
+                </div>
+              </button>
+            )}
+
+            {/* CARD QR CODE */}
+            <div className="neon-card w-full max-w-[400px] mx-auto h-80 flex flex-col items-center justify-between p-6 neon-border-purple">
+              <div className="flex-1 flex items-center justify-center w-full bg-white p-4 rounded-2xl">
+                <QRCodeSVG value="https://saladejogos.vercel.app" size={180} />
+              </div>
+              <div className="w-full text-center mt-4">
+                <h2 className="font-display text-2xl text-yellow-400 tracking-wide mb-1 leading-tight">COMPARTILHAR</h2>
+                <p className="text-gray-300 text-sm font-medium">saladejogos.vercel.app</p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Footer Area */}
-        <div className="mt-auto pt-6 flex justify-between items-end border-t border-white/10">
-          <div className="text-xs text-gray-400 space-y-1">
-            <p>ESTADO ADMIN: <span className="text-green-400 font-bold">ATIVO</span></p>
-            <p>IPs ÚNICOS: 142</p>
-            <p>ÚLTIMO ACESSO: 14/03/2026 21:30</p>
-          </div>
-          <div className="flex gap-4">
-            <button className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors">
-              <LayoutGrid className="w-5 h-5" /> COLEÇÃO COMPLETA
-            </button>
-            <button className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors">
-              <QrCode className="w-5 h-5" /> COMPARTILHAR QR
-            </button>
-            {deferredPrompt && (
-              <button onClick={handleInstall} className="bg-yellow-500 hover:bg-yellow-400 text-black px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors">
-                <Download className="w-5 h-5" /> BAIXAR APP
-              </button>
-            )}
-          </div>
+        <div className="mt-auto pt-6 flex flex-col items-center gap-2 border-t border-white/10 text-center">
+          <p className="text-sm text-gray-300 font-medium">Desenvolvido por André Victor Brito de Andrade</p>
+          <p className="text-xs text-gray-500">Contato: {user.email}</p>
+          <p className="text-xs text-gray-600">Versão 1.0.0</p>
         </div>
       </div>
     </div>
