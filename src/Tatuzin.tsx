@@ -35,6 +35,7 @@ const Tatuzin = ({ onBack }: { onBack: () => void }) => {
   const [mumbucas, setMumbucas] = useState(0);
   const [vidas, setVidas] = useState(3);
   const [levelIdx, setLevelIdx] = useState(0);
+  const [continueCountdown, setContinueCountdown] = useState(10);
   
   const gameRef = useRef({
     player: { y: 0, vy: 0, w: 85, h: 75, grounded: false, animFrame: 0, invul: 0 },
@@ -48,7 +49,7 @@ const Tatuzin = ({ onBack }: { onBack: () => void }) => {
     lifeCount: 3,
   });
 
-  const startGame = (idx = 0) => {
+  const startGame = (idx = 0, resetLives = true) => {
     const level = LEVELS[idx];
     const startY = window.innerHeight * 0.8 - 75;
     gameRef.current = {
@@ -59,13 +60,33 @@ const Tatuzin = ({ onBack }: { onBack: () => void }) => {
       boss: { active: false, x: 0, y: window.innerHeight * 0.4, hp: 5 + idx, state: 'HIDDEN' },
       distance: 0,
       nextPlatformX: window.innerWidth + 800,
-      mumbucaCount: 0,
-      lifeCount: 3,
+      mumbucaCount: resetLives ? 0 : gameRef.current.mumbucaCount,
+      lifeCount: resetLives ? 3 : vidas,
     };
-    setMumbucas(0);
-    setVidas(3);
+    if (resetLives) {
+      setMumbucas(0);
+      setVidas(3);
+    }
     setLevelIdx(idx);
     setGameState('PLAYING');
+    setContinueCountdown(10);
+  };
+
+  const handleDeath = () => {
+    const newVidas = vidas - 1;
+    setVidas(newVidas);
+    gameRef.current.lifeCount = newVidas;
+    
+    if (newVidas > 0) {
+      // Respawn at current level start
+      const startY = window.innerHeight * 0.8 - 75;
+      gameRef.current.player.y = startY;
+      gameRef.current.player.vy = 0;
+      gameRef.current.player.invul = 120;
+      gameRef.current.distance = Math.max(0, gameRef.current.distance - 500); // Voltar um pouco
+    } else {
+      setGameState('GAMEOVER');
+    }
   };
 
   const jump = (e?: React.PointerEvent | PointerEvent) => {
@@ -158,7 +179,7 @@ const Tatuzin = ({ onBack }: { onBack: () => void }) => {
 
       // 4. Lógica de Morte
       if (state.player.y > canvas.height) {
-        setGameState('GAMEOVER');
+        handleDeath();
       }
 
       // 5. Coleta e Danos
@@ -177,12 +198,12 @@ const Tatuzin = ({ onBack }: { onBack: () => void }) => {
            const dy = (state.player.y + 40) - (obj.y + 30);
            if (Math.sqrt(dx*dx + dy*dy) < 65) {
              if (state.mumbucaCount > 0) {
-               state.mumbucaCount = 0;
-               setMumbucas(0);
+               state.mumbucaCount = Math.max(0, state.mumbucaCount - 10);
+               setMumbucas(state.mumbucaCount);
                state.player.invul = 60;
                createExplosion(px, state.player.y + 40, '#fbbf24');
              } else {
-               setGameState('GAMEOVER');
+               handleDeath();
              }
            }
         }
@@ -203,8 +224,10 @@ const Tatuzin = ({ onBack }: { onBack: () => void }) => {
         state.boss.x -= (level.speed - 1);
         if (px > state.boss.x && state.player.invul === 0) {
            if (state.mumbucaCount > 0) {
-             state.mumbucaCount = 0; setMumbucas(0); state.player.invul = 60;
-           } else { setGameState('GAMEOVER'); }
+             state.mumbucaCount = Math.max(0, state.mumbucaCount - 20); 
+             setMumbucas(state.mumbucaCount); 
+             state.player.invul = 60;
+           } else { handleDeath(); }
         }
         // Se pular no boss
         if (state.player.vy > 0 && Math.abs(px - (state.boss.x + 60)) < 80 && state.player.y + state.player.h > state.boss.y) {
@@ -320,6 +343,22 @@ const Tatuzin = ({ onBack }: { onBack: () => void }) => {
     return () => cancelAnimationFrame(animationId);
   }, [gameState, levelIdx]);
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (gameState === 'GAMEOVER' && continueCountdown > 0) {
+      timer = setInterval(() => {
+        setContinueCountdown(prev => {
+          if (prev <= 1) {
+            onBack();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [gameState, continueCountdown, onBack]);
+
   return (
     <div 
       className="w-screen h-screen bg-black overflow-hidden font-sans select-none touch-none relative" 
@@ -366,7 +405,7 @@ const Tatuzin = ({ onBack }: { onBack: () => void }) => {
             <motion.h1 
               initial={{ rotate: -5, scale: 0.8 }}
               animate={{ rotate: -5, scale: 1 }}
-              className="text-[8rem] sm:text-[14rem] font-black italic text-white uppercase drop-shadow-[12px_12px_0px_rgba(0,0,0,1)] leading-none mb-12 select-none text-center px-4"
+              className="text-[5rem] sm:text-[10rem] font-black italic text-white uppercase drop-shadow-[12px_12px_0px_rgba(0,0,0,1)] leading-none mb-12 select-none text-center px-4"
             >
               TATUZIN
             </motion.h1>
@@ -389,9 +428,24 @@ const Tatuzin = ({ onBack }: { onBack: () => void }) => {
         )}
 
         {gameState === 'GAMEOVER' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-red-950/90 backdrop-blur-xl text-center">
-            <h2 className="text-6xl sm:text-[12rem] font-black italic text-white uppercase mb-12 drop-shadow-2xl">MORREU!</h2>
-            <button onPointerDown={(e) => { e.stopPropagation(); startGame(levelIdx); }} className="bg-white text-red-600 px-16 sm:px-24 py-6 sm:py-10 rounded-[4rem] font-black text-3xl sm:text-5xl shadow-2xl uppercase">Tentar De Novo</button>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-red-950/95 backdrop-blur-xl text-center p-6">
+            <h2 className="text-6xl sm:text-[10rem] font-black italic text-white uppercase mb-4 drop-shadow-2xl">MORREU!</h2>
+            <p className="text-2xl sm:text-4xl font-black text-red-500 uppercase mb-12 tracking-widest">Deseja continuar? {continueCountdown}s</p>
+            
+            <div className="flex flex-col sm:flex-row gap-6 w-full max-w-2xl">
+              <button 
+                onPointerDown={(e) => { e.stopPropagation(); startGame(levelIdx, true); }} 
+                className="flex-1 bg-white text-red-600 px-8 py-6 rounded-[2rem] font-black text-2xl sm:text-4xl shadow-2xl uppercase hover:scale-105 transition-transform"
+              >
+                Continuar
+              </button>
+              <button 
+                onPointerDown={(e) => { e.stopPropagation(); onBack(); }} 
+                className="flex-1 bg-red-600 text-white px-8 py-6 rounded-[2rem] font-black text-2xl sm:text-4xl shadow-2xl uppercase hover:scale-105 transition-transform"
+              >
+                Sair
+              </button>
+            </div>
           </motion.div>
         )}
 

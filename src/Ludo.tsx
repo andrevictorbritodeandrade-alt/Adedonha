@@ -141,7 +141,7 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
   const handlePostRoll = (value: number) => {
     const player = players[currentPlayer];
     const canMove = player.pieces.some((pos: number) => {
-      if (pos === -1) return value === 6;
+      if (pos === -1) return value === 1 || value === 6;
       if (pos === 57) return false;
       return pos + value <= 57;
     });
@@ -163,8 +163,9 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
     let actionLabel = "";
 
     if (pos === -1) {
-      player.pieces[pieceIndex] = 0;
-      actionLabel = "saiu da base";
+      // Se tirar 1, vai para a casa 0 (1ª casa). Se tirar 6, vai para a casa 5 (6ª casa).
+      player.pieces[pieceIndex] = (diceValue === 6) ? 5 : 0;
+      actionLabel = (diceValue === 6) ? "saiu da base e andou 6 casas" : "saiu da base";
     } else {
       const newPos = pos + (diceValue || 0);
       player.pieces[pieceIndex] = newPos;
@@ -307,7 +308,7 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
             r = coords.r; c = coords.c;
         }
         const isMyTurn = pIdx === currentPlayer;
-        const canMoveThis = turnPhase === 'MOVE' && isMyTurn && ((pos === -1 && diceValue === 6) || (pos >= 0 && pos + (diceValue || 0) <= 57));
+        const canMoveThis = turnPhase === 'MOVE' && isMyTurn && ((pos === -1 && (diceValue === 1 || diceValue === 6)) || (pos >= 0 && pos + (diceValue || 0) <= 57));
         ctx.save();
         if (canMoveThis && !dragInfo) {
           ctx.shadowBlur = 15;
@@ -342,7 +343,7 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
     player.pieces.forEach((pos: number, idx: number) => {
       const coords = getCoords(player, idx, pos);
       const dist = Math.sqrt(Math.pow(clickedC + 0.5 - coords.c, 2) + Math.pow(clickedR + 0.5 - coords.r, 2));
-      const canMove = (pos === -1 && diceValue === 6) || (pos >= 0 && pos + (diceValue || 0) <= 57);
+      const canMove = (pos === -1 && (diceValue === 1 || diceValue === 6)) || (pos >= 0 && pos + (diceValue || 0) <= 57);
       if (dist < 1.2 && canMove) foundIdx = idx;
     });
     if (foundIdx !== -1) {
@@ -350,7 +351,7 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
             pieceIdx: foundIdx,
             currentX: x,
             currentY: y,
-            targetPos: player.pieces[foundIdx] === -1 ? 0 : player.pieces[foundIdx] + (diceValue || 0)
+            targetPos: player.pieces[foundIdx] === -1 ? (diceValue === 6 ? 5 : 0) : player.pieces[foundIdx] + (diceValue || 0)
         });
     }
   };
@@ -377,7 +378,7 @@ export default function Ludo({ onBack }: { onBack: () => void }) {
     <div className="min-h-screen bg-slate-50 p-2 md:p-6 font-sans flex flex-col items-center select-none overflow-x-hidden relative">
       <button 
         onClick={onBack}
-        className="absolute left-4 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-50 shadow-lg border border-white/10 flex items-center justify-center"
+        className="absolute left-4 top-4 text-slate-900 hover:text-red-600 transition-all p-3 bg-slate-200 rounded-full z-50 shadow-lg border border-slate-300 flex items-center justify-center"
         aria-label="Voltar"
       >
         <ArrowLeft size={32} />

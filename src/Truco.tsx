@@ -164,7 +164,7 @@ export default function Truco({ onBack }: { onBack: () => void }) {
   if (!gameStarted) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 text-white font-sans relative">
-        <button onClick={onBack} className="absolute left-4 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-50 shadow-lg border border-white/10 flex items-center justify-center" aria-label="Voltar">
+        <button onClick={onBack} className="absolute left-4 top-4 text-red-400 hover:text-red-300 transition-all p-3 bg-red-400/10 rounded-full z-50 shadow-lg border border-red-400/20 flex items-center justify-center" aria-label="Voltar">
           <ArrowLeft size={32} />
         </button>
         <div className="bg-slate-800 p-10 rounded-[50px] shadow-2xl w-full max-w-2xl border-4 border-yellow-500">
@@ -194,7 +194,7 @@ export default function Truco({ onBack }: { onBack: () => void }) {
     <div className="h-screen bg-emerald-950 text-white flex flex-col select-none overflow-hidden relative font-sans">
       <button 
         onClick={onBack}
-        className="absolute left-4 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-50 shadow-lg border border-white/10 flex items-center justify-center"
+        className="absolute left-4 top-4 text-red-400 hover:text-red-300 transition-all p-3 bg-red-400/10 rounded-full z-50 shadow-lg border border-red-400/20 flex items-center justify-center"
         aria-label="Voltar"
       >
         <ArrowLeft size={32} />

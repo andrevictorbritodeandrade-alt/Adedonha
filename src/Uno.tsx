@@ -329,7 +329,7 @@ export default function Uno({ onBack }: { onBack: () => void }) {
     <div className="h-screen w-screen bg-slate-950 text-white font-sans overflow-hidden flex flex-col select-none touch-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 to-black relative">
       <button 
         onClick={onBack}
-        className="absolute left-4 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-50 shadow-lg border border-white/10 flex items-center justify-center"
+        className="absolute left-4 top-4 text-yellow-400 hover:text-yellow-300 transition-all p-3 bg-yellow-400/10 rounded-full z-50 shadow-lg border border-yellow-400/20 flex items-center justify-center"
         aria-label="Voltar"
       >
         <ArrowLeft size={32} />

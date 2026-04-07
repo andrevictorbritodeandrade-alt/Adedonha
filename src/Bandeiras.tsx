@@ -66,7 +66,7 @@ export default function Bandeiras({ onBack }: { onBack: () => void }) {
       <header className="text-center mb-6 relative w-full max-w-4xl">
         <button 
           onClick={onBack} 
-          className="absolute left-0 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-30 shadow-lg border border-white/10 flex items-center justify-center"
+          className="absolute left-0 top-4 text-orange-600 hover:text-orange-500 transition-all p-3 bg-orange-100 rounded-full z-30 shadow-lg border border-orange-200 flex items-center justify-center"
           aria-label="Voltar"
         >
           <ArrowLeft size={32} />

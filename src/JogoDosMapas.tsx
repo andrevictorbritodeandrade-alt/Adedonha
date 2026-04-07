@@ -173,6 +173,12 @@ export default function JogoDosMapas({ onBack }: { onBack: () => void }) {
     }
   }, [timer, gameState, feedback, score]);
 
+  useEffect(() => {
+    if (gameState === 'atlas' && gamePool.length > 0) {
+      setTarget(gamePool[atlasIndex]);
+    }
+  }, [atlasIndex, gameState, gamePool]);
+
   const drawMaps = useCallback(() => {
     if (!target || !canvasReal.current || !canvasContexto.current) return;
     const ctxL = canvasReal.current.getContext('2d');

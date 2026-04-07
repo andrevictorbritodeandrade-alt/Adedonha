@@ -130,7 +130,18 @@ export default function XadrezSortudo({ onBack }: XadrezSortudoProps) {
     const isWin = centerLine[0].id === centerLine[1].id && centerLine[1].id === centerLine[2].id;
 
     if (isWin) {
-      const wonCoins = centerLine[0].value;
+      let wonCoins = centerLine[0].value;
+      
+      // Bonus: White Knights (w_knight) - Special win
+      const isWhiteKnights = centerLine.every(p => p.id === 'w_knight');
+      
+      // Bonus: Kings or Queens - Double score
+      const isKingOrQueen = centerLine[0].type === 'king' || centerLine[0].type === 'queen';
+      
+      if (isKingOrQueen) {
+        wonCoins *= 2;
+      }
+
       setWinAmount(wonCoins);
       setShowWin(true);
       if (winAudioRef.current) {
@@ -162,7 +173,7 @@ export default function XadrezSortudo({ onBack }: XadrezSortudoProps) {
         
         <button 
           onClick={onBack} 
-          className="absolute left-4 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-50 shadow-lg border border-white/10 flex items-center justify-center"
+          className="absolute left-4 top-4 text-yellow-400 hover:text-yellow-300 transition-all p-3 bg-yellow-400/10 rounded-full z-50 shadow-lg border border-yellow-400/20 flex items-center justify-center"
           aria-label="Voltar"
         >
           <ArrowLeft size={32} />

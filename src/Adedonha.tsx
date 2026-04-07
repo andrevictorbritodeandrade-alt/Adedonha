@@ -364,7 +364,7 @@ const AdedonhaGame = ({ onBack }: { onBack: () => void }) => {
       <header className="flex flex-col items-center justify-center relative z-20 pt-4 px-12">
         <button 
           onClick={onBack} 
-          className="absolute left-0 top-4 text-white hover:text-yellow-400 transition-all p-3 bg-white/5 rounded-full z-30 shadow-lg border border-white/10 flex items-center justify-center"
+          className="absolute left-0 top-4 text-yellow-400 hover:text-yellow-300 transition-all p-3 bg-yellow-400/10 rounded-full z-30 shadow-lg border border-yellow-400/20 flex items-center justify-center"
           aria-label="Voltar"
         >
           <ArrowLeft size={32} />

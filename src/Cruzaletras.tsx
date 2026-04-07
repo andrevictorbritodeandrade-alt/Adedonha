@@ -335,7 +335,7 @@ const Cruzaletras = ({ onBack }) => {
 
   return (
     <div className="min-h-screen bg-[#070b14] text-white font-sans flex flex-col items-center select-none overflow-x-hidden relative">
-      <button onClick={onBack} className="absolute top-4 left-4 z-50 bg-white/10 text-white px-4 py-2 rounded-lg font-bold hover:bg-white/20">Voltar</button>
+      <button onClick={onBack} className="absolute top-4 left-4 z-50 bg-yellow-400/10 text-yellow-400 px-4 py-2 rounded-lg font-bold hover:bg-yellow-400/20 border border-yellow-400/20 shadow-lg">Voltar</button>
 
       {/* SCOREBOARD */}
       {gameState !== 'menu' && (

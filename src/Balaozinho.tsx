@@ -296,7 +296,7 @@ export default function Balaozinho({ onBack }: BalaozinhoProps) {
       
       <button 
         onClick={onBack}
-        className="fixed top-3 left-3 z-50 bg-[#1b1d25]/80 backdrop-blur-md px-4 py-2 rounded-full border border-gray-800 hover:bg-gray-800 transition-all shadow-xl flex items-center gap-2 font-bold"
+        className="fixed top-3 left-3 z-50 bg-yellow-400/10 backdrop-blur-md px-4 py-2 rounded-full border border-yellow-400/20 hover:bg-yellow-400/20 transition-all shadow-xl flex items-center gap-2 font-bold text-yellow-400"
       >
         <ChevronLeft size={18} /> Voltar
       </button>

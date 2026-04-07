@@ -12,17 +12,54 @@ import { GoogleGenAI } from "@google/genai";
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 const genAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-const MARICA_LOCATIONS = [
-  "Igreja de Nossa Senhora do Amparo",
-  "Lagoa de Araçatiba",
-  "Praia de Ponta Negra",
-  "Farol de Ponta Negra",
-  "Pedra do Elefante",
-  "Cachoeira do Espraiado",
-  "Orla de Itaipuaçu",
-  "Terminal Rodoviário de Maricá",
-  "Praça Orlando de Barros Pimentel",
-  "Barra de Maricá"
+const DISTRICTS = [
+  { 
+    id: "centro", 
+    name: "1º Distrito: Centro", 
+    locations: [
+      "Igreja de Nossa Senhora do Amparo", "Lagoa de Araçatiba", "Praia da Barra de Maricá", "Farol da Barra",
+      "Praça Orlando de Barros Pimentel", "Terminal Rodoviário de Maricá", "Cine Henfil", "Mercado das Artes",
+      "Orla de Araçatiba", "Deck do Pôr do Sol", "Canal da Barra", "Ponte da Barra", "Lagoa de Jacaroá",
+      "Colina de Nossa Senhora do Amparo", "Prédio da Prefeitura", "Câmara Municipal", "Hospital Conde Modesto Leal",
+      "Campus de Educação Pública", "Aeroporto de Maricá", "Parque Linear do Flamengo", "Praça do Ferreirinha",
+      "Lagoa do Boqueirão", "Itapeba", "Parque de Exposições", "Boqueirão"
+    ]
+  },
+  { 
+    id: "ponta_negra", 
+    name: "2º Distrito: Ponta Negra", 
+    locations: [
+      "Praia de Ponta Negra", "Farol de Ponta Negra", "Canal de Ponta Negra", "Gruta da Sacristia",
+      "Praia da Sacristia", "Cachoeira do Espraiado", "Sede das Unidades de Conservação", "Mirante do Farol",
+      "Praça de Ponta Negra", "Orla de Ponta Negra", "Bambuí", "Lagoa de Bambuí", "Manoel Ribeiro",
+      "Espraiado", "Vale do Espraiado", "Refúgio de Vida Silvestre", "Trilha do Farol", "Praia de Jaconé",
+      "Canal de Jaconé", "Praça de Jaconé", "Escola Municipal de Ponta Negra", "Posto de Saúde de Ponta Negra",
+      "Destacamento de Bombeiros", "Área de Camping", "Restaurantes da Orla"
+    ]
+  },
+  { 
+    id: "inoa", 
+    name: "3º Distrito: Inoã", 
+    locations: [
+      "Trevo de Inoã", "Passarela de Inoã", "Shopping Inoã", "Santa Paula", "Condomínio Santa Paula",
+      "Cassorotiba", "Chácaras de Inoã", "Spar", "Calaboca", "Rio Inoã", "Praça de Inoã",
+      "Unidade de Saúde de Inoã", "Escola Municipal de Inoã", "Centro Comercial de Inoã", "Posto de Gasolina de Inoã",
+      "Igreja de Inoã", "Área Rural de Cassorotiba", "Fazenda Inoã", "Trilha da Santa Paula", "Mirante de Inoã",
+      "Campo de Futebol de Inoã", "Academia ao Ar Livre", "Ponto do Vermelhinho em Inoã", "Delegacia de Inoã",
+      "Mercado de Inoã"
+    ]
+  },
+  { 
+    id: "itaipuacu", 
+    name: "4º Distrito: Itaipuaçu", 
+    locations: [
+      "Orla de Itaipuaçu", "Pedra do Elefante", "Recanto de Itaipuaçu", "Canal do Recanto", "Praia do Recanto",
+      "Barroco", "Praça do Barroco", "Jardim Atlântico", "Rua 1", "Rua 128", "Terminal de Itaipuaçu",
+      "Praça do Ferreirinha (Itaipuaçu)", "Orla de 8km", "Ciclovia de Itaipuaçu", "Morro da Peça",
+      "Trilha da Pedra do Elefante", "Mirante da Serrinha", "Praia de Itaipuaçu (Posto 4)", "Cajueiros",
+      "São Bento da Lagoa", "Inferninho", "Costa Verde", "Vivendas", "Peixaria do Recanto", "Centro Comercial do Barroco"
+    ]
+  }
 ];
 
 const BUS_LINES = ["E01", "E02", "E11", "E24", "E30", "E31"];
@@ -37,8 +74,9 @@ interface LeaderboardEntry {
 
 export default function Vermelhinho({ onBack }: { onBack: () => void }) {
   // Estados do Jogo
-  const [gameState, setGameState] = useState<'menu' | 'loading' | 'playing' | 'result'>('menu');
+  const [gameState, setGameState] = useState<'menu' | 'district' | 'loading' | 'playing' | 'result'>('menu');
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
   const [targetPos, setTargetPos] = useState({ x: 0, y: 0 });
@@ -88,12 +126,13 @@ export default function Vermelhinho({ onBack }: { onBack: () => void }) {
   }, [gameState, timeLeft]);
 
   // Gerar Novo Jogo com Gemini e Imagen
-  const startNewGame = async () => {
+  const startNewGame = async (districtId?: string) => {
     setGameState('loading');
     setLoadingProgress(10);
     setLoadingStatus("Escolhendo destino em Maricá...");
     
-    const selectedLoc = MARICA_LOCATIONS[Math.floor(Math.random() * MARICA_LOCATIONS.length)];
+    const district = DISTRICTS.find(d => d.id === (districtId || selectedDistrict)) || DISTRICTS[0];
+    const selectedLoc = district.locations[Math.floor(Math.random() * district.locations.length)];
     const selectedBus = BUS_LINES[Math.floor(Math.random() * BUS_LINES.length)];
     setLocation(selectedLoc);
     setBusLine(selectedBus);
@@ -316,10 +355,42 @@ export default function Vermelhinho({ onBack }: { onBack: () => void }) {
               </div>
 
               <button 
-                onClick={startNewGame}
+                onClick={() => setGameState('district')}
                 className="w-full py-6 bg-red-600 hover:bg-red-500 text-white rounded-full font-black text-2xl uppercase italic tracking-tighter transition-all hover:scale-105 active:scale-95 shadow-2xl flex items-center justify-center gap-4"
               >
                 <PlayIcon /> INICIAR BUSCA
+              </button>
+            </motion.div>
+          )}
+
+          {gameState === 'district' && (
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="text-center w-full max-w-4xl px-6"
+            >
+              <h2 className="text-4xl font-black italic uppercase mb-8">Escolha o Distrito</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {DISTRICTS.map((d) => (
+                  <button
+                    key={d.id}
+                    onClick={() => {
+                      setSelectedDistrict(d.id);
+                      startNewGame(d.id);
+                    }}
+                    className="p-6 bg-white/5 border-2 border-white/10 rounded-3xl hover:border-red-600 hover:bg-red-600/10 transition-all text-left flex flex-col gap-2 group"
+                  >
+                    <span className="text-2xl font-black uppercase italic group-hover:text-red-500">{d.name}</span>
+                    <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">Explore {d.locations.length} locais únicos</span>
+                  </button>
+                ))}
+              </div>
+              <button 
+                onClick={() => setGameState('menu')}
+                className="mt-8 text-gray-500 hover:text-white font-black uppercase tracking-widest text-xs"
+              >
+                Voltar ao Menu
               </button>
             </motion.div>
           )}

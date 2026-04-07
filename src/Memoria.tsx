@@ -116,7 +116,7 @@ export default function Memoria({ onBack }: { onBack: () => void }) {
       <header className="text-center mb-6 relative w-full max-w-4xl z-10 bg-white/80 p-4 rounded-2xl shadow-md border border-amber-200">
         <button 
           onClick={onBack}
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-amber-800 hover:text-amber-600 transition-all p-3 bg-amber-100 rounded-full z-30 shadow-md border border-amber-200 flex items-center justify-center"
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-900 hover:text-blue-700 transition-all p-3 bg-blue-100 rounded-full z-30 shadow-md border border-blue-200 flex items-center justify-center"
           aria-label="Voltar"
         >
           <ArrowLeft size={32} />
