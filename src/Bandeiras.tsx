@@ -12,15 +12,26 @@ export default function Bandeiras({ onBack }: { onBack: () => void }) {
   const [score, setScore] = useState(0);
   const [round, setRound] = useState(1);
   const [isFlashing, setIsFlashing] = useState(false);
+  const [history, setHistory] = useState<string[]>([]);
 
   const generateQuestion = () => {
     let pool = ITEMS;
     if (mode === 'brazil') pool = ITEMS.filter(i => i.type === 'state');
-    else if (mode === 'world') pool = ITEMS;
-    // continent mode would need filtering by continent
+    else if (mode === 'world') pool = ITEMS.filter(i => i.type === 'country');
+    // continent mode could be expanded here
+    
+    // Filter out recently seen flags to prevent repetition
+    let availablePool = pool.filter(item => !history.includes(item.code));
+    
+    // If pool is too small after filtering, reset history
+    if (availablePool.length < 5) {
+      availablePool = pool;
+      setHistory([]);
+    }
 
-    const target = pool[Math.floor(Math.random() * pool.length)];
+    const target = availablePool[Math.floor(Math.random() * availablePool.length)];
     setCurrentCountry(target);
+    setHistory(prev => [target.code, ...prev].slice(0, 15));
 
     const wrongOptions = pool
       .filter(c => c.code !== target.code)
