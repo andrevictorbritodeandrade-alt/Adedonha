@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Trophy, Timer, Play, RotateCcw, Award, RefreshCw, Star, ArrowLeft
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 // Alfabeto sem K, W, Y
 const LETTERS = "ABCDEFGHIJLMNOPQRSTUVXZ".split("");

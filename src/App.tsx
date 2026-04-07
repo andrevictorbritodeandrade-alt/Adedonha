@@ -22,31 +22,33 @@ import Vermelhinho from './Vermelhinho';
 import Tatuzin from './Tatuzin';
 import Cruzaletras from './Cruzaletras';
 import JogoDosMapas from './JogoDosMapas';
-import { generateMenuBackground } from './ImageGen';
-import { auth } from './firebase';
+import { generateMenuBackground, generateGameAvatar } from './ImageGen';
+import { auth, db } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { collection, onSnapshot, query, orderBy, setDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
 import { UserProfile } from './components/UserProfile';
 
-const JOGOS = [
-  { id: 'adedonha', nome: 'ADEDONHA INTERATIVA', category: 'Mickey Mouse', image: 'https://picsum.photos/seed/mickey-mouse-disney/600/600' },
-  { id: 'perguntados', nome: 'PERGUNTADOS', category: 'Gênio (Aladdin)', image: 'https://picsum.photos/seed/disney-genie-blue/600/600' },
-  { id: 'forca', nome: 'JOGO DA FORCA', category: 'Capitão Gancho', image: 'https://picsum.photos/seed/captain-hook-pirate/600/600' },
-  { id: 'velha', nome: 'JOGO DA VELHA', category: 'Olaf (Frozen)', image: 'https://picsum.photos/seed/olaf-snowman/600/600' },
-  { id: 'memoria', nome: 'JOGO DO MEMÓRIA', category: 'Dory (Nemo)', image: 'https://picsum.photos/seed/dory-fish-blue/600/600' },
-  { id: 'bandeiras', nome: 'JOGO DAS BANDEIRAS', category: 'Castelo Disney', image: 'https://picsum.photos/seed/disney-castle-magic/600/600' },
-  { id: 'mapas', nome: 'JOGO DOS MAPAS', category: 'Woody (Toy Story)', image: 'https://picsum.photos/seed/woody-cowboy/600/600' },
-  { id: 'ludo', nome: 'LUDO', category: 'Sininho', image: 'https://picsum.photos/seed/tinkerbell-fairy/600/600' },
-  { id: 'uno', nome: 'UNO', category: 'Cartas Uno', image: 'https://picsum.photos/seed/uno-cards-game/600/600' },
-  { id: 'truco', nome: 'TRUCO', category: 'Scar (Rei Leão)', image: 'https://picsum.photos/seed/scar-lion/600/600' },
-  { id: 'xadrez', nome: 'XADREZ SORTUDO', category: 'Peças de Xadrez', image: 'https://picsum.photos/seed/chess-pieces-board/600/600' },
-  { id: 'balaozinho', nome: 'JOGO DO BALÃOZINHO', category: 'Balão Vermelho', image: 'https://picsum.photos/seed/red-balloon-sky/600/600' },
-  { id: 'vermelhinho', nome: 'ONDE ESTÁ O VERMELHINHO?', category: 'Mickey Detetive', image: 'https://picsum.photos/seed/mickey-detective/600/600' },
-  { id: 'tatuzin', nome: 'TATUZIN', category: 'Tatu Real', image: 'https://picsum.photos/seed/armadillo-animal/600/600' },
-  { id: 'cruzaletras', nome: 'CRUZALETRAS', category: 'Livros da Bela', image: 'https://picsum.photos/seed/belle-books/600/600' },
+const JOGOS_FALLBACK = [
+  { id: 'adedonha', title: 'ADEDONHA INTERATIVA', subtitle: 'PROFESSOR E MÁGICO DE PALAVRAS', image_url: 'https://picsum.photos/seed/3d-roulette-letters-pixar/600/600', accent_color: '#107C10', path: 'adedonha', avatar_prompt: 'Uma roleta colorida cercada por letras 3D flutuantes' },
+  { id: 'perguntados', title: 'PERGUNTADOS', subtitle: 'GÊNIO DO CONHECIMENTO', image_url: 'https://picsum.photos/seed/3d-question-marks-pixar/600/600', accent_color: '#0078D7', path: 'perguntados', avatar_prompt: 'Vários pontos de interrogação e exclamação coloridos em 3D' },
+  { id: 'forca', title: 'JOGO DA FORCA', subtitle: 'INVESTIGADOR MISTERIOSO', image_url: 'https://picsum.photos/seed/3d-gallows-stickman-pixar/600/600', accent_color: '#D83B01', path: 'forca', avatar_prompt: 'Um boneco palito 3D amigável ao lado de uma forca de madeira estilizada' },
+  { id: 'velha', title: 'JOGO DA VELHA', subtitle: 'DUELO ESTRATÉGICO X E O', image_url: 'https://picsum.photos/seed/3d-tic-tac-toe-pixar/600/600', accent_color: '#E81123', path: 'velha', avatar_prompt: 'Um tabuleiro de jogo da velha 3D com peças X e O brilhantes' },
+  { id: 'memoria', title: 'JOGO DO MEMÓRIA', subtitle: 'NOSTALGIA E MEMÓRIAS', image_url: 'https://picsum.photos/seed/3d-memory-cards-brain-pixar/600/600', accent_color: '#68217A', path: 'memoria', avatar_prompt: 'Cartas de baralho viradas e um cérebro 3D com uma exclamação em cima' },
+  { id: 'bandeiras', title: 'JOGO DAS BANDEIRAS', subtitle: 'EXPLORADOR DE CULTURAS', image_url: 'https://picsum.photos/seed/3d-world-flags-pixar/600/600', accent_color: '#00B294', path: 'bandeiras', avatar_prompt: 'Uma coleção de bandeiras de diversos países em 3D' },
+  { id: 'mapas', title: 'JOGO DOS MAPAS', subtitle: 'CARTÓGRAFO DE AVENTURAS', image_url: 'https://picsum.photos/seed/3d-world-maps-pixar/600/600', accent_color: '#E3008C', path: 'mapas', avatar_prompt: 'Vários mapas mundiais e globos terrestres em 3D' },
+  { id: 'ludo', title: 'LUDO', subtitle: 'MESTRE DO TABULEIRO', image_url: 'https://picsum.photos/seed/3d-ludo-board-pixar/600/600', accent_color: '#00CC6A', path: 'ludo', avatar_prompt: 'Um tabuleiro de Ludo clássico com peças coloridas em 3D' },
+  { id: 'uno', title: 'UNO', subtitle: 'ESTRATEGISTA DE CARTAS', image_url: 'https://picsum.photos/seed/3d-uno-cards-pixar/600/600', accent_color: '#5C2D91', path: 'uno', avatar_prompt: 'Cartas de Uno coloridas espalhadas em 3D' },
+  { id: 'truco', title: 'TRUCO', subtitle: 'DESAFIO DE TRUCO', image_url: 'https://picsum.photos/seed/3d-playing-cards-pixar/600/600', accent_color: '#00188F', path: 'truco', avatar_prompt: 'Cartas de baralho espanhol/brasileiro em 3D' },
+  { id: 'xadrez', title: 'XADREZ SORTUDO', subtitle: 'MESTRE DE XADREZ', image_url: 'https://picsum.photos/seed/3d-chess-pieces-pixar/600/600', accent_color: '#A80000', path: 'xadrez', avatar_prompt: 'Peças de xadrez em um tabuleiro quadriculado em 3D' },
+  { id: 'balaozinho', title: 'JOGO DO BALÃOZINHO', subtitle: 'AVENTURA NAS ALTURAS', image_url: 'https://picsum.photos/seed/3d-hot-air-balloon-pixar/600/600', accent_color: '#008272', path: 'balaozinho', avatar_prompt: 'Um balão de ar quente colorido com cesto voando entre nuvens 3D' },
+  { id: 'vermelhinho', title: 'ONDE ESTÁ O VERMELHINHO?', subtitle: 'DETETIVE DE MARICÁ', image_url: 'https://picsum.photos/seed/3d-red-bus-london-pixar/600/600', accent_color: '#107C10', path: 'vermelhinho', avatar_prompt: 'Um ônibus de dois andares vermelho (estilo Londres) em 3D' },
+  { id: 'tatuzin', title: 'TATUZIN', subtitle: 'EXPLORADOR DA NATUREZA', image_url: 'https://picsum.photos/seed/3d-armadillo-mascot-pixar/600/600', accent_color: '#0078D7', path: 'tatuzin', avatar_prompt: 'Um tatu-bola mascote (estilo Fuleco) sorridente em 3D' },
+  { id: 'cruzaletras', title: 'CRUZALETRAS', subtitle: 'MESTRE DAS LETRAS', image_url: 'https://picsum.photos/seed/3d-crossword-pixar/600/600', accent_color: '#D83B01', path: 'cruzaletras', avatar_prompt: 'Uma grade de palavras cruzadas em 3D com letras flutuantes' },
 ];
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('menu');
+  const [games, setGames] = useState<any[]>([]);
   const [user, setUser] = useState<any>({
     uid: 'guest',
     email: 'visitante@arena.com',
@@ -57,15 +59,94 @@ export default function App() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [isGeneratingAvatars, setIsGeneratingAvatars] = useState(false);
+
+  // Seeding function to populate Firestore if empty or missing prompts
+  const seedGames = async () => {
+    const gamesRef = collection(db, 'games');
+    const snapshot = await getDocs(gamesRef);
+    
+    // Always sync fallback data to ensure prompts and better default images are present
+    console.log('Syncing games to Firestore...');
+    for (const game of JOGOS_FALLBACK) {
+      const gameDoc = doc(gamesRef, game.id);
+      await setDoc(gameDoc, {
+        title: game.title,
+        subtitle: game.subtitle,
+        image_url: game.image_url,
+        path: game.path,
+        accent_color: game.accent_color || '#107C10',
+        order: JOGOS_FALLBACK.indexOf(game),
+        avatar_prompt: (game as any).avatar_prompt
+      }, { merge: true });
+    }
+  };
+
+  const generateAllAvatars = async () => {
+    if (!user || user.email !== 'andrevictorbritodeandrade@gmail.com') return;
+    setIsGeneratingAvatars(true);
+    try {
+      const gamesRef = collection(db, 'games');
+      const snapshot = await getDocs(gamesRef);
+      
+      for (const gameDoc of snapshot.docs) {
+        const data = gameDoc.data();
+        const prompt = data.avatar_prompt || data.title;
+        console.log(`Gerando avatar para: ${data.title}...`);
+        const newUrl = await generateGameAvatar(data.title, prompt);
+        if (newUrl) {
+          await updateDoc(doc(db, 'games', gameDoc.id), {
+            image_url: newUrl
+          });
+        }
+      }
+      alert('Todos os avatares foram gerados com sucesso!');
+    } catch (e) {
+      console.error("Erro ao gerar avatares:", e);
+      alert('Erro ao gerar avatares. Verifique o console.');
+    } finally {
+      setIsGeneratingAvatars(false);
+    }
+  };
 
   useEffect(() => {
     generateMenuBackground().then(setBackgroundImage);
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        // Seed if admin
+        if (currentUser.email === 'andrevictorbritodeandrade@gmail.com') {
+          seedGames();
+        }
       }
     });
-    return () => unsubscribe();
+
+    // Real-time games listener
+    const q = query(collection(db, 'games'), orderBy('order', 'asc'));
+    const unsubscribeGames = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const gamesList = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setGames(gamesList);
+      } else {
+        // Fallback if DB is empty and not seeded yet
+        setGames(JOGOS_FALLBACK.map(g => ({
+          id: g.id,
+          title: g.title,
+          subtitle: g.subtitle,
+          image_url: g.image_url,
+          path: g.path,
+          accent_color: g.accent_color
+        })));
+      }
+    });
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeGames();
+    };
   }, []);
 
   useEffect(() => {
@@ -211,15 +292,23 @@ export default function App() {
           </div>
         </div>
 
-        {showProfile && <UserProfile user={user} onClose={() => setShowProfile(false)} />}
+        {showProfile && (
+        <UserProfile 
+          user={user} 
+          onClose={() => setShowProfile(false)} 
+          onGenerateAvatars={generateAllAvatars}
+          isGenerating={isGeneratingAvatars}
+        />
+      )}
 
         {/* Xbox 360 Style Tile Grid */}
         <div className="flex-1 overflow-y-auto hide-scrollbar pb-20">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4 max-w-[1600px] mx-auto">
-            {JOGOS.map(({ id, nome, category, image }, index) => {
+            {games.map((game, index) => {
+              const { id, title, subtitle, image_url, path, accent_color } = game;
               // Metro UI style sizing logic
               const isLarge = index === 0 || index === 7;
-              const isWide = index === 3 || index === 10 || index === 13;
+              const isWide = id === 'mapas' || id === 'cruzaletras' || index === 3 || index === 10 || index === 13;
               
               let spanClass = "col-span-1 row-span-1 aspect-square";
               if (isLarge) spanClass = "col-span-2 row-span-2 aspect-square md:aspect-auto";
@@ -228,13 +317,14 @@ export default function App() {
               return (
                 <button 
                   key={id} 
-                  onClick={() => navigateToGame(id)}
+                  onClick={() => navigateToGame(path)}
                   className={`relative overflow-hidden group ${spanClass} rounded-sm shadow-lg transition-all duration-300 hover:scale-[1.02] hover:z-10 focus:outline-none focus:ring-4 focus:ring-white border border-white/10`}
+                  style={{ backgroundColor: accent_color || '#1a1a1a' }}
                 >
                   {/* Full Card Avatar Image */}
                   <img 
-                    src={image} 
-                    alt={category} 
+                    src={image_url} 
+                    alt={subtitle} 
                     referrerPolicy="no-referrer"
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
@@ -246,8 +336,8 @@ export default function App() {
                   <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                   <div className="absolute bottom-4 left-4 right-4 text-left z-10">
-                    <h2 className={`font-display font-bold text-white tracking-wide leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] group-hover:translate-x-1 transition-transform ${isLarge ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>{nome}</h2>
-                    <p className="text-white/90 text-xs font-bold mt-1 truncate uppercase tracking-wider drop-shadow-md">{category}</p>
+                    <h2 className={`font-display font-bold text-white tracking-wide leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] group-hover:translate-x-1 transition-transform ${isLarge ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>{title}</h2>
+                    <p className="text-white/90 text-xs font-bold mt-1 truncate uppercase tracking-wider drop-shadow-md">{subtitle}</p>
                   </div>
                 </button>
               );

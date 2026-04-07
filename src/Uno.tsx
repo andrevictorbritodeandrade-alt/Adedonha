@@ -4,25 +4,22 @@ import {
   UserPlus, Zap, ShieldAlert, Crown, Sparkles, BrainCircuit, MessageSquareQuote,
   Music, Music2, Palette, CheckCircle2, Play, MousePointer2, ArrowLeft
 } from 'lucide-react';
+import { GoogleGenAI } from "@google/genai";
 
-const GEMINI_MODEL = "gemini-3.1-flash-preview";
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
 const callGemini = async (prompt: string, systemInstruction = "") => {
-  const apiKey = process.env.GEMINI_API_KEY || "";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
-  const payload = {
-    contents: [{ parts: [{ text: prompt }] }],
-    systemInstruction: { parts: [{ text: systemInstruction }] }
-  };
   try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+    const fullPrompt = systemInstruction ? `${systemInstruction}\n\nUser: ${prompt}` : prompt;
+    const result = await (genAI as any).models.generateContent({ 
+      model: "gemini-3-flash-preview",
+      contents: [{ role: 'user', parts: [{ text: fullPrompt }] }]
     });
-    const result = await response.json();
-    return result.candidates?.[0]?.content?.parts?.[0]?.text || "IA processando...";
-  } catch (e) { return "Mestre IA offline."; }
+    return result.candidates[0].content.parts[0].text || "IA processando...";
+  } catch (e) { 
+    console.error("Gemini Error:", e);
+    return "Mestre IA offline."; 
+  }
 };
 
 export default function Uno({ onBack }: { onBack: () => void }) {

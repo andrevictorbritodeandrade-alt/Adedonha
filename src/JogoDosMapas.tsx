@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Trophy, Clock, Globe, Map as MapIcon, RefreshCw, User, CheckCircle, AlertCircle, XCircle, LayoutGrid, MapPin, BookOpen, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 // URLs de dados geográficos estáveis e com metadados de continente
 const URL_MUNDO = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson";

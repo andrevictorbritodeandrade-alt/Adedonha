@@ -3,16 +3,16 @@ import { PERGUNTAS } from './perguntas';
 import { ArrowLeft } from 'lucide-react';
 
 const CATEGORIAS = [
-  { id: 1, name: "Português", icon: "🧙‍♂️", color: "#FF3366" }, // Pink/Red
-  { id: 2, name: "Matemática", icon: "👽", color: "#33CCFF" }, // Light Blue
-  { id: 3, name: "Geografia", icon: "🌋", color: "#33FF66" }, // Neon Green
-  { id: 4, name: "História", icon: "👑", color: "#FFCC00" }, // Gold/Yellow
-  { id: 5, name: "Ciências", icon: "🧪", color: "#9933FF" }, // Purple
-  { id: 6, name: "Entretenimento", icon: "🎪", color: "#FF66CC" }, // Hot Pink
-  { id: 7, name: "Educação Física", icon: "🥋", color: "#FF6600" }, // Orange
-  { id: 8, name: "Artes", icon: "🎨", color: "#00CC99" }, // Teal
-  { id: 9, name: "Inglês", icon: "🗽", color: "#0066FF" }, // Blue
-  { id: 10, name: "Francês", icon: "🥐", color: "#FF3333" }, // Red
+  { id: 1, name: "Português", icon: "🐭", color: "#FF3366" }, // Mickey
+  { id: 2, name: "Matemática", icon: "🦆", color: "#33CCFF" }, // Donald
+  { id: 3, name: "Geografia", icon: "🦁", color: "#33FF66" }, // Simba
+  { id: 4, name: "História", icon: "🏛️", color: "#FFCC00" }, // Hercules
+  { id: 5, name: "Ciências", icon: "👽", color: "#9933FF" }, // Stitch
+  { id: 6, name: "Entretenimento", icon: "🤡", color: "#FF66CC" }, // Pateta
+  { id: 7, name: "Educação Física", icon: "🏎️", color: "#FF6600" }, // McQueen
+  { id: 8, name: "Artes", icon: "👸", color: "#00CC99" }, // Rapunzel
+  { id: 9, name: "Inglês", icon: "🎩", color: "#0066FF" }, // Alice
+  { id: 10, name: "Francês", icon: "🧀", color: "#FF3333" }, // Remy
 ];
 
 const TEMPO_INICIAL = 30; // 30 segundos para responder
@@ -280,7 +280,7 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
   const isShaking = isRunning && timeLeft <= 10 && timeLeft > 0;
 
   return (
-    <div className={`min-h-screen bg-magical font-sans p-2 md:p-4 text-white transition-colors duration-300 ${flashColor || ''} ${isShaking ? 'animate-msn-shake' : ''}`}>
+    <div className={`min-h-screen bg-[#0f0c29] font-sans p-2 md:p-4 text-white transition-colors duration-300 ${flashColor || ''} ${isShaking ? 'animate-msn-shake' : ''}`}>
       
       <header className="text-center mb-4 mt-2 relative z-20">
         <button 
@@ -297,7 +297,7 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
           </span>
           <span className="inline-block animate-bounce ml-2" style={{ animationDelay: '0.2s' }}>🧠</span>
         </h1>
-        <p className="text-slate-500 font-bold uppercase tracking-wider text-sm">Gire a roleta e responda à pergunta!</p>
+        <p className="text-slate-400 font-bold uppercase tracking-wider text-sm">Gire a roleta e responda à pergunta!</p>
       </header>
 
       <div className="max-w-[1400px] w-full mx-auto flex flex-col lg:flex-row gap-6 justify-center">
@@ -305,7 +305,7 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
         {/* Painel Esquerdo (Roleta/Pergunta e Timer) */}
         <div className="w-full lg:w-2/3 bg-[#1a1a2e] p-6 rounded-3xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-white/10 flex flex-col relative overflow-hidden">
           
-          <div className="bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 p-6 rounded-2xl flex flex-col items-center justify-center mb-6 border-4 border-indigo-500/30 min-h-[500px] shadow-inner relative overflow-hidden">
+          <div className="bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 p-6 rounded-2xl flex flex-col items-center justify-center mb-6 border-4 border-indigo-500/30 min-h-[500px] shadow-inner relative overflow-hidden">
             {/* Background decoration */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent opacity-50"></div>
             
@@ -343,18 +343,20 @@ export default function Perguntados({ onBack }: { onBack: () => void }) {
                     {CATEGORIAS.map((cat, i) => (
                       <div 
                         key={cat.id}
-                        className="absolute top-0 left-1/2 origin-bottom flex items-start justify-center pt-2 sm:pt-3 md:pt-4 z-10"
+                        className="absolute top-0 left-1/2 origin-bottom flex items-start justify-center z-10"
                         style={{
                           height: '50%',
                           transform: `translateX(-50%) rotate(${i * (360/CATEGORIAS.length)}deg)`,
-                          width: '140px'
+                          width: '180px'
                         }}
                       >
-                        <div className="flex flex-col items-center">
-                          <span className="block text-center font-black text-white drop-shadow-lg text-[10px] sm:text-xs md:text-sm leading-tight uppercase px-1 mb-1 sm:mb-2" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9), -1px -1px 0 rgba(0,0,0,0.5)' }}>
+                        <div className="flex flex-col items-center w-full h-full relative">
+                          {/* Nome na Borda */}
+                          <span className="absolute top-2 w-full text-center font-black text-white drop-shadow-lg text-[9px] sm:text-[10px] md:text-xs leading-tight uppercase px-1" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9), -1px -1px 0 rgba(0,0,0,0.5)' }}>
                             {cat.name}
                           </span>
-                          <span className="text-4xl sm:text-5xl md:text-6xl drop-shadow-xl" style={{ filter: 'drop-shadow(0px 5px 5px rgba(0,0,0,0.6))' }}>{cat.icon}</span>
+                          {/* Ícone no Centro do Segmento */}
+                          <span className="mt-12 sm:mt-16 md:mt-20 text-4xl sm:text-5xl md:text-6xl drop-shadow-xl" style={{ filter: 'drop-shadow(0px 5px 5px rgba(0,0,0,0.6))' }}>{cat.icon}</span>
                         </div>
                       </div>
                     ))}

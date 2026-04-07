@@ -36,6 +36,31 @@
         "timestamp": { "type": "string", "format": "date-time", "description": "Acceptance timestamp" }
       },
       "required": ["userId", "email", "timestamp"]
+    },
+    "Game": {
+      "title": "Game",
+      "description": "Represents a game in the menu.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "The display name of the game." },
+        "subtitle": { "type": "string", "description": "A short description or category." },
+        "image_url": { "type": "string", "description": "URL of the game's avatar image." },
+        "path": { "type": "string", "description": "The internal path or ID for navigation." },
+        "accent_color": { "type": "string", "description": "The primary color for the game tile (e.g., #00FF00)." }
+      },
+      "required": ["title", "subtitle", "image_url", "path", "accent_color"]
+    },
+    "VermelhinhoScore": {
+      "title": "VermelhinhoScore",
+      "description": "Leaderboard entry for Onde está o Vermelhinho.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "score": { "type": "number" },
+        "time": { "type": "number" },
+        "date": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "score", "time", "date"]
     }
   },
   "firestore": {
@@ -50,6 +75,14 @@
     "/registros_nda/{logId}": {
       "schema": { "$ref": "NDA" },
       "description": "NDA acceptance logs"
+    },
+    "/games/{gameId}": {
+      "schema": { "$ref": "Game" },
+      "description": "Dynamic game menu items"
+    },
+    "/vermelhinho_scores/{scoreId}": {
+      "schema": { "$ref": "VermelhinhoScore" },
+      "description": "Leaderboard for Vermelhinho game"
     }
   }
 }
