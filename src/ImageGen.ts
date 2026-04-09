@@ -29,7 +29,7 @@ export async function generateMenuBackground() {
 
 export async function generateGameAvatar(gameTitle: string, description: string) {
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
-  const prompt = `Estilo animação 3D realista (estilo Pixar/Disney moderno), ícone centralizado para o jogo "${gameTitle}". Descrição: ${description}. Iluminação cinematográfica, cores vibrantes, fundo limpo.`;
+  const prompt = `${description}, Estilo animação 3D realista (estilo Pixar/Disney moderno), personagem negro com traços detalhados, iluminação cinematográfica suave, cores vibrantes, fundo levemente desfocado (bokeh), enquadramento de meio corpo, centralizado.`;
   
   try {
     const response = await ai.models.generateContent({

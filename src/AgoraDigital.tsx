@@ -152,15 +152,12 @@ const AgoraDigital = ({ onBack }: { onBack: () => void }) => {
         ctx.save();
         ctx.translate(centerX, centerY);
         ctx.rotate(startAngle + angleStep / 2);
-        ctx.font = "24px Arial"; 
-        ctx.textAlign = "center";
-        ctx.fillText(CATEGORIES[cat].icon, radius * 0.45, 10);
-        ctx.font = "bold 13px sans-serif"; 
+        ctx.font = "900 16px sans-serif"; 
         ctx.fillStyle = "#fff";
         ctx.textAlign = "right"; 
         let label = cat.toUpperCase();
-        if (label.length > 14) label = label.substring(0, 12) + "..";
-        ctx.fillText(label, radius * 0.95, 4);
+        if (label.length > 18) label = label.substring(0, 16) + "..";
+        ctx.fillText(label, radius * 0.95, 6);
         ctx.restore();
       });
 
