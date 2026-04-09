@@ -22,6 +22,10 @@ import Vermelhinho from './Vermelhinho';
 import Tatuzin from './Tatuzin';
 import Cruzaletras from './Cruzaletras';
 import JogoDosMapas from './JogoDosMapas';
+import QuemSouEu from './QuemSouEu';
+import TouchHero from './TouchHero';
+import IssoOuAquilo from './IssoOuAquilo';
+import AgoraDigital from './AgoraDigital';
 import { generateMenuBackground, generateGameAvatar } from './ImageGen';
 import { auth, db } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -44,6 +48,10 @@ const JOGOS_FALLBACK = [
   { id: 'vermelhinho', title: 'ONDE ESTÁ O VERMELHINHO?', subtitle: 'DETETIVE DE MARICÁ', image_url: 'https://picsum.photos/seed/3d-red-bus-london-pixar/600/600', accent_color: '#107C10', path: 'vermelhinho', avatar_prompt: 'Um ônibus de dois andares vermelho (estilo Londres) em 3D' },
   { id: 'tatuzin', title: 'TATUZIN', subtitle: 'EXPLORADOR DA NATUREZA', image_url: 'https://picsum.photos/seed/3d-armadillo-mascot-pixar/600/600', accent_color: '#0078D7', path: 'tatuzin', avatar_prompt: 'Um tatu-bola mascote (estilo Fuleco) sorridente em 3D' },
   { id: 'cruzaletras', title: 'CRUZALETRAS', subtitle: 'MESTRE DAS LETRAS', image_url: 'https://picsum.photos/seed/3d-crossword-pixar/600/600', accent_color: '#D83B01', path: 'cruzaletras', avatar_prompt: 'Uma grade de palavras cruzadas em 3D com letras flutuantes' },
+  { id: 'quemsoueu', title: 'QUEM SOU EU?', subtitle: 'SORTEADOR DE PALAVRAS', image_url: 'https://picsum.photos/seed/3d-who-am-i-pixar/600/600', accent_color: '#0078D7', path: 'quemsoueu', avatar_prompt: 'Um aluno com um ponto de interrogação flutuante sobre a cabeça em 3D' },
+  { id: 'touchhero', title: 'TOUCH HERO', subtitle: 'DESAFIO DE RITMO', image_url: 'https://picsum.photos/seed/3d-music-hero-pixar/600/600', accent_color: '#E81123', path: 'touchhero', avatar_prompt: 'Um herói musical com raios e notas musicais em 3D' },
+  { id: 'issoouaquilo', title: 'ISSO OU AQUILO?', subtitle: 'AMBIENTE DE DEBATE', image_url: 'https://picsum.photos/seed/3d-debate-pixar/600/600', accent_color: '#F59E0B', path: 'issoouaquilo', avatar_prompt: 'Dois caminhos ou opções brilhantes em 3D com um ponto de interrogação' },
+  { id: 'agoradigital', title: 'ÁGORA DIGITAL', subtitle: 'DEBATE E ARGUMENTAÇÃO', image_url: 'https://picsum.photos/seed/3d-agora-pixar/600/600', accent_color: '#D4AF37', path: 'agoradigital', avatar_prompt: 'Uma ágora grega moderna com elementos digitais e hologramas em 3D' },
 ];
 
 export default function App() {
@@ -221,6 +229,10 @@ export default function App() {
         case 'tatuzin': return <Tatuzin onBack={() => setCurrentScreen('menu')} />;
         case 'cruzaletras': return <Cruzaletras onBack={() => setCurrentScreen('menu')} />;
         case 'mapas': return <JogoDosMapas onBack={() => setCurrentScreen('menu')} />;
+        case 'quemsoueu': return <QuemSouEu onBack={() => setCurrentScreen('menu')} />;
+        case 'touchhero': return <TouchHero onBack={() => setCurrentScreen('menu')} />;
+        case 'issoouaquilo': return <IssoOuAquilo onBack={() => setCurrentScreen('menu')} />;
+        case 'agoradigital': return <AgoraDigital onBack={() => setCurrentScreen('menu')} />;
         default: return null;
       }
     };
@@ -268,7 +280,6 @@ export default function App() {
             <h1 className="font-display font-extrabold text-5xl md:text-7xl text-white tracking-widest drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] mb-2">ARENA DE JOGOS</h1>
             <div className="flex gap-6 text-lg font-bold text-gray-400 uppercase tracking-wider">
               <span className="text-white border-b-4 border-[#107C10] pb-1">Jogos</span>
-              <span className="hover:text-white cursor-pointer transition-colors">Aplicativos</span>
               <span className="hover:text-white cursor-pointer transition-colors">Configurações</span>
             </div>
           </div>
@@ -373,14 +384,10 @@ export default function App() {
         </div>
 
         {/* Footer Area */}
-        <div className="absolute bottom-6 left-12 right-12 flex justify-between items-end pointer-events-none">
-          <div className="text-left pointer-events-auto">
-            <p className="text-sm text-gray-400 font-medium">Desenvolvido por André Victor Brito de Andrade</p>
-            <p className="text-xs text-gray-500">Contato: {user.email}</p>
-          </div>
-          <div className="text-right pointer-events-auto">
-            <p className="text-xs text-gray-500 font-bold">V 1.0.0</p>
-          </div>
+        <div className="absolute bottom-6 left-0 right-0 flex flex-col items-center justify-center text-center gap-1 pointer-events-none">
+          <p className="text-sm text-gray-400 font-medium pointer-events-auto">Desenvolvido por: André Victor Brito de Andrade</p>
+          <p className="text-xs text-gray-500 pointer-events-auto">Contato: andrevictorbritodeandrade@gmail.com</p>
+          <p className="text-xs text-gray-500 font-bold pointer-events-auto">Versão: 1.0.5</p>
         </div>
       </div>
     </div>
